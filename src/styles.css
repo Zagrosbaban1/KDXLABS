@@ -1,0 +1,2373 @@
+@import url('https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;800;900&family=Source+Serif+4:opsz,wght@8..60,400;8..60,600&family=Vazirmatn:wght@400;500;600;700;800;900&family=Noto+Naskh+Arabic:wght@400;500;600;700&display=swap');
+
+html, body { margin: 0; padding: 0; background: #ffffff; color-scheme: light; }
+
+.kdx {
+  --blue: #4453ff;
+  --blue-deep: #2f3ce6;
+  --blue-rgb: 68, 83, 255;
+  --ink: #0b0b10;
+  --ink-2: rgba(11, 11, 16, 0.74);
+  --ink-3: rgba(11, 11, 16, 0.54);
+  --paper: #ffffff;
+  --mist: #f5f5f8;
+  --line: rgba(11, 11, 16, 0.10);
+  --line-strong: rgba(11, 11, 16, 0.18);
+  --line-light: rgba(255, 255, 255, 0.18);
+
+  /* one radius scale and one easing curve for the whole page */
+  --pill: 999px;
+  --r-sm: 12px;
+  --r-md: 16px;
+  --r-lg: 24px;
+  --ease: cubic-bezier(0.2, 0.7, 0.2, 1);
+  --shadow-sm: 0 1px 2px rgba(11, 11, 16, 0.06), 0 4px 12px rgba(11, 11, 16, 0.05);
+  --shadow-md: 0 2px 6px rgba(11, 11, 16, 0.07), 0 12px 32px rgba(11, 11, 16, 0.10);
+  --shadow-blue: 0 2px 6px rgba(var(--blue-rgb), 0.14), 0 12px 32px rgba(var(--blue-rgb), 0.18);
+  --display: 'Figtree', 'Gilroy', 'Avenir Next', 'Segoe UI', Helvetica, Arial, sans-serif;
+  --serif: 'Source Serif 4', Georgia, 'Times New Roman', serif;
+
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--serif);
+  font-size: 17px;
+  line-height: 1.65;
+  -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
+}
+.kdx *, .kdx *::before, .kdx *::after { box-sizing: border-box; }
+
+/* ---- element reset ----
+   All of this is wrapped in :where() so it carries zero specificity.
+   As bare ".kdx p" / ".kdx a" / ".kdx button" each rule scored (0,1,1) and beat
+   every component class at (0,1,0) — which is why solid buttons rendered with
+   no fill, chips lost their borders, .kdx-btn links inherited the section's
+   text colour (white label on a white pill), and the margins set on
+   .kdx-eyebrow / .kdx-lede / .kdx-hint never applied. A reset must lose. */
+:where(.kdx p) { margin: 0 0 1.1em; }
+:where(.kdx h1, .kdx h2, .kdx h3, .kdx h4, .kdx h5) {
+  font-family: var(--display); margin: 0; letter-spacing: -0.022em;
+  text-wrap: balance;
+}
+:where(.kdx a) { color: inherit; }
+:where(.kdx ul, .kdx ol, .kdx dl, .kdx dd) { margin: 0; padding: 0; list-style: none; }
+:where(.kdx button) { font: inherit; color: inherit; background: none; border: 0; cursor: pointer; }
+.kdx ::selection { background: var(--blue); color: #fff; }
+/* currentColor rings disappeared on same-colour pairings (a white ring on a
+   white section, a blue ring on the blue hero). Each surface names its own. */
+.kdx :focus-visible {
+  outline: 2px solid var(--focus, var(--blue));
+  outline-offset: 3px;
+  border-radius: 4px;
+}
+.kdx-hero, .kdx-contact, .kdx-drawer, .kdx-nav:not(.is-stuck) { --focus: #fff; }
+.kdx-mark { display: block; width: auto; height: auto; }
+
+.kdx-skip {
+  position: fixed; top: -100px; left: 1rem; z-index: 200;
+  background: #fff; color: var(--blue); padding: 0.7rem 1.1rem;
+  font-family: var(--display); font-size: 0.78rem; font-weight: 700;
+  letter-spacing: 0.12em; text-transform: uppercase; text-decoration: none;
+  transition: top 0.2s ease;
+}
+.kdx-skip:focus { top: 1rem; }
+
+/* ---- shared bits ---- */
+.kdx-wrap { width: min(1180px, 100% - 3rem); margin-inline: auto; }
+.kdx-sec { padding: clamp(5rem, 10vw, 9rem) 0; }
+
+/* Uppercase is now reserved for micro-labels only — eyebrows, meta and table
+   headers. Everything interactive reads in sentence case below. */
+.kdx-eyebrow {
+  font-family: var(--display);
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  margin: 0 0 1.7rem;
+  opacity: 0.8;
+}
+.kdx-eyebrow-blue { color: var(--blue); opacity: 1; }
+
+.kdx-h1 {
+  font-weight: 900;
+  font-size: clamp(2.6rem, 6.6vw, 5.1rem);
+  line-height: 1.02;
+  letter-spacing: -0.035em;
+}
+.kdx-h1 span { display: block; }
+.kdx-h2 {
+  font-weight: 800;
+  font-size: clamp(1.9rem, 3.9vw, 3.1rem);
+  line-height: 1.07;
+  letter-spacing: -0.03em;
+  max-width: 18ch;
+  margin-bottom: 1.8rem;
+}
+.kdx-sec-lede {
+  font-size: 1.16rem;
+  max-width: 56ch;
+  color: var(--ink-2);
+}
+.kdx-rule { display: block; width: 58px; height: 3px; background: currentColor; margin-bottom: 2.2rem; }
+
+.kdx [data-reveal] {
+  opacity: 0;
+  transform: translateY(18px);
+  transition: opacity 0.7s cubic-bezier(0.2, 0.7, 0.2, 1), transform 0.7s cubic-bezier(0.2, 0.7, 0.2, 1);
+}
+.kdx [data-reveal].is-in { opacity: 1; transform: none; }
+
+/* page-load sequence */
+.kdx-in { opacity: 0; transform: translateY(20px); }
+.kdx.is-loaded .kdx-in {
+  opacity: 1; transform: none;
+  transition: opacity 0.8s cubic-bezier(0.2, 0.7, 0.2, 1) var(--d, 0s),
+              transform 0.8s cubic-bezier(0.2, 0.7, 0.2, 1) var(--d, 0s);
+}
+
+/* ---- nav ---- */
+.kdx-nav {
+  position: fixed; inset: 0 0 auto 0; z-index: 90;
+  display: flex; align-items: center; gap: 2rem;
+  padding: 1.1rem clamp(1.5rem, 4vw, 3rem);
+  color: #fff;
+  transition: background 0.35s ease, color 0.35s ease, box-shadow 0.35s ease, padding 0.35s ease;
+}
+.kdx-nav.is-stuck {
+  background: rgba(255, 255, 255, 0.93);
+  backdrop-filter: blur(14px);
+  color: var(--ink);
+  box-shadow: 0 1px 0 var(--line);
+  padding-block: 0.75rem;
+}
+.kdx-nav.is-open { background: transparent; color: #fff; box-shadow: none; }
+.kdx-progress {
+  position: absolute; top: 0; left: 0; right: 0; height: 2px;
+  background: currentColor; opacity: 0.35;
+  transform-origin: 0 50%; transform: scaleX(0);
+}
+.kdx-nav.is-stuck .kdx-progress { background: var(--blue); opacity: 1; }
+.kdx-nav.is-open .kdx-progress { opacity: 0; }
+.kdx-brand { display: flex; align-items: center; gap: 0.65rem; text-decoration: none; margin-right: auto; }
+.kdx-brand-mark { width: 24px; }
+.kdx-brand-word {
+  font-family: var(--display); font-weight: 800; font-size: 0.95rem;
+  letter-spacing: 0.13em; text-transform: uppercase;
+}
+.kdx-nav-links { display: flex; gap: 2rem; }
+.kdx-nav-links a {
+  position: relative;
+  font-family: var(--display); font-size: 0.94rem; font-weight: 500;
+  letter-spacing: -0.005em; text-decoration: none;
+  opacity: 0.8; transition: opacity 0.25s var(--ease);
+  padding-block: 0.3rem;
+}
+.kdx-nav-links a::after {
+  content: ""; position: absolute; left: 0; bottom: -2px; height: 2px; width: 0;
+  background: currentColor; transition: width 0.3s cubic-bezier(0.2, 0.7, 0.2, 1);
+}
+.kdx-nav-links a:hover { opacity: 1; }
+.kdx-nav-links a:hover::after { width: 100%; }
+.kdx-nav-links a.is-active { opacity: 1; }
+.kdx-nav-links a.is-active::after { width: 100%; }
+.kdx-nav-cta {
+  display: inline-flex; align-items: center; min-height: 40px;
+  font-family: var(--display); font-size: 0.9rem; font-weight: 600;
+  letter-spacing: -0.005em; text-decoration: none;
+  border: 1px solid currentColor; padding: 0 1.25rem; border-radius: var(--pill);
+  transition: background 0.25s var(--ease), color 0.25s var(--ease), border-color 0.25s var(--ease);
+  white-space: nowrap;
+}
+.kdx-nav.is-stuck .kdx-nav-cta { background: var(--blue); border-color: var(--blue); color: #fff; }
+.kdx-nav-cta:hover { background: #fff; color: var(--blue); border-color: #fff; }
+.kdx-nav.is-stuck .kdx-nav-cta:hover { background: var(--ink); border-color: var(--ink); color: #fff; }
+
+.kdx-burger {
+  display: none; width: 34px; height: 26px; padding: 0;
+  position: relative; flex: 0 0 auto;
+}
+.kdx-burger span {
+  position: absolute; left: 4px; right: 4px; height: 2px; background: currentColor;
+  transition: transform 0.3s cubic-bezier(0.2, 0.7, 0.2, 1), opacity 0.2s ease;
+}
+.kdx-burger span:first-child { top: 8px; }
+.kdx-burger span:last-child { bottom: 8px; }
+.kdx-nav.is-open .kdx-burger span:first-child { transform: translateY(7px) rotate(45deg); }
+.kdx-nav.is-open .kdx-burger span:last-child { transform: translateY(-7px) rotate(-45deg); }
+
+/* ---- mobile drawer ---- */
+.kdx-drawer {
+  position: fixed; inset: 0; z-index: 80;
+  background: var(--ink); color: #fff;
+  display: flex; flex-direction: column; justify-content: center;
+  padding: 5.5rem clamp(1.5rem, 6vw, 3rem) 2.5rem;
+  opacity: 0; visibility: hidden; pointer-events: none;
+  transition: opacity 0.3s ease, visibility 0s linear 0.3s;
+}
+.kdx-drawer.is-open {
+  opacity: 1; visibility: visible; pointer-events: auto;
+  transition: opacity 0.3s ease, visibility 0s;
+}
+.kdx-drawer-links { display: flex; flex-direction: column; gap: 0.2rem; }
+.kdx-drawer-links a {
+  font-family: var(--display); font-weight: 800;
+  font-size: clamp(2rem, 9vw, 3rem); letter-spacing: -0.03em;
+  text-decoration: none; padding: 0.35rem 0;
+}
+.kdx-drawer-foot {
+  margin-top: auto; padding-top: 2rem; border-top: 1px solid var(--line-light);
+  display: flex; flex-direction: column; gap: 0.4rem;
+  font-family: var(--display); font-size: 0.95rem; opacity: 0.8;
+}
+.kdx-drawer-foot a { text-decoration: none; }
+
+/* ---- radar motif ---- */
+.kdx-radar { width: 100%; height: 100%; display: block; overflow: visible; }
+.kdx-radar-static circle { fill: none; stroke: currentColor; stroke-width: 1; opacity: 0.42; }
+.kdx-radar-static line { stroke: currentColor; stroke-width: 1; opacity: 0.2; }
+.kdx-sweep-arm { stroke: currentColor; stroke-width: 1.4; opacity: 0.75; }
+.kdx-sweep-core { fill: none; stroke: currentColor; stroke-width: 1.6; opacity: 0.9; }
+.kdx-radar-sweep { transform-origin: 0 0; animation: kdx-spin 26s linear infinite; }
+@keyframes kdx-spin { to { transform: rotate(360deg); } }
+
+/* ---- hero ---- */
+.kdx-hero {
+  position: relative; background: var(--blue); color: #fff;
+  min-height: 100svh; display: flex; align-items: stretch; overflow: hidden;
+}
+.kdx-hero-radar {
+  position: absolute; top: -14%; right: -18%;
+  width: min(120vh, 96vw); aspect-ratio: 1; color: #fff; pointer-events: none;
+}
+.kdx-hero-inner {
+  position: relative; z-index: 1;
+  width: min(1180px, 100% - 3rem); margin-inline: auto;
+  display: flex; flex-direction: column;
+  padding: clamp(7rem, 14vh, 10rem) 0 clamp(3.5rem, 9vh, 5.5rem);
+}
+.kdx-hero-eyebrow { align-self: flex-end; text-align: right; opacity: 0.75; }
+/* 50rem, because the longest h1 line needs ~48rem at the 5.1rem cap.
+   At 42rem the three <span> lines wrapped into five, which added ~167px of
+   height and pushed the buttons below the fold. */
+.kdx-hero-copy { margin-top: auto; max-width: 50rem; }
+.kdx-lede { font-size: clamp(1.1rem, 1.7vw, 1.3rem); max-width: 34rem; opacity: 0.9; margin-top: 1.8rem; }
+.kdx-hero-actions { display: flex; flex-wrap: wrap; gap: 0.9rem; margin-top: 2.5rem; }
+
+/* ---- buttons ----
+   One geometry for every variant: a 1px border on all of them so solid and
+   outlined buttons measure identically, and min-height instead of vertical
+   padding so a button that wraps its label stays the same height as its
+   neighbour. Only colour changes between variants. */
+.kdx-btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 0.5rem;
+  font-family: var(--display); font-size: 0.98rem; font-weight: 600;
+  letter-spacing: -0.008em; text-decoration: none;
+  cursor: pointer;
+  min-height: 54px; padding: 0.9rem 1.7rem;
+  background: #fff; color: var(--blue);
+  border: 1px solid transparent; border-radius: var(--pill);
+  transition: transform 0.2s var(--ease), background 0.2s var(--ease),
+              color 0.2s var(--ease), border-color 0.2s var(--ease),
+              box-shadow 0.2s var(--ease);
+}
+.kdx-btn:hover { transform: translateY(-1px); box-shadow: var(--shadow-md); }
+.kdx-btn:active { transform: translateY(0); box-shadow: none; transition-duration: 0.07s; }
+.kdx-btn [aria-hidden] { transition: transform 0.2s var(--ease); }
+.kdx-btn:hover [aria-hidden] { transform: translateX(2px); }
+
+.kdx-btn-ghost { background: transparent; color: #fff; border-color: rgba(255, 255, 255, 0.45); }
+.kdx-btn-ghost:hover { background: rgba(255, 255, 255, 0.12); border-color: #fff; box-shadow: none; }
+.kdx-btn-sm { min-height: 46px; padding: 0.65rem 1.35rem; font-size: 0.9rem; }
+
+/* ---- who we are ---- */
+.kdx-who-grid {
+  display: grid; grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: clamp(2rem, 5vw, 4.5rem); margin-top: 2.5rem; align-items: start;
+}
+.kdx-who-grid .kdx-prose p:last-child { margin-bottom: 0; }
+.kdx-prose p { color: var(--ink-2); }
+.kdx-pull {
+  font-family: var(--display); font-weight: 800; font-size: clamp(1.15rem, 1.9vw, 1.45rem);
+  line-height: 1.32; color: var(--blue) !important; letter-spacing: -0.02em;
+  border-left: 3px solid var(--blue); padding-left: 1.4rem; margin-bottom: 1.5em;
+}
+.kdx-mission {
+  margin-top: clamp(3.5rem, 7vw, 5.5rem); padding-top: 2.2rem; border-top: 1px solid var(--line);
+}
+.kdx-mission-text {
+  font-family: var(--display); font-weight: 600; letter-spacing: -0.02em;
+  font-size: clamp(1.25rem, 2.4vw, 1.85rem); line-height: 1.34; max-width: 30ch; margin: 0;
+}
+
+/* ---- coverage map ---- */
+.kdx-coverage {
+  display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: clamp(2rem, 5vw, 4.5rem); align-items: center;
+  margin-top: clamp(3rem, 6vw, 4.5rem); padding-top: clamp(2.5rem, 5vw, 3.5rem);
+  border-top: 1px solid var(--line);
+}
+.kdx-coverage + .kdx-mission { margin-top: clamp(3rem, 6vw, 4.5rem); }
+.kdx-coverage-map { max-width: 460px; margin-inline: auto; width: 100%; }
+.kdx-map { width: 100%; height: auto; display: block; overflow: visible; }
+.kdx-map-base {
+  fill: rgba(11, 11, 16, 0.055);
+  stroke: rgba(11, 11, 16, 0.18); stroke-width: 1.4; stroke-linejoin: round;
+}
+.kdx-map-kri { fill: var(--blue); stroke: var(--blue); stroke-width: 1; stroke-linejoin: round; }
+.kdx-map-kri-line { fill: none; stroke: rgba(255, 255, 255, 0.5); stroke-width: 1.2; }
+.kdx-map-leader { stroke: rgba(11, 11, 16, 0.3); stroke-width: 1; }
+.kdx-map-dot { fill: rgba(11, 11, 16, 0.45); }
+.kdx-map-label {
+  font-family: var(--display); font-size: 15px; font-weight: 600;
+  letter-spacing: 0.12em; text-transform: uppercase; fill: rgba(11, 11, 16, 0.55);
+}
+.kdx-map-pulse { fill: #fff; opacity: 0; animation: kdx-ping 3.6s cubic-bezier(0.2, 0.7, 0.2, 1) infinite; }
+.kdx-map-ring { fill: none; stroke: #fff; stroke-width: 1.4; opacity: 0.5; }
+.kdx-map-hq-dot { fill: #fff; }
+.kdx-map-hq-label {
+  font-family: var(--display); font-size: 21px; font-weight: 800;
+  letter-spacing: 0.06em; fill: #fff;
+}
+@keyframes kdx-ping {
+  0% { r: 8; opacity: 0.5; }
+  70% { r: 34; opacity: 0; }
+  100% { r: 34; opacity: 0; }
+}
+.kdx-coverage-h {
+  font-weight: 800; font-size: clamp(1.3rem, 2.3vw, 1.75rem); line-height: 1.18;
+  margin-bottom: 1rem; max-width: 20ch;
+}
+.kdx-coverage-copy p { color: var(--ink-2); max-width: 46ch; }
+.kdx-legend { display: grid; gap: 0.65rem; margin: 1.6rem 0 0; }
+.kdx-legend li {
+  display: flex; align-items: center; gap: 0.7rem;
+  font-family: var(--display); font-size: 0.86rem; color: var(--ink-2);
+}
+.kdx-swatch { width: 14px; height: 14px; border-radius: 3px; flex: 0 0 auto; }
+.kdx-swatch-blue { background: var(--blue); }
+.kdx-swatch-grey { background: rgba(11, 11, 16, 0.1); box-shadow: inset 0 0 0 1px rgba(11, 11, 16, 0.18); }
+.kdx-coverage-cta { margin-top: 1.8rem; text-decoration: none; }
+
+/* ---- services ---- */
+.kdx-services { background: var(--mist); }
+.kdx-svc-list { margin-top: 3.2rem; border-top: 1px solid var(--line); }
+.kdx-svc {
+  display: grid; grid-template-columns: minmax(0, 0.85fr) minmax(0, 1.15fr);
+  gap: clamp(1rem, 4vw, 3.5rem);
+  padding: clamp(2rem, 3.8vw, 3.1rem) 0;
+  border-bottom: 1px solid var(--line);
+  position: relative;
+}
+.kdx-svc::after {
+  content: ""; position: absolute; left: 0; bottom: -1px; height: 1px; width: 0;
+  background: var(--blue); transition: width 0.5s cubic-bezier(0.2, 0.7, 0.2, 1);
+}
+.kdx-svc:hover::after { width: 100%; }
+.kdx-svc-name {
+  font-weight: 800; font-size: clamp(1.35rem, 2.4vw, 1.95rem); line-height: 1.12;
+  transition: color 0.3s ease;
+}
+.kdx-svc:hover .kdx-svc-name { color: var(--blue); }
+.kdx-svc-role {
+  font-family: var(--display); font-size: 0.7rem; font-weight: 600;
+  letter-spacing: 0.14em; text-transform: uppercase; color: var(--blue);
+  margin: 0.7rem 0 0;
+}
+.kdx-svc-body p { color: var(--ink-2); margin-bottom: 1.2rem; }
+.kdx-tags { display: flex; flex-wrap: wrap; gap: 0.4rem; }
+.kdx-tags li {
+  font-family: var(--display); font-size: 0.82rem; font-weight: 500;
+  letter-spacing: -0.005em;
+  padding: 0.35rem 0.8rem; border: 1px solid transparent; border-radius: var(--pill);
+  background: rgba(11, 11, 16, 0.045); color: var(--ink-2);
+}
+.kdx-services .kdx-tags li { background: var(--paper); }
+/* the underline grows instead of appearing, and the arrow moves on its own —
+   animating the gap re-laid-out the row on every hover */
+.kdx-svc-cta {
+  margin-top: 1.4rem; padding: 0 0 0.3rem; cursor: pointer;
+  font-family: var(--display); font-size: 0.98rem; font-weight: 600;
+  letter-spacing: -0.008em; color: var(--blue);
+  display: inline-flex; align-items: center; gap: 0.55rem;
+  background-image: linear-gradient(var(--blue), var(--blue));
+  background-repeat: no-repeat;
+  background-size: 0% 1px; background-position: 0 100%;
+  transition: background-size 0.3s var(--ease);
+}
+.kdx-svc-cta [aria-hidden] { transition: transform 0.25s var(--ease); }
+.kdx-svc-cta:hover { background-size: 100% 1px; }
+.kdx-svc-cta:hover [aria-hidden] { transform: translateX(4px); }
+.kdx-consult {
+  margin-top: 3rem; padding: clamp(1.6rem, 3vw, 2.4rem);
+  background: var(--paper); border-left: 3px solid var(--blue);
+  border-radius: var(--r-md);
+}
+.kdx-consult p:last-child { margin-bottom: 0; max-width: 72ch; color: var(--ink-2); }
+.kdx-consult .kdx-eyebrow { color: var(--blue); opacity: 1; margin-bottom: 0.9rem; }
+
+/* ---- work ---- */
+.kdx-product {
+  position: relative; overflow: hidden;
+  background: var(--mist); color: var(--ink);
+  border-left: 4px solid var(--blue);
+  border-radius: var(--r-lg);
+  padding: clamp(2.2rem, 5vw, 4rem);
+  margin-top: 1rem;
+}
+.kdx-product-radar {
+  position: absolute; top: -55%; right: -12%; width: 62%; aspect-ratio: 1;
+  color: var(--blue); opacity: 0.18; pointer-events: none;
+}
+.kdx-product .kdx-eyebrow { color: var(--blue); opacity: 1; }
+.kdx-product-inner { position: relative; z-index: 1; max-width: 46rem; }
+.kdx-product-name {
+  font-weight: 900; font-size: clamp(2.1rem, 4.6vw, 3.4rem); letter-spacing: -0.035em;
+  margin-bottom: 1.4rem;
+}
+.kdx-product-inner p { color: var(--ink-2); max-width: 44rem; }
+.kdx-stats {
+  display: flex; flex-wrap: wrap; gap: clamp(2rem, 6vw, 4.5rem);
+  margin-top: 2.4rem; padding-top: 2rem; border-top: 1px solid var(--line);
+}
+.kdx-stats dt {
+  font-family: var(--display); font-weight: 900; font-size: clamp(1.9rem, 3.4vw, 2.6rem);
+  line-height: 1; letter-spacing: -0.03em; color: var(--blue);
+}
+.kdx-stats dd {
+  font-family: var(--display); font-size: 0.9rem; font-weight: 500;
+  letter-spacing: -0.005em; color: var(--ink-3); margin-top: 0.55rem;
+}
+.kdx-product-actions { display: flex; flex-wrap: wrap; gap: 0.75rem; margin-top: 2.4rem; }
+/* portfolio */
+.kdx-work-head {
+  display: flex; align-items: flex-end; justify-content: space-between; gap: 2rem; flex-wrap: wrap;
+  margin-top: clamp(4rem, 8vw, 6rem);
+}
+.kdx-work-h {
+  font-weight: 800; font-size: clamp(1.4rem, 2.6vw, 2rem); line-height: 1.15;
+  max-width: 22ch; letter-spacing: -0.025em;
+}
+.kdx-filters { display: flex; flex-wrap: wrap; gap: 0.45rem; }
+/* Surface variants live together further down, next to .kdx-chip, so that
+   source order can't decide which one wins. See "chip variants" below. */
+
+.kdx-work-grid {
+  display: grid; grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1.4rem; margin-top: 2.4rem;
+}
+/* The card is the hit area, but only the title is a real <button>: a button's
+   content model is phrasing content, so it can't hold the heading, paragraphs
+   and tag list it used to wrap. The overlay carries the click instead. */
+.kdx-card {
+  position: relative; display: flex; flex-direction: column; align-items: flex-start;
+  padding: clamp(1.5rem, 2.5vw, 2rem);
+  border: 1px solid rgba(11, 11, 16, 0.07); border-radius: var(--r-md);
+  background: var(--paper); box-shadow: var(--shadow-sm);
+  transition: border-color 0.25s var(--ease), transform 0.25s var(--ease), box-shadow 0.25s var(--ease);
+}
+.kdx-card:hover, .kdx-card:focus-within {
+  border-color: rgba(var(--blue-rgb), 0.32); transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+}
+.kdx-card:focus-within { outline: 2px solid var(--blue); outline-offset: 3px; }
+.kdx-card-btn {
+  padding: 0; text-align: left; font: inherit; color: inherit; letter-spacing: inherit;
+}
+.kdx-card-btn::after { content: ""; position: absolute; inset: 0; border-radius: var(--r-md); }
+.kdx-card-btn:focus-visible { outline: none; }
+.kdx-card.is-accent { background: var(--blue); color: #fff; border-color: var(--blue); }
+.kdx-card.is-accent:hover { box-shadow: var(--shadow-blue); }
+.kdx-card-top {
+  display: flex; justify-content: space-between; width: 100%; gap: 1rem;
+  font-family: var(--display); font-size: 0.68rem; font-weight: 600;
+  letter-spacing: 0.14em; text-transform: uppercase; color: var(--blue);
+  margin-bottom: 1.2rem;
+}
+.kdx-card-year { color: var(--ink-3); }
+.kdx-card.is-accent .kdx-card-top, .kdx-card.is-accent .kdx-card-year { color: rgba(255, 255, 255, 0.8); }
+.kdx-card-title {
+  width: 100%;
+  font-weight: 800; font-size: clamp(1.15rem, 1.8vw, 1.4rem); line-height: 1.2;
+  letter-spacing: -0.025em; margin-bottom: 0.35rem;
+}
+.kdx-card-client {
+  font-family: var(--display); font-size: 0.85rem; color: var(--ink-3); margin-bottom: 0.9rem;
+}
+.kdx-card.is-accent .kdx-card-client { color: rgba(255,255,255,0.72); }
+.kdx-card-summary { color: var(--ink-2); font-size: 0.98rem; margin-bottom: 1.2rem; }
+.kdx-card.is-accent .kdx-card-summary { color: rgba(255,255,255,0.9); }
+.kdx-card-tags { margin-bottom: 1.4rem; }
+.kdx-card.is-accent .kdx-tags li { background: rgba(255, 255, 255, 0.16); color: rgba(255, 255, 255, 0.9); }
+.kdx-card-more {
+  margin-top: auto;
+  font-family: var(--display); font-size: 0.92rem; font-weight: 600;
+  letter-spacing: -0.008em; color: var(--blue);
+  display: inline-flex; align-items: center; gap: 0.5rem;
+}
+.kdx-card-more [aria-hidden] { transition: transform 0.25s var(--ease); }
+.kdx-card.is-accent .kdx-card-more { color: #fff; }
+.kdx-card:hover .kdx-card-more [aria-hidden],
+.kdx-card:focus-within .kdx-card-more [aria-hidden] { transform: translateX(4px); }
+.kdx-work-note {
+  margin-top: 1.6rem; font-family: var(--display); font-size: 0.86rem;
+  color: var(--ink-3); max-width: 60ch;
+}
+
+/* case study dialog */
+.kdx-modal {
+  position: fixed; inset: 0; z-index: 100;
+  background: rgba(11, 11, 16, 0.55); backdrop-filter: blur(6px);
+  display: flex; align-items: center; justify-content: center;
+  padding: clamp(0.75rem, 3vw, 2rem);
+  animation: kdx-fade 0.2s ease;
+}
+@keyframes kdx-fade { from { opacity: 0; } }
+.kdx-modal-panel {
+  position: relative; background: var(--paper); color: var(--ink);
+  width: min(880px, 100%); max-height: 100%; overflow: auto;
+  padding: clamp(1.6rem, 4vw, 3rem); border-radius: var(--r-lg);
+  box-shadow: 0 24px 70px rgba(11, 11, 16, 0.28);
+  animation: kdx-rise 0.3s cubic-bezier(0.2, 0.7, 0.2, 1);
+}
+@keyframes kdx-rise { from { transform: translateY(18px); opacity: 0; } }
+.kdx-modal-close {
+  position: absolute; top: 0.9rem; right: 0.9rem;
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 44px; height: 44px; border-radius: 50%; font-size: 1.5rem; line-height: 1;
+  color: var(--ink-3); border: 1px solid var(--line);
+  transition: background 0.2s var(--ease), color 0.2s var(--ease), border-color 0.2s var(--ease);
+}
+.kdx-modal-close:hover { background: var(--ink); border-color: var(--ink); color: #fff; }
+.kdx-modal-title {
+  font-weight: 900; font-size: clamp(1.7rem, 3.4vw, 2.5rem); line-height: 1.08;
+  letter-spacing: -0.03em; max-width: 20ch;
+}
+.kdx-modal-client { font-family: var(--display); color: var(--ink-3); margin: 0.6rem 0 0; }
+.kdx-modal-body {
+  display: grid; grid-template-columns: minmax(0, 1.4fr) minmax(0, 0.9fr);
+  gap: clamp(1.5rem, 4vw, 3rem); margin-top: 2rem; padding-top: 2rem;
+  border-top: 1px solid var(--line);
+}
+.kdx-modal-label {
+  font-family: var(--display); font-size: 0.7rem; font-weight: 600;
+  letter-spacing: 0.14em; text-transform: uppercase; color: var(--blue);
+  margin: 0 0 0.6rem;
+}
+.kdx-modal-col p:not(.kdx-modal-label) { color: var(--ink-2); margin-bottom: 1.5rem; }
+.kdx-modal-facts > div { padding: 0.8rem 0; border-top: 1px solid var(--line); }
+.kdx-modal-facts > div:first-child { border-top: 0; padding-top: 0; }
+.kdx-modal-facts dt {
+  font-family: var(--display); font-size: 0.68rem; font-weight: 600;
+  letter-spacing: 0.14em; text-transform: uppercase; color: var(--ink-3);
+}
+.kdx-modal-facts dd { font-family: var(--display); font-weight: 600; margin-top: 0.2rem; }
+.kdx-modal-actions {
+  display: flex; flex-wrap: wrap; gap: 0.75rem; margin-top: 2rem; padding-top: 1.6rem;
+  border-top: 1px solid var(--line);
+}
+.kdx-btn-blue { background: var(--blue); border-color: var(--blue); color: #fff; }
+.kdx-btn-blue:hover {
+  background: var(--blue-deep); border-color: var(--blue-deep); box-shadow: var(--shadow-blue);
+}
+.kdx-btn-outline { background: transparent; color: var(--ink); border-color: var(--line-strong); }
+.kdx-btn-outline:hover {
+  background: var(--ink); border-color: var(--ink); color: #fff; box-shadow: none;
+}
+
+.kdx-why-label { margin-top: clamp(4rem, 8vw, 6rem); }
+.kdx-reasons { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: clamp(1.8rem, 4vw, 3.2rem); }
+.kdx-reason { padding-top: 1.4rem; border-top: 1px solid var(--line); }
+.kdx-reason h3 { font-weight: 800; font-size: 1.2rem; margin-bottom: 0.7rem; }
+.kdx-reason p { color: var(--ink-2); margin: 0; }
+
+/* ---- approach ---- */
+.kdx-approach { background: var(--paper); color: var(--ink); }
+.kdx-approach .kdx-eyebrow { color: var(--blue); opacity: 1; }
+/* four stages, four cards — same card language as the work grid */
+.kdx-stages {
+  display: grid; grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 1.4rem; margin-top: 3rem;
+}
+.kdx-stages li {
+  display: flex; flex-direction: column;
+  padding: clamp(1.5rem, 2.4vw, 2rem);
+  border: 1px solid rgba(11, 11, 16, 0.07); border-radius: var(--r-md);
+  background: var(--paper); box-shadow: var(--shadow-sm);
+  transition: transform 0.25s var(--ease), box-shadow 0.25s var(--ease),
+              border-color 0.25s var(--ease);
+}
+.kdx-stages li:hover {
+  transform: translateY(-2px); box-shadow: var(--shadow-md);
+  border-color: rgba(var(--blue-rgb), 0.28);
+}
+.kdx-stage-n {
+  align-self: flex-start;          /* or the circle stretches to card width */
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 46px; height: 46px; border-radius: 50%;
+  background: var(--blue); color: #fff;
+  font-family: var(--display); font-weight: 800; font-size: 0.92rem;
+  letter-spacing: 0.04em;
+  margin-bottom: 1.4rem;
+  transition: transform 0.25s var(--ease);
+}
+.kdx-stages li:hover .kdx-stage-n { transform: scale(1.06); }
+.kdx-stage-copy h3 {
+  font-weight: 800; font-size: clamp(1.15rem, 1.8vw, 1.4rem);
+  letter-spacing: -0.025em; margin-bottom: 0.6rem;
+}
+.kdx-stage-copy p { color: var(--ink-2); margin: 0; font-size: 0.98rem; }
+.kdx-approach-cta {
+  display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 1.5rem;
+  margin-top: clamp(2.5rem, 5vw, 4rem);
+}
+.kdx-approach-cta p {
+  font-family: var(--display); font-weight: 600; letter-spacing: -0.02em;
+  font-size: clamp(1.1rem, 2vw, 1.5rem); margin: 0; max-width: 24ch;
+}
+
+/* ---- faq ---- */
+.kdx-faq-list { margin-top: 3rem; border-bottom: 1px solid var(--line); }
+.kdx-faq-item { border-top: 1px solid var(--line); }
+.kdx-faq-item summary {
+  list-style: none; cursor: pointer;
+  display: flex; align-items: center; justify-content: space-between; gap: 1.5rem;
+  padding: 1.6rem 0; min-height: 44px;
+  font-family: var(--display); font-weight: 800; letter-spacing: -0.015em;
+  font-size: clamp(1.05rem, 1.8vw, 1.25rem); line-height: 1.3;
+  transition: color 0.2s ease;
+}
+.kdx-faq-item summary::-webkit-details-marker { display: none; }
+.kdx-faq-item summary:hover { color: var(--blue); }
+.kdx-faq-icon {
+  position: relative; flex: 0 0 auto; width: 16px; height: 16px;
+}
+.kdx-faq-icon::before, .kdx-faq-icon::after {
+  content: ""; position: absolute; inset: 50% 0 auto 0; height: 2px;
+  background: var(--blue); transform: translateY(-50%);
+  transition: transform 0.25s cubic-bezier(0.2, 0.7, 0.2, 1);
+}
+.kdx-faq-icon::after { transform: translateY(-50%) rotate(90deg); }
+.kdx-faq-item[open] .kdx-faq-icon::after { transform: translateY(-50%) rotate(0deg); }
+.kdx-faq-item > p {
+  max-width: 66ch; margin: -0.4rem 0 1.8rem;
+  color: var(--ink-2);
+}
+.kdx-faq-more { margin-top: 2.2rem; color: var(--ink-2); }
+.kdx-faq-more a { color: var(--blue); text-decoration: none; border-bottom: 1px solid currentColor; }
+
+/* ---- contact ---- */
+.kdx-contact {
+  position: relative; overflow: hidden;
+  background: var(--ink); color: #fff;
+  padding: clamp(5rem, 10vw, 8rem) 0 2.5rem;
+}
+.kdx-contact-radar {
+  position: absolute; bottom: -60%; right: -10%; width: 70%; aspect-ratio: 1;
+  color: #fff; opacity: 0.4; pointer-events: none;
+}
+.kdx-contact-inner { position: relative; z-index: 1; }
+.kdx-contact .kdx-eyebrow { opacity: 0.75; }
+.kdx-contact-h { max-width: 20ch; margin-bottom: 3rem; }
+.kdx-contact-grid {
+  display: grid; grid-template-columns: minmax(0, 1.15fr) minmax(0, 0.85fr);
+  gap: clamp(2.5rem, 6vw, 5rem);
+}
+
+/* form */
+.kdx-field-row { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1.2rem; }
+.kdx-field { margin-bottom: 1.5rem; }
+.kdx-field label, .kdx-label {
+  display: block;
+  font-family: var(--display); font-size: 0.95rem; font-weight: 500;
+  letter-spacing: -0.005em; opacity: 0.92;
+  margin-bottom: 0.55rem;
+}
+.kdx-opt {
+  font-size: 0.85rem; letter-spacing: 0; font-weight: 400;
+  opacity: 0.55; margin-left: 0.4rem;
+}
+.kdx-hint {
+  font-family: var(--display); font-size: 0.85rem; opacity: 0.7;
+  margin: -0.7rem 0 1.4rem;
+}
+.kdx-field .kdx-hint { margin: 0.7rem 0 0; }
+.kdx-field input, .kdx-field textarea {
+  width: 100%; font-family: var(--display); font-size: 1rem; color: #fff;
+  background: rgba(255, 255, 255, 0.06); border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: var(--r-sm); padding: 0.9rem 1.05rem; min-height: 52px; resize: vertical;
+  transition: border-color 0.2s var(--ease), background 0.2s var(--ease), box-shadow 0.2s var(--ease);
+}
+.kdx-field textarea { min-height: 7.5rem; line-height: 1.5; }
+.kdx-field input::placeholder, .kdx-field textarea::placeholder { color: rgba(255, 255, 255, 0.45); }
+.kdx-field input:focus, .kdx-field textarea:focus {
+  outline: none; border-color: #fff; background: rgba(255, 255, 255, 0.12);
+  box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.16);
+}
+.kdx-field input[aria-invalid="true"], .kdx-field textarea[aria-invalid="true"] {
+  border-color: rgba(255, 255, 255, 0.9); background: rgba(255, 255, 255, 0.16);
+}
+.kdx-err {
+  font-family: var(--display); font-size: 0.8rem; margin: 0.55rem 0 0; opacity: 0.95;
+}
+.kdx-chips { display: flex; flex-wrap: wrap; gap: 0.45rem; }
+/* ---- chip variants ----
+   .kdx-chip carries geometry only. Colour comes from the surface variant,
+   and both variants sit here together: as separate blocks in separate
+   sections they scored the same (0,1,0) and whichever came last silently
+   won, which rendered the work filters white-on-white. */
+.kdx-chip {
+  display: inline-flex; align-items: center; cursor: pointer;
+  font-family: var(--display); font-size: 0.9rem; font-weight: 500;
+  letter-spacing: -0.005em;
+  min-height: 44px; padding: 0 1.1rem; border-radius: var(--pill);
+  border: 1px solid transparent; background: transparent;
+  transition: background 0.2s var(--ease), color 0.2s var(--ease), border-color 0.2s var(--ease);
+}
+
+/* on a dark surface — the contact form */
+.kdx-chip-light { border-color: rgba(255, 255, 255, 0.28); color: rgba(255, 255, 255, 0.82); }
+.kdx-chip-light:hover { background: rgba(255, 255, 255, 0.1); border-color: #fff; color: #fff; }
+.kdx-chip-light.is-on { background: #fff; color: var(--ink); border-color: #fff; }
+
+/* on a light surface — the work filters */
+.kdx-chip-dark { border-color: var(--line-strong); color: var(--ink-2); }
+.kdx-chip-dark:hover { background: var(--mist); border-color: var(--ink); color: var(--ink); }
+.kdx-chip-dark.is-on { background: var(--ink); color: #fff; border-color: var(--ink); }
+.kdx-form-actions { display: flex; flex-wrap: wrap; gap: 0.75rem; margin-top: 0.4rem; }
+.kdx-form-note {
+  font-family: var(--display); font-size: 0.88rem; opacity: 0.78; margin: 1.2rem 0 0;
+  max-width: 42ch; line-height: 1.5;
+}
+.kdx-sent {
+  border: 1px solid var(--line-light); border-radius: var(--r-md);
+  background: rgba(255, 255, 255, 0.04);
+  padding: clamp(1.5rem, 3vw, 2.2rem);
+}
+.kdx-sent h3 { font-weight: 800; font-size: 1.4rem; margin-bottom: 0.8rem; }
+.kdx-sent p { opacity: 0.88; max-width: 44ch; }
+
+/* details column */
+.kdx-contact-rows { display: grid; gap: 0; }
+.kdx-contact-rows > div {
+  display: grid; grid-template-columns: 6rem minmax(0, 1fr); align-items: baseline;
+  gap: 1rem; padding: 0.95rem 0; border-top: 1px solid var(--line-light);
+}
+.kdx-contact-rows dt {
+  font-family: var(--display); font-size: 0.7rem; font-weight: 600;
+  letter-spacing: 0.14em; text-transform: uppercase; opacity: 0.6;
+}
+.kdx-contact-rows dd { font-size: 1.05rem; display: flex; align-items: baseline; gap: 0.8rem; flex-wrap: wrap; }
+.kdx-contact-rows a { text-decoration: none; border-bottom: 1px solid rgba(255,255,255,0.35); }
+.kdx-contact-rows a:hover { border-color: #fff; }
+.kdx-copy {
+  display: inline-flex; align-items: center; min-height: 34px;
+  font-family: var(--display); font-size: 0.8rem; font-weight: 500;
+  letter-spacing: -0.005em;
+  padding: 0 0.9rem; border-radius: var(--pill);
+  border: 1px solid rgba(255, 255, 255, 0.28); color: rgba(255, 255, 255, 0.78);
+  transition: background 0.2s var(--ease), color 0.2s var(--ease), border-color 0.2s var(--ease);
+}
+.kdx-copy:hover { background: rgba(255, 255, 255, 0.12); border-color: #fff; color: #fff; }
+.kdx-details-wa { margin-top: 1.8rem; }
+.kdx-details-mark { width: 64px; margin-top: clamp(2.5rem, 6vw, 4rem); opacity: 0.9; }
+
+.kdx-contact-foot {
+  display: flex; align-items: center; gap: 1.5rem; flex-wrap: wrap;
+  margin-top: clamp(3.5rem, 8vw, 6rem); padding-top: 1.4rem;
+  border-top: 1px solid var(--line-light);
+}
+.kdx-foot-links { display: flex; flex-wrap: wrap; gap: 1.4rem; margin-right: auto; }
+.kdx-foot-links a {
+  font-family: var(--display); font-size: 0.92rem; font-weight: 500;
+  letter-spacing: -0.005em; text-decoration: none;
+  opacity: 0.78; transition: opacity 0.2s var(--ease); padding: 0.4rem 0;
+}
+.kdx-foot-links a:hover { opacity: 1; }
+.kdx-foot-meta {
+  font-family: var(--display); font-size: 0.85rem; letter-spacing: -0.005em;
+  opacity: 0.55;
+}
+.kdx-top {
+  font-family: var(--display); font-size: 0.9rem; font-weight: 500;
+  letter-spacing: -0.005em;
+  display: inline-flex; align-items: center; gap: 0.5rem;
+  min-height: 42px; padding: 0 1.15rem; border-radius: var(--pill);
+  border: 1px solid rgba(255, 255, 255, 0.28);
+  transition: background 0.25s var(--ease), color 0.25s var(--ease), border-color 0.25s var(--ease);
+}
+.kdx-top [aria-hidden] { transition: transform 0.25s var(--ease); }
+.kdx-top:hover { background: #fff; color: var(--ink); border-color: #fff; }
+.kdx-top:hover [aria-hidden] { transform: translateY(-2px); }
+
+/* ---- floating tools ---- */
+.kdx-tools {
+  position: fixed; right: clamp(1rem, 3vw, 2rem); bottom: clamp(1rem, 3vw, 2rem);
+  z-index: 70; display: flex; align-items: center; gap: 0.6rem;
+  opacity: 0; transform: translateY(14px); pointer-events: none;
+  transition: opacity 0.3s ease, transform 0.3s ease;
+}
+.kdx-tools.is-in { opacity: 1; transform: none; pointer-events: auto; }
+.kdx-tool {
+  display: inline-flex; align-items: center; justify-content: center; gap: 0.55rem;
+  min-height: 48px; padding: 0 1.2rem; border-radius: 999px;
+  background: var(--ink); color: #fff; text-decoration: none;
+  font-family: var(--display); font-size: 0.92rem; font-weight: 600;
+  letter-spacing: -0.005em;
+  box-shadow: var(--shadow-md);
+  transition: transform 0.2s var(--ease), background 0.2s var(--ease), box-shadow 0.2s var(--ease);
+}
+.kdx-tool:hover { transform: translateY(-2px); box-shadow: 0 6px 14px rgba(11, 11, 16, 0.14), 0 18px 40px rgba(11, 11, 16, 0.18); }
+.kdx-tool:active { transform: translateY(0); }
+.kdx-tool svg { width: 20px; height: 20px; }
+.kdx-tool-top {
+  width: 48px; padding: 0; font-size: 1.1rem;
+  background: #fff; color: var(--ink);
+  box-shadow: var(--shadow-md), inset 0 0 0 1px var(--line-strong);
+}
+
+/* ---- responsive ---- */
+@media (max-width: 980px) {
+  .kdx-contact-grid { grid-template-columns: minmax(0, 1fr); }
+  .kdx-details-mark { display: none; }
+}
+@media (max-width: 1040px) {
+  .kdx-stages { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media (max-width: 900px) {
+  .kdx-who-grid, .kdx-reasons, .kdx-coverage, .kdx-modal-body { grid-template-columns: minmax(0, 1fr); }
+  .kdx-work-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .kdx-coverage { gap: 2.5rem; }
+  .kdx-svc { grid-template-columns: minmax(0, 1fr); gap: 1.1rem; }
+  .kdx-nav-links, .kdx-nav-cta { display: none; }
+  .kdx-burger { display: block; }
+}
+@media (max-width: 620px) {
+  .kdx { font-size: 16px; }
+  .kdx-wrap, .kdx-hero-inner { width: calc(100% - 2.2rem); }
+  .kdx-hero-eyebrow { align-self: flex-start; text-align: left; }
+  .kdx-hero-radar { top: 4%; right: -42%; width: 150vw; }
+  .kdx-stages { grid-template-columns: minmax(0, 1fr); }
+  .kdx-contact-rows > div { grid-template-columns: minmax(0, 1fr); gap: 0.25rem; }
+  .kdx-field-row { grid-template-columns: minmax(0, 1fr); gap: 0; }
+  .kdx-hero-actions .kdx-btn,
+  .kdx-form-actions .kdx-btn,
+  .kdx-approach-cta .kdx-btn,
+  .kdx-modal-actions .kdx-btn { width: 100%; }
+  .kdx-work-grid { grid-template-columns: minmax(0, 1fr); }
+  .kdx-modal { align-items: flex-end; padding: 0; }
+  .kdx-modal-panel { border-radius: 12px 12px 0 0; max-height: 92vh; }
+  .kdx-product-actions .kdx-btn { flex: 1 1 12rem; }
+  .kdx-contact-foot { flex-direction: column; align-items: flex-start; gap: 1.2rem; }
+  .kdx-tool span:not([aria-hidden]) { display: none; }
+  .kdx-tool { width: 48px; padding: 0; }
+  .kdx-faq-item summary { gap: 1rem; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .kdx *, .kdx *::before, .kdx *::after { animation: none !important; transition: none !important; }
+  .kdx-in { opacity: 1; transform: none; }
+}
+
+/* =====================================================================
+   Added with the dynamic pass: interactive map, About section,
+   work toolbar (search / filter / sort), and richer motion.
+   ===================================================================== */
+
+/* ---- staggered reveals ---- */
+.kdx [data-reveal][data-stagger] {
+  transition-delay: calc(var(--s, 0) * 70ms);
+}
+
+.kdx-sec-head { max-width: 62ch; }
+
+/* ---------------------------------------------------------------- *
+ *  About
+ * ---------------------------------------------------------------- */
+.kdx-about-story {
+  display: grid; grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: clamp(1.6rem, 3.5vw, 3rem);
+  margin-top: 2.6rem;
+}
+.kdx-about-story p { color: var(--ink-2); margin: 0; }
+.kdx-about-story > div { padding-top: 1.3rem; border-top: 2px solid var(--blue); }
+
+.kdx-disciplines {
+  display: grid; grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1.4rem; margin-top: 2.4rem;
+}
+.kdx-discipline {
+  padding: clamp(1.4rem, 2.4vw, 1.9rem);
+  border: 1px solid rgba(11, 11, 16, 0.07); border-radius: var(--r-md);
+  background: var(--paper); box-shadow: var(--shadow-sm);
+  transition: transform 0.25s var(--ease), box-shadow 0.25s var(--ease),
+              border-color 0.25s var(--ease);
+}
+.kdx-discipline:hover {
+  transform: translateY(-2px); box-shadow: var(--shadow-md);
+  border-color: rgba(var(--blue-rgb), 0.28);
+}
+.kdx-discipline h3 {
+  font-weight: 800; font-size: 1.18rem; letter-spacing: -0.02em; margin-bottom: 0.6rem;
+}
+.kdx-discipline p { color: var(--ink-2); margin: 0 0 1rem; font-size: 0.98rem; }
+.kdx-discipline .kdx-tags li { font-size: 0.78rem; }
+
+/* ---- timeline ---- */
+.kdx-timeline { margin-top: 2.6rem; position: relative; }
+.kdx-timeline::before {
+  content: ""; position: absolute; left: 5.5rem; top: 0.6rem; bottom: 0.6rem;
+  width: 2px; background: var(--line);
+}
+.kdx-timeline li {
+  position: relative; display: grid;
+  grid-template-columns: 5.5rem minmax(0, 1fr);
+  gap: clamp(1.5rem, 3vw, 2.5rem);
+  padding: 0 0 2.2rem;
+}
+.kdx-timeline li:last-child { padding-bottom: 0; }
+.kdx-timeline-intro {
+  color: var(--ink-2); max-width: 52ch; margin: -0.6rem 0 0;
+}
+.kdx-timeline-step {
+  font-family: var(--display); font-weight: 800; font-size: 1rem;
+  letter-spacing: 0.06em; color: var(--blue); padding-top: 0.1rem;
+}
+.kdx-timeline-copy { position: relative; }
+.kdx-timeline-copy::before {
+  content: ""; position: absolute; left: calc(-1 * clamp(1.5rem, 3vw, 2.5rem) - 5px);
+  top: 0.55rem; width: 12px; height: 12px; border-radius: 50%;
+  background: var(--paper); border: 2px solid var(--blue);
+  transition: transform 0.3s var(--ease), background 0.3s var(--ease);
+}
+.kdx-timeline li:hover .kdx-timeline-copy::before {
+  background: var(--blue); transform: scale(1.25);
+}
+.kdx-timeline-copy h3 {
+  font-weight: 800; font-size: 1.1rem; letter-spacing: -0.02em; margin-bottom: 0.35rem;
+}
+.kdx-timeline-copy p { color: var(--ink-2); margin: 0; font-size: 0.98rem; }
+
+/* ---------------------------------------------------------------- *
+ *  Interactive coverage map
+ * ---------------------------------------------------------------- */
+.kdx-coverage-map { position: relative; }
+
+.kdx-map-base {
+  stroke-dasharray: 4200; stroke-dashoffset: 4200;
+}
+.kdx-map.is-drawn .kdx-map-base {
+  transition: stroke-dashoffset 1.6s var(--ease);
+  stroke-dashoffset: 0;
+}
+
+/* regions fade in one after another once the outline has drawn */
+.kdx-gov-shape, .kdx-map-marks, .kdx-map-labels { opacity: 0; }
+.kdx-map.is-drawn .kdx-gov-shape {
+  opacity: 1;
+  transition: opacity 0.6s var(--ease) calc(0.35s + var(--i) * 0.12s),
+              fill-opacity 0.25s var(--ease), stroke-width 0.25s var(--ease);
+}
+.kdx-map.is-drawn .kdx-map-marks,
+.kdx-map.is-drawn .kdx-map-labels {
+  opacity: 1; transition: opacity 0.5s var(--ease) 0.75s;
+}
+
+.kdx-gov-shape {
+  fill: var(--blue); fill-opacity: 0.62;
+  stroke: #fff; stroke-width: 1.2; stroke-linejoin: round;
+  cursor: pointer; outline: none;
+}
+.kdx-gov-shape.is-active { fill-opacity: 0.92; }
+.kdx-gov-shape.is-selected { fill-opacity: 1; stroke-width: 2.2; }
+.kdx-gov-shape:focus-visible { stroke: var(--ink); stroke-width: 2.6; }
+
+.kdx-gov-dot { fill: #fff; opacity: 0.9; }
+
+/* Labels overhang their own region, so they carry a white halo to stay
+   readable over both the blue fill and the page behind it. */
+.kdx-map-label, .kdx-gov-label {
+  paint-order: stroke fill;
+  stroke: var(--paper); stroke-width: 3.5px; stroke-linejoin: round;
+}
+.kdx-gov-label {
+  font-family: var(--display); font-size: 15px; font-weight: 700;
+  letter-spacing: 0.1em; text-transform: uppercase;
+  fill: var(--ink-3);
+  transition: fill 0.25s var(--ease);
+}
+.kdx-gov-label.is-hq { font-size: 19px; font-weight: 800; fill: var(--ink); }
+.kdx-gov-label.is-active { fill: var(--blue); }
+
+.kdx-map-marks, .kdx-map-labels { pointer-events: none; }
+
+
+.kdx-region-panel {
+  margin-top: 1.8rem; padding-top: 1.6rem; border-top: 1px solid var(--line);
+  min-height: 10rem;
+}
+.kdx-region-name {
+  display: flex; align-items: center; gap: 0.7rem; flex-wrap: wrap;
+  font-weight: 800; font-size: clamp(1.3rem, 2.2vw, 1.7rem);
+  letter-spacing: -0.025em; margin-bottom: 0.6rem;
+}
+.kdx-region-flag {
+  font-family: var(--display); font-size: 0.64rem; font-weight: 700;
+  letter-spacing: 0.14em; text-transform: uppercase;
+  padding: 0.3rem 0.6rem; border-radius: var(--pill);
+  background: var(--blue); color: #fff;
+}
+.kdx-region-panel > p { color: var(--ink-2); margin-bottom: 1rem; max-width: 46ch; }
+.kdx-region-fade { animation: kdx-region-in 0.35s var(--ease); }
+@keyframes kdx-region-in {
+  from { opacity: 0; transform: translateY(6px); }
+}
+.kdx-region-hint {
+  font-family: var(--display); font-size: 0.86rem; color: var(--ink-3); margin: 0;
+}
+
+.kdx-coverage-stats {
+  display: flex; flex-wrap: wrap; gap: clamp(1.5rem, 4vw, 3rem);
+  margin-top: 2rem; padding-top: 1.6rem; border-top: 1px solid var(--line);
+}
+.kdx-coverage-stats dt {
+  font-family: var(--display); font-weight: 900;
+  font-size: clamp(1.7rem, 3vw, 2.3rem); line-height: 1;
+  letter-spacing: -0.03em; color: var(--blue);
+}
+.kdx-coverage-stats dd {
+  font-family: var(--display); font-size: 0.88rem; font-weight: 500;
+  color: var(--ink-3); margin-top: 0.45rem;
+}
+
+/* ---------------------------------------------------------------- *
+ *  Work toolbar: search, filters, sort
+ * ---------------------------------------------------------------- */
+.kdx-work-tools {
+  display: flex; flex-wrap: wrap; align-items: center; gap: 0.8rem;
+  margin-top: 2rem;
+}
+.kdx-search { position: relative; flex: 1 1 16rem; min-width: 0; }
+.kdx-search input {
+  width: 100%; font-family: var(--display); font-size: 0.95rem; color: var(--ink);
+  background: var(--paper); border: 1px solid var(--line-strong);
+  border-radius: var(--pill); padding: 0 2.6rem; min-height: 46px;
+  transition: border-color 0.2s var(--ease), box-shadow 0.2s var(--ease);
+}
+.kdx-search input::placeholder { color: var(--ink-3); }
+.kdx-search input:focus {
+  outline: none; border-color: var(--blue);
+  box-shadow: 0 0 0 3px rgba(var(--blue-rgb), 0.12);
+}
+.kdx-search-icon {
+  position: absolute; left: 0.95rem; top: 50%; transform: translateY(-50%);
+  width: 16px; height: 16px; color: var(--ink-3); pointer-events: none;
+}
+.kdx-search-clear {
+  position: absolute; right: 0.5rem; top: 50%; transform: translateY(-50%);
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 30px; height: 30px; border-radius: 50%; font-size: 1.1rem; line-height: 1;
+  color: var(--ink-3); cursor: pointer;
+  transition: background 0.2s var(--ease), color 0.2s var(--ease);
+}
+.kdx-search-clear:hover { background: var(--mist); color: var(--ink); }
+
+.kdx-sort {
+  display: inline-flex; align-items: center; gap: 0.5rem;
+  font-family: var(--display); font-size: 0.9rem; color: var(--ink-3);
+}
+.kdx-sort select {
+  font-family: var(--display); font-size: 0.9rem; font-weight: 500; color: var(--ink);
+  background-color: var(--paper); border: 1px solid var(--line-strong);
+  border-radius: var(--pill); padding: 0 2.2rem 0 0.95rem; min-height: 46px;
+  cursor: pointer; appearance: none;
+  background-image: linear-gradient(45deg, transparent 50%, currentColor 50%),
+                    linear-gradient(135deg, currentColor 50%, transparent 50%);
+  background-position: calc(100% - 1.15rem) 55%, calc(100% - 0.85rem) 55%;
+  background-size: 5px 5px, 5px 5px;
+  background-repeat: no-repeat;
+  transition: border-color 0.2s var(--ease);
+}
+.kdx-sort select:focus-visible { border-color: var(--blue); }
+
+.kdx-work-count {
+  font-family: var(--display); font-size: 0.9rem; color: var(--ink-3);
+  margin: 1.4rem 0 0;
+}
+.kdx-work-count strong { color: var(--ink); font-weight: 600; }
+
+.kdx-work-grid > li { animation: kdx-card-in 0.4s var(--ease) backwards; }
+.kdx-work-grid > li:nth-child(2) { animation-delay: 0.04s; }
+.kdx-work-grid > li:nth-child(3) { animation-delay: 0.08s; }
+.kdx-work-grid > li:nth-child(4) { animation-delay: 0.12s; }
+.kdx-work-grid > li:nth-child(5) { animation-delay: 0.16s; }
+.kdx-work-grid > li:nth-child(6) { animation-delay: 0.2s; }
+@keyframes kdx-card-in {
+  from { opacity: 0; transform: translateY(10px) scale(0.99); }
+}
+.kdx-search-hit { background: rgba(var(--blue-rgb), 0.14); border-radius: 2px; }
+
+.kdx-empty {
+  grid-column: 1 / -1; padding: clamp(2.5rem, 6vw, 4rem) 1.5rem;
+  text-align: center; border: 1px dashed var(--line-strong); border-radius: var(--r-md);
+}
+.kdx-empty h4 { font-weight: 800; font-size: 1.2rem; margin-bottom: 0.5rem; }
+.kdx-empty p { color: var(--ink-3); margin: 0 0 1.3rem; }
+
+/* ---- draft-saved note on the form ---- */
+.kdx-saved {
+  display: flex; align-items: center; gap: 0.55rem; flex-wrap: wrap;
+  font-family: var(--display); font-size: 0.86rem; opacity: 0.7;
+  margin: 1rem 0 0;
+}
+.kdx-saved button {
+  font: inherit; text-decoration: underline; text-underline-offset: 3px;
+  cursor: pointer; opacity: 0.9;
+}
+.kdx-saved button:hover { opacity: 1; }
+
+/* ---- toast for copy confirmations ---- */
+.kdx-toast {
+  position: fixed; left: 50%; bottom: 2rem; z-index: 120;
+  transform: translate(-50%, 1.5rem);
+  display: inline-flex; align-items: center; gap: 0.6rem;
+  padding: 0.85rem 1.3rem; border-radius: var(--pill);
+  background: var(--ink); color: #fff;
+  font-family: var(--display); font-size: 0.92rem; font-weight: 500;
+  box-shadow: var(--shadow-md);
+  opacity: 0; pointer-events: none;
+  transition: opacity 0.25s var(--ease), transform 0.25s var(--ease);
+}
+.kdx-toast.is-in { opacity: 1; transform: translate(-50%, 0); }
+
+/* ---------------------------------------------------------------- *
+ *  Responsive
+ * ---------------------------------------------------------------- */
+@media (max-width: 900px) {
+  .kdx-about-story { grid-template-columns: minmax(0, 1fr); }
+  .kdx-disciplines { grid-template-columns: minmax(0, 1fr); }
+}
+@media (max-width: 620px) {
+  .kdx-timeline::before { left: 3.6rem; }
+  .kdx-timeline li { grid-template-columns: 3.6rem minmax(0, 1fr); gap: 1.4rem; }
+  .kdx-timeline-copy::before { left: -1.9rem; }
+  .kdx-work-tools { flex-direction: column; align-items: stretch; }
+  /* the flex basis is a height once this stacks — reset it or the search
+     box grows to 16rem tall and its icon floats loose in the middle */
+  .kdx-search { flex: 0 0 auto; }
+  .kdx-sort { justify-content: space-between; }
+  .kdx-sort select { flex: 1 1 auto; }
+  .kdx-region-panel { min-height: 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .kdx-map-base { stroke-dashoffset: 0 !important; }
+  .kdx-gov-shape, .kdx-map-marks, .kdx-map-labels { opacity: 1 !important; }
+  .kdx-work-grid > li { animation: none !important; }
+}
+
+/* filters now sit below the toolbar rather than inside the section head */
+.kdx-filters { margin-top: 0.9rem; }
+
+/* an inline text button that reads as a link */
+.kdx-linkish {
+  font: inherit; color: var(--blue); cursor: pointer;
+  text-decoration: underline; text-underline-offset: 3px;
+}
+.kdx-linkish:hover { color: var(--blue-deep); }
+
+/* =====================================================================
+   Added when About moved onto its own route: page header, mission and
+   vision, and the short about band that replaced it on the home page.
+   ===================================================================== */
+
+/* ---- an inner page's blue header, the hero's smaller sibling ---- */
+.kdx-page-head {
+  position: relative; overflow: hidden;
+  background: var(--blue); color: #fff;
+  padding: clamp(8rem, 16vh, 11rem) 0 clamp(3.5rem, 7vw, 5.5rem);
+}
+.kdx-page-head-radar {
+  position: absolute; top: -55%; right: -12%;
+  width: min(90vh, 70vw); aspect-ratio: 1; color: #fff;
+  opacity: 0.55; pointer-events: none;
+}
+.kdx-page-head-inner { position: relative; z-index: 1; }
+.kdx-page-head .kdx-eyebrow { opacity: 0.75; }
+.kdx-page-title {
+  font-weight: 900;
+  font-size: clamp(2.3rem, 5.4vw, 4rem);
+  line-height: 1.04; letter-spacing: -0.035em;
+  max-width: 16ch;
+}
+.kdx-page-lede {
+  font-size: clamp(1.1rem, 1.7vw, 1.3rem);
+  max-width: 44ch; opacity: 0.9; margin: 1.6rem 0 0;
+}
+
+/* ---- mission & vision ---- */
+.kdx-mv-grid {
+  display: grid; grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: clamp(1.2rem, 3vw, 2rem);
+}
+.kdx-mv-card {
+  padding: clamp(1.8rem, 3.4vw, 2.8rem);
+  border-radius: var(--r-lg);
+  background: var(--mist);
+  border: 1px solid rgba(11, 11, 16, 0.06);
+}
+.kdx-mv-card p:last-child { margin-bottom: 0; color: var(--ink-2); }
+.kdx-mv-statement {
+  font-weight: 800; font-size: clamp(1.5rem, 2.8vw, 2.1rem);
+  line-height: 1.14; letter-spacing: -0.03em;
+  margin-bottom: 1.1rem; max-width: 18ch;
+}
+/* vision is the forward-looking half, so it carries the brand colour */
+.kdx-mv-card.is-vision {
+  background: var(--blue); border-color: var(--blue); color: #fff;
+}
+.kdx-mv-card.is-vision .kdx-eyebrow { opacity: 0.75; }
+.kdx-mv-card.is-vision p:last-child { color: rgba(255, 255, 255, 0.9); }
+
+.kdx-commitments {
+  margin-top: clamp(2.5rem, 5vw, 3.5rem);
+  padding-top: clamp(2rem, 4vw, 2.8rem);
+  border-top: 1px solid var(--line);
+}
+.kdx-commitments ul {
+  display: grid; grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1rem clamp(1.5rem, 4vw, 3rem);
+}
+.kdx-commitments li {
+  position: relative; display: flex; align-items: flex-start; gap: 0.8rem;
+  color: var(--ink-2); max-width: 44ch;
+}
+.kdx-commit-mark {
+  flex: 0 0 auto; margin-top: 0.55em;
+  width: 8px; height: 8px; border-radius: 50%; background: var(--blue);
+}
+
+/* ---- the short about band on the home page ---- */
+.kdx-about-band { background: var(--paper); }
+.kdx-about-band-grid {
+  display: grid; grid-template-columns: minmax(0, 1.25fr) minmax(0, 0.75fr);
+  gap: clamp(2rem, 5vw, 4.5rem); align-items: start;
+}
+.kdx-about-band-grid .kdx-h2 { margin-bottom: 1.4rem; }
+.kdx-about-band-cta { margin-top: 1.8rem; text-decoration: none; }
+.kdx-about-band-mission {
+  padding: clamp(1.5rem, 3vw, 2.2rem);
+  border-radius: var(--r-md);
+  background: var(--mist);
+}
+.kdx-about-band-mission .kdx-mission-text { margin: 0; }
+
+/* the page header already supplies the top margin */
+.kdx-page-head + .kdx-sec { padding-top: clamp(3rem, 6vw, 5rem); }
+.kdx-mv + .kdx-about-sec { padding-top: 0; }
+
+@media (max-width: 900px) {
+  .kdx-mv-grid { grid-template-columns: minmax(0, 1fr); }
+  .kdx-commitments ul { grid-template-columns: minmax(0, 1fr); }
+  .kdx-about-band-grid { grid-template-columns: minmax(0, 1fr); }
+}
+
+/* =====================================================================
+   DESIGN PASS
+   Three things were weak: every section sat on the same white so the page
+   read as one long scroll; the intro of each section was spaced slightly
+   differently; and several blocks were plain text floating in whitespace,
+   which read as empty rather than generous. Fixed in that order.
+   ===================================================================== */
+
+/* ---- 1. section rhythm ----
+   Alternating surfaces give the page structure without any extra ink. */
+.kdx-about-band { background: var(--paper); }
+.kdx-services   { background: var(--mist); }
+.kdx-work       { background: var(--paper); }
+.kdx-why        { background: var(--mist); }
+.kdx-approach   { background: var(--paper); }
+.kdx-faq        { background: var(--mist); }
+.kdx-mv         { background: var(--paper); }
+.kdx-about-sec  { background: var(--mist); }
+.kdx-coverage-sec { background: var(--paper); }
+.kdx-about-why  { background: var(--mist); }
+
+/* on a tinted surface the white cards carry the contrast, so drop the
+   fill the tags were using to stand off white */
+.kdx-services .kdx-tags li,
+.kdx-why .kdx-tags li,
+.kdx-about-sec .kdx-tags li { background: var(--paper); }
+
+/* ---- 2. one intro block, spaced the same everywhere ---- */
+.kdx-sec-head { max-width: 62ch; }
+.kdx-sec-head .kdx-eyebrow { margin-bottom: 1.3rem; }
+.kdx-sec-head .kdx-h2 { margin-bottom: 1.3rem; }
+.kdx-sec-head .kdx-h2:last-child { margin-bottom: 0; }
+.kdx-sec-head .kdx-sec-lede { margin: 0; }
+
+/* ---- 3. depth in the blue fields ----
+   A single soft highlight behind the radar keeps the flat blue from
+   reading as a printed swatch. */
+.kdx-hero {
+  background-image:
+    radial-gradient(115% 85% at 78% 10%, rgba(255, 255, 255, 0.13), rgba(255, 255, 255, 0) 62%);
+}
+.kdx-page-head {
+  background-image:
+    radial-gradient(120% 130% at 82% 0%, rgba(255, 255, 255, 0.14), rgba(255, 255, 255, 0) 60%);
+}
+.kdx-mv-card.is-vision {
+  background-image:
+    radial-gradient(110% 120% at 85% 8%, rgba(255, 255, 255, 0.14), rgba(255, 255, 255, 0) 60%);
+}
+.kdx-contact {
+  background-image:
+    radial-gradient(90% 70% at 85% 100%, rgba(var(--blue-rgb), 0.22), rgba(0, 0, 0, 0) 65%);
+}
+
+/* ---- 4. "Why KDX Labs" as cards ----
+   Four one-line points on hairlines looked like leftovers in a wide
+   column. As a 2x2 of panels they hold the space. */
+.kdx-reasons {
+  display: grid; grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1.4rem; margin-top: 0;
+}
+.kdx-reason {
+  position: relative; padding: clamp(1.6rem, 2.6vw, 2.1rem);
+  border: 1px solid rgba(11, 11, 16, 0.07); border-radius: var(--r-md);
+  background: var(--paper); box-shadow: var(--shadow-sm);
+  transition: transform 0.25s var(--ease), box-shadow 0.25s var(--ease),
+              border-color 0.25s var(--ease);
+}
+.kdx-reason:hover {
+  transform: translateY(-2px); box-shadow: var(--shadow-md);
+  border-color: rgba(var(--blue-rgb), 0.28);
+}
+.kdx-reason-n {
+  display: block;
+  font-family: var(--display); font-weight: 800; font-size: 0.76rem;
+  letter-spacing: 0.14em; color: var(--blue); margin-bottom: 1rem;
+}
+.kdx-reason h3 {
+  font-weight: 800; font-size: 1.22rem; letter-spacing: -0.022em;
+  margin-bottom: 0.6rem;
+}
+.kdx-reason p { color: var(--ink-2); margin: 0; font-size: 0.99rem; }
+
+/* ---- 5. the about band on the home page ----
+   It was a short heading in a tall section, so most of it was empty.
+   Tighter block, vertically centred, and the mission card given an edge. */
+.kdx-about-band { padding-block: clamp(4rem, 8vw, 6.5rem); }
+.kdx-about-band-grid { align-items: center; }
+.kdx-about-band-mission {
+  padding: clamp(1.8rem, 3vw, 2.4rem);
+  border-radius: var(--r-lg);
+  background: var(--mist);
+  border-left: 3px solid var(--blue);
+}
+.kdx-about-band-mission .kdx-mission-text {
+  font-size: clamp(1.15rem, 2vw, 1.5rem); line-height: 1.3;
+}
+
+/* ---- 6. small corrections that were bugging the rhythm ---- */
+/* the consult note sat on white inside a white section — give it an edge */
+.kdx-consult { box-shadow: var(--shadow-sm); }
+/* the product panel is the loudest thing in the work section; let it sit
+   on the page rather than float in it */
+.kdx-product { box-shadow: var(--shadow-sm); }
+/* stage cards live on white now, so they need the same treatment as the
+   reason cards to read as one family */
+.kdx-stages li { box-shadow: var(--shadow-sm); }
+/* the FAQ list is on tint now — lift the open answer slightly */
+.kdx-faq-item[open] summary { color: var(--blue); }
+
+@media (max-width: 760px) {
+  .kdx-reasons { grid-template-columns: minmax(0, 1fr); }
+}
+
+/* =====================================================================
+   Hero
+   The hero used to carry a photograph of the Erbil Citadel behind the
+   type, blended to a duotone with a scrim over the reading side. The
+   photograph is gone; the field is the brand blue, the soft highlight
+   set in the design pass above, and the radar motif. The radar keeps the
+   opacity it was given when it sat over the picture — at full strength
+   the rings compete with the headline.
+   ===================================================================== */
+.kdx-hero-radar { z-index: 0; opacity: 0.85; }
+
+/* =====================================================================
+   GRADIENT PASS
+   Same palette, richer surfaces. The page was built out of flat fills:
+   one blue, one white, one grey. Flat reads as cheap at large sizes, so
+   every large surface now carries a gradient and every raised element
+   carries a blue-tinted shadow instead of a grey one.
+
+   Four rules held throughout:
+     - gradients run dark-to-light diagonally, never rainbow;
+     - text always lands on the dark end of whatever it sits on;
+     - shadows are tinted with the brand blue, never neutral black;
+     - nothing new is introduced that isn't blue, white or ink.
+
+   Delete this block to get the flat version back.
+   ===================================================================== */
+
+.kdx {
+  --grad-brand: linear-gradient(135deg, #2f3ce6 0%, #4453ff 45%, #6d78ff 100%);
+  --grad-brand-rev: linear-gradient(135deg, #6d78ff 0%, #4453ff 55%, #2f3ce6 100%);
+  --grad-card: linear-gradient(180deg, #ffffff 0%, #fafbff 100%);
+  --grad-hairline: linear-gradient(90deg, rgba(var(--blue-rgb), 0), rgba(var(--blue-rgb), 0.55), rgba(var(--blue-rgb), 0));
+  --glow-sm: 0 1px 2px rgba(11, 11, 16, 0.04), 0 10px 26px -14px rgba(var(--blue-rgb), 0.30);
+  --glow-md: 0 1px 2px rgba(11, 11, 16, 0.05), 0 20px 44px -20px rgba(var(--blue-rgb), 0.45);
+  --glow-lg: 0 2px 4px rgba(11, 11, 16, 0.05), 0 34px 70px -30px rgba(var(--blue-rgb), 0.55);
+  --sheen: inset 0 1px 0 rgba(255, 255, 255, 0.24);
+  --grain: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='200' height='200' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+.kdx-sec { padding: clamp(5.5rem, 11vw, 10rem) 0; }
+
+/* ---- 1. the blue fields --------------------------------------------
+   One gradient, used by the hero, the About header, the KDXJobs panel
+   and the vision card. Light falls from the top right, which is where
+   the radar sits and where no copy ever lands, so the reading side
+   stays at the dark end. */
+.kdx-hero,
+.kdx-page-head,
+.kdx-product,
+.kdx-mv-card.is-vision {
+  background-color: #2f3ad2;
+  background-image:
+    radial-gradient(78% 62% at 80% 6%, rgba(146, 155, 255, 0.55), rgba(146, 155, 255, 0) 62%),
+    radial-gradient(72% 58% at 10% 96%, rgba(38, 47, 186, 0.72), rgba(38, 47, 186, 0) 66%),
+    linear-gradient(152deg, #4049f2 0%, #4453ff 34%, #3641da 70%, #2b34c4 100%);
+}
+/* a film of noise keeps a big gradient from banding on wide screens */
+.kdx-hero::after,
+.kdx-page-head::after,
+.kdx-product::after,
+.kdx-contact::after {
+  content: ""; position: absolute; inset: 0; z-index: 0; pointer-events: none;
+  background-image: var(--grain); opacity: 0.05; mix-blend-mode: overlay;
+}
+.kdx-hero-radar { opacity: 0.9; }
+.kdx-rule {
+  height: 2px;
+  background: linear-gradient(90deg, #ffffff, rgba(255, 255, 255, 0.15));
+}
+
+/* ---- 2. the ink field ----------------------------------------------
+   The contact footer keeps its near-black, but the blue now rises into
+   it from the corner instead of sitting flat behind it. */
+.kdx-contact {
+  background-color: #07070c;
+  background-image:
+    radial-gradient(68% 58% at 88% 104%, rgba(var(--blue-rgb), 0.46), rgba(var(--blue-rgb), 0) 62%),
+    radial-gradient(52% 46% at 4% -6%, rgba(var(--blue-rgb), 0.20), rgba(var(--blue-rgb), 0) 60%),
+    linear-gradient(180deg, #101019 0%, #07070c 100%);
+}
+.kdx-contact-radar { opacity: 0.45; }
+
+/* ---- 3. section surfaces --------------------------------------------
+   The alternation stays; each band is now a shallow gradient so the
+   seam between two sections reads as a fold rather than a step. */
+.kdx-about-band   { background: linear-gradient(180deg, #ffffff 0%, #fbfbff 100%); }
+.kdx-services     { background: linear-gradient(180deg, #f6f7fd 0%, #f1f3fb 100%); }
+.kdx-work         { background: linear-gradient(180deg, #ffffff 0%, #fafbff 100%); }
+.kdx-why          { background: linear-gradient(180deg, #f4f6fd 0%, #f8f9fe 100%); }
+.kdx-approach     { background: linear-gradient(180deg, #ffffff 0%, #fafbff 100%); }
+.kdx-faq          { background: linear-gradient(180deg, #f6f7fd 0%, #f1f3fb 100%); }
+.kdx-mv           { background: linear-gradient(180deg, #ffffff 0%, #fbfbff 100%); }
+.kdx-about-sec    { background: linear-gradient(180deg, #f6f7fd 0%, #f1f3fb 100%); }
+.kdx-coverage-sec { background: linear-gradient(180deg, #ffffff 0%, #fafbff 100%); }
+.kdx-about-why    { background: linear-gradient(180deg, #f4f6fd 0%, #f8f9fe 100%); }
+
+/* ---- 4. navigation --------------------------------------------------- */
+.kdx-nav.is-stuck {
+  /* 0.82, not 0.72: the bar also passes over the near-black contact
+     footer, and a thinner glass turned muddy grey there. */
+  background: rgba(255, 255, 255, 0.82);
+  backdrop-filter: blur(22px) saturate(1.6);
+  -webkit-backdrop-filter: blur(22px) saturate(1.6);
+  box-shadow: 0 1px 0 rgba(11, 11, 16, 0.05), 0 14px 34px -24px rgba(11, 11, 16, 0.3);
+}
+.kdx-nav.is-stuck .kdx-progress { background-image: var(--grad-brand); opacity: 1; }
+.kdx-nav-links a::after { background: linear-gradient(90deg, currentColor, rgba(255, 255, 255, 0.2)); }
+.kdx-nav.is-stuck .kdx-nav-links a::after { background-image: var(--grad-brand); }
+.kdx-nav.is-stuck .kdx-nav-cta {
+  background-image: var(--grad-brand); border-color: transparent;
+  box-shadow: var(--sheen), 0 8px 20px -10px rgba(var(--blue-rgb), 0.7);
+}
+.kdx-nav.is-stuck .kdx-nav-cta:hover {
+  background-image: none; background-color: var(--ink); border-color: var(--ink);
+  box-shadow: 0 8px 20px -10px rgba(11, 11, 16, 0.5);
+}
+.kdx-drawer {
+  background-color: #07070c;
+  background-image:
+    radial-gradient(60% 50% at 90% 100%, rgba(var(--blue-rgb), 0.4), rgba(var(--blue-rgb), 0) 62%),
+    linear-gradient(180deg, #101019 0%, #07070c 100%);
+}
+
+/* ---- 5. buttons ------------------------------------------------------
+   Solid buttons get a top sheen and a coloured shadow; the shadow is
+   what actually reads as expensive, not the fill. */
+.kdx-btn {
+  background-image: linear-gradient(180deg, #ffffff 0%, #f2f4ff 100%);
+  box-shadow: 0 1px 2px rgba(11, 11, 16, 0.05), 0 10px 24px -14px rgba(11, 11, 16, 0.35);
+  transition: transform 0.35s var(--ease), box-shadow 0.35s var(--ease),
+              background 0.35s var(--ease), color 0.35s var(--ease),
+              border-color 0.35s var(--ease);
+}
+.kdx-btn:hover { box-shadow: 0 2px 4px rgba(11, 11, 16, 0.06), 0 18px 38px -16px rgba(11, 11, 16, 0.4); }
+.kdx-btn-ghost { background-image: none; box-shadow: none; }
+.kdx-btn-ghost:hover {
+  background: rgba(255, 255, 255, 0.14); border-color: #fff;
+  box-shadow: 0 10px 26px -16px rgba(0, 0, 0, 0.6);
+}
+.kdx-btn-blue {
+  background-image: var(--grad-brand); border-color: transparent;
+  box-shadow: var(--sheen), 0 10px 26px -12px rgba(var(--blue-rgb), 0.72);
+}
+.kdx-btn-blue:hover {
+  background-image: var(--grad-brand-rev); border-color: transparent;
+  box-shadow: var(--sheen), 0 18px 40px -14px rgba(var(--blue-rgb), 0.8);
+}
+.kdx-btn-outline { background-image: none; box-shadow: none; }
+.kdx-btn-outline:hover { background-image: linear-gradient(135deg, #1a1a24, #0b0b10); }
+
+/* ---- 6. cards --------------------------------------------------------
+   Every card in the site — reasons, stages, disciplines, work — is one
+   surface treatment: a near-white gradient, a blue-tinted hairline, a
+   coloured shadow, and a gradient rule that lights along the top edge
+   on hover. */
+.kdx-reason,
+.kdx-stages li,
+.kdx-discipline,
+.kdx-card {
+  position: relative; overflow: hidden;
+  background: var(--grad-card);
+  border-color: rgba(var(--blue-rgb), 0.11);
+  box-shadow: var(--glow-sm);
+  transition: transform 0.35s var(--ease), box-shadow 0.35s var(--ease),
+              border-color 0.35s var(--ease);
+}
+.kdx-reason::before,
+.kdx-stages li::before,
+.kdx-discipline::before,
+.kdx-card::before {
+  content: ""; position: absolute; inset: 0 0 auto 0; height: 2px;
+  background: var(--grad-hairline);
+  opacity: 0; transition: opacity 0.4s var(--ease);
+}
+.kdx-reason:hover, .kdx-reason:focus-within,
+.kdx-stages li:hover,
+.kdx-discipline:hover,
+.kdx-card:hover, .kdx-card:focus-within {
+  transform: translateY(-3px);
+  box-shadow: var(--glow-md);
+  border-color: rgba(var(--blue-rgb), 0.26);
+}
+.kdx-reason:hover::before,
+.kdx-stages li:hover::before,
+.kdx-discipline:hover::before,
+.kdx-card:hover::before,
+.kdx-card:focus-within::before { opacity: 1; }
+
+/* the stage numeral is the one small solid blue thing on a white card,
+   so it carries the gradient and a glow of its own */
+.kdx-stage-n {
+  background-image: var(--grad-brand);
+  box-shadow: var(--sheen), 0 8px 18px -8px rgba(var(--blue-rgb), 0.75);
+}
+.kdx-stages li:hover .kdx-stage-n { transform: scale(1.06); }
+.kdx-reason-n {
+  background: var(--grad-brand); -webkit-background-clip: text; background-clip: text;
+  color: transparent;
+}
+
+/* ---- 7. the services list -------------------------------------------
+   Rows, not cards — so the hover is a wash that fades out to the right
+   rather than a lift. */
+.kdx-svc { transition: background 0.45s var(--ease); }
+.kdx-svc:hover {
+  background: linear-gradient(90deg, rgba(var(--blue-rgb), 0.05) 0%, rgba(var(--blue-rgb), 0) 68%);
+}
+.kdx-svc::after { background-image: var(--grad-brand); }
+.kdx-consult {
+  background: var(--grad-card);
+  border-left: 0;
+  border: 1px solid rgba(var(--blue-rgb), 0.12);
+  box-shadow: var(--glow-sm);
+  position: relative; overflow: hidden;
+}
+.kdx-consult::before {
+  content: ""; position: absolute; inset: 0 auto 0 0; width: 3px;
+  background: var(--grad-brand);
+}
+
+/* ---- 8. the KDXJobs panel -------------------------------------------
+   It was a grey box with a blue edge in a white section — the loudest
+   claim on the page in the quietest surface. It is now the blue field. */
+.kdx-product {
+  border-left: 0;
+  color: #fff;
+  box-shadow: var(--glow-lg);
+}
+.kdx-product .kdx-eyebrow { color: rgba(255, 255, 255, 0.78); opacity: 1; }
+.kdx-product-inner p { color: rgba(255, 255, 255, 0.86); }
+.kdx-product-radar { color: #fff; opacity: 0.34; }
+.kdx-stats { border-top-color: rgba(255, 255, 255, 0.22); }
+.kdx-stats dt { color: #fff; }
+.kdx-stats dd { color: rgba(255, 255, 255, 0.7); }
+.kdx-product .kdx-btn-blue {
+  background-image: linear-gradient(180deg, #ffffff 0%, #f2f4ff 100%);
+  color: var(--blue); border-color: transparent;
+  box-shadow: 0 10px 26px -12px rgba(0, 0, 0, 0.5);
+}
+.kdx-product .kdx-btn-blue:hover {
+  background-image: linear-gradient(180deg, #ffffff 0%, #e8ebff 100%);
+  color: var(--blue-deep);
+  box-shadow: 0 18px 40px -14px rgba(0, 0, 0, 0.55);
+}
+.kdx-product .kdx-btn-outline {
+  color: #fff; border-color: rgba(255, 255, 255, 0.45); background-image: none;
+}
+.kdx-product .kdx-btn-outline:hover {
+  background-image: none; background-color: rgba(255, 255, 255, 0.14);
+  border-color: #fff; color: #fff;
+}
+
+/* ---- 9. mission, vision, the about band ------------------------------ */
+.kdx-about-band-mission {
+  background: linear-gradient(140deg, rgba(var(--blue-rgb), 0.07) 0%, rgba(var(--blue-rgb), 0.02) 100%);
+  border: 1px solid rgba(var(--blue-rgb), 0.12);
+  border-left: 0;
+  box-shadow: var(--glow-sm);
+  position: relative; overflow: hidden;
+}
+.kdx-about-band-mission::before {
+  content: ""; position: absolute; inset: 0 auto 0 0; width: 3px;
+  background: var(--grad-brand);
+}
+.kdx-mv-card {
+  background: linear-gradient(140deg, rgba(var(--blue-rgb), 0.06) 0%, rgba(var(--blue-rgb), 0.015) 100%);
+  border: 1px solid rgba(var(--blue-rgb), 0.12);
+  box-shadow: var(--glow-sm);
+}
+.kdx-mv-card.is-vision {
+  border-color: transparent; color: #fff;
+  box-shadow: var(--glow-lg);
+}
+.kdx-commit-mark { background-image: var(--grad-brand); }
+.kdx-about-story > div { border-top-color: transparent; position: relative; }
+.kdx-about-story > div::before {
+  content: ""; position: absolute; inset: 0 0 auto 0; height: 2px;
+  background: linear-gradient(90deg, var(--blue), rgba(var(--blue-rgb), 0.15));
+}
+
+/* ---- 10. timeline, map, coverage ------------------------------------- */
+.kdx-timeline::before {
+  background: linear-gradient(180deg, rgba(var(--blue-rgb), 0.35), rgba(11, 11, 16, 0.06));
+}
+.kdx-timeline-copy::before { box-shadow: 0 0 0 4px rgba(var(--blue-rgb), 0.10); }
+.kdx-timeline li:hover .kdx-timeline-copy::before {
+  background-image: var(--grad-brand); box-shadow: 0 0 0 6px rgba(var(--blue-rgb), 0.14);
+}
+.kdx-coverage-stats dt,
+.kdx-region-flag {
+  background: var(--grad-brand);
+}
+.kdx-coverage-stats dt {
+  -webkit-background-clip: text; background-clip: text; color: transparent;
+}
+.kdx-region-flag { box-shadow: var(--sheen), 0 6px 14px -6px rgba(var(--blue-rgb), 0.7); }
+
+/* ---- 11. the contact form --------------------------------------------
+   Glass rather than grey: the inputs pick up the blue rising behind
+   them instead of sitting on a flat wash. */
+.kdx-field input, .kdx-field textarea {
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.09), rgba(255, 255, 255, 0.04));
+  border-color: rgba(255, 255, 255, 0.18);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+}
+.kdx-field input:focus, .kdx-field textarea:focus {
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.16), rgba(255, 255, 255, 0.07));
+  border-color: rgba(255, 255, 255, 0.85);
+  box-shadow: 0 0 0 3px rgba(var(--blue-rgb), 0.35);
+}
+.kdx-chip-light.is-on {
+  background-image: var(--grad-brand); color: #fff; border-color: transparent;
+  box-shadow: var(--sheen), 0 8px 18px -8px rgba(var(--blue-rgb), 0.8);
+}
+.kdx-chip-dark.is-on {
+  background-image: var(--grad-brand); border-color: transparent;
+  box-shadow: var(--sheen), 0 8px 18px -8px rgba(var(--blue-rgb), 0.7);
+}
+.kdx-sent {
+  background: linear-gradient(140deg, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.02));
+  border-color: rgba(255, 255, 255, 0.16);
+}
+
+/* ---- 12. tags, chips, small surfaces ---------------------------------- */
+.kdx-tags li {
+  background: linear-gradient(180deg, rgba(var(--blue-rgb), 0.07), rgba(var(--blue-rgb), 0.03));
+  border-color: rgba(var(--blue-rgb), 0.12);
+  color: var(--ink-2);
+}
+.kdx-services .kdx-tags li,
+.kdx-why .kdx-tags li,
+.kdx-about-sec .kdx-tags li {
+  background: linear-gradient(180deg, #ffffff, #f7f8ff);
+  border-color: rgba(var(--blue-rgb), 0.12);
+}
+.kdx-product .kdx-tags li,
+.kdx-card.is-accent .kdx-tags li {
+  background: rgba(255, 255, 255, 0.16); border-color: rgba(255, 255, 255, 0.2);
+  color: rgba(255, 255, 255, 0.92);
+}
+
+/* ---- 13. faq ---------------------------------------------------------- */
+.kdx-faq-item summary { transition: color 0.3s var(--ease); }
+.kdx-faq-item[open] summary { color: var(--blue); }
+.kdx-faq-icon::before, .kdx-faq-icon::after { background-image: var(--grad-brand); }
+
+/* ---- 14. floating tools, toast, modal --------------------------------- */
+.kdx-tool {
+  background-image: linear-gradient(160deg, #1b1b26 0%, #0b0b10 100%);
+  box-shadow: var(--sheen), 0 14px 34px -14px rgba(11, 11, 16, 0.6);
+}
+.kdx-tool:hover {
+  background-image: var(--grad-brand);
+  box-shadow: var(--sheen), 0 18px 40px -14px rgba(var(--blue-rgb), 0.75);
+}
+.kdx-tool-top {
+  background-image: linear-gradient(180deg, #ffffff, #f2f4ff);
+  box-shadow: 0 14px 34px -16px rgba(11, 11, 16, 0.45), inset 0 0 0 1px rgba(var(--blue-rgb), 0.16);
+}
+.kdx-toast {
+  background-image: linear-gradient(160deg, #1b1b26 0%, #0b0b10 100%);
+  box-shadow: var(--sheen), 0 18px 40px -16px rgba(11, 11, 16, 0.6);
+}
+.kdx-modal { background: rgba(8, 8, 14, 0.58); }
+.kdx-modal-panel {
+  background: var(--grad-card);
+  box-shadow: 0 40px 90px -30px rgba(11, 11, 16, 0.45);
+}
+.kdx-modal-close:hover { background-image: var(--grad-brand); border-color: transparent; }
+
+/* ---- 15. motion ------------------------------------------------------- */
+/* A shade slower and a shade shorter: the reveal should feel like the
+   page settling, not like content arriving late. */
+.kdx [data-reveal] {
+  transform: translateY(16px);
+  transition: opacity 0.9s var(--ease), transform 0.9s var(--ease);
+}
+.kdx.is-loaded .kdx-in {
+  transition: opacity 1s var(--ease) var(--d, 0s), transform 1s var(--ease) var(--d, 0s);
+}
+.kdx-radar-sweep { animation-duration: 34s; }
+
+@media (prefers-reduced-motion: reduce) {
+  .kdx-reason:hover, .kdx-stages li:hover, .kdx-discipline:hover, .kdx-card:hover {
+    transform: none;
+  }
+}
+
+/* ---- 16. the timeline's future entries -------------------------------
+   Only the first milestone has happened. The rest carry step "00" and a
+   label, and are drawn back so the eye reads one solid entry followed by
+   three intentions — rather than four claims of equal weight. */
+.kdx-timeline-copy h3 {
+  display: flex; align-items: center; gap: 0.7rem; flex-wrap: wrap;
+}
+.kdx-timeline-future {
+  font-family: var(--display); font-size: 0.68rem; font-weight: 600;
+  letter-spacing: 0.13em; text-transform: uppercase;
+  padding: 0.3rem 0.65rem; border-radius: var(--pill);
+  border: 1px solid rgba(var(--blue-rgb), 0.28);
+  background: rgba(var(--blue-rgb), 0.07);
+  color: var(--blue);
+  white-space: nowrap;
+}
+
+/* the 00 steps read as placeholders, not as numbers in a sequence */
+.kdx-timeline li.is-future .kdx-timeline-step { color: var(--ink-3); }
+.kdx-timeline li.is-future .kdx-timeline-copy h3 { color: var(--ink-2); }
+.kdx-timeline li.is-future .kdx-timeline-copy p { color: var(--ink-3); }
+
+/* a hollow, grey node instead of the blue one, and it stays grey on
+   hover — the hover fill means "this happened" */
+.kdx-timeline li.is-future .kdx-timeline-copy::before,
+.kdx-timeline li.is-future:hover .kdx-timeline-copy::before {
+  background: var(--paper);
+  border-color: var(--line-strong);
+  transform: none;
+}
+
+/* the connector fades out below the first entry for the same reason */
+.kdx-timeline::before {
+  background: linear-gradient(180deg,
+    rgba(var(--blue-rgb), 0.45) 0%,
+    rgba(var(--blue-rgb), 0.18) 22%,
+    rgba(11, 11, 16, 0.07) 46%,
+    rgba(11, 11, 16, 0.05) 100%);
+}
+
+@media (max-width: 620px) {
+  .kdx-timeline-future { font-size: 0.62rem; padding: 0.25rem 0.55rem; }
+}
+
+/* ---- 17. the headline, word by word ---------------------------------
+   Three colours only: green, red and white. They alternate — every odd
+   word is white and every even word takes a colour, red following green
+   — so the colour lands on "build", "systems", "businesses" and "on."
+   and the connecting words carry the white.
+
+   Every gradient starts at white and only reaches its colour at the
+   baseline. That is what keeps this legible: a saturated red on this
+   blue measures about 2.4:1, well under the 3:1 that display text needs,
+   so the reds here are held light on purpose. Darkening them past the
+   values below will fail contrast.
+   ===================================================================== */
+
+/* `.kdx-h1 span { display: block }` above turns every span into a line;
+   the word spans have to opt back out. (0,2,0) beats that rule's (0,1,1). */
+.kdx-h1 .kdx-word { display: inline; }
+
+.kdx-hero .kdx-h1 .kdx-word {
+  /* the default is also the fallback: a word past the eighth still gets a
+     gradient, so it can never end up transparent-on-transparent */
+  background-image: linear-gradient(180deg, #ffffff 0%, #e9edff 100%);
+  background-repeat: no-repeat;
+  color: #fff;
+}
+/* only claim the text as a mask where the browser can actually paint it,
+   otherwise the fallback colour above stands */
+@supports ((-webkit-background-clip: text) or (background-clip: text)) {
+  .kdx-hero .kdx-h1 .kdx-word {
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+}
+
+/* white — We, the, modern, run */
+.kdx-hero .kdx-h1 .kdx-word-1,
+.kdx-hero .kdx-h1 .kdx-word-3,
+.kdx-hero .kdx-h1 .kdx-word-5,
+.kdx-hero .kdx-h1 .kdx-word-7 {
+  background-image: linear-gradient(180deg, #ffffff 0%, #e9edff 100%);
+}
+/* green — build, businesses */
+.kdx-hero .kdx-h1 .kdx-word-2,
+.kdx-hero .kdx-h1 .kdx-word-6 {
+  background-image: linear-gradient(180deg, #ffffff 6%, #4fdd93 100%);
+}
+/* red — systems, on. */
+.kdx-hero .kdx-h1 .kdx-word-4,
+.kdx-hero .kdx-h1 .kdx-word-8 {
+  background-image: linear-gradient(180deg, #ffffff 6%, #ff9e9e 100%);
+}
+
+/* Chrome paints a clipped background over the selection highlight, which
+   makes selected words look unselected. Hand the text back its own colour
+   while it is highlighted. */
+.kdx-hero .kdx-h1 .kdx-word::selection {
+  -webkit-text-fill-color: #fff;
+  color: #fff;
+  background: rgba(11, 11, 16, 0.55);
+}
+
+/* =====================================================================
+   REFINEMENT PASS — hierarchy, feedback, and the psychology of the click
+   No new look. Every rule here either sharpens the order in which the
+   eye reads the page, or answers an interaction the instant it happens.
+
+   The principles, and where each one lands:
+     - one primary action per view (Hick): the hero's solid button is now
+       clearly senior to the ghost one, and the nav CTA defers to both;
+     - risk reversal sits at the point of decision: the note under the
+       hero buttons (markup in Home.jsx), styled here;
+     - motor feedback inside 100ms (perceived responsiveness): every
+       button presses down on :active instead of only floating on hover;
+     - serial position: the services list is numbered so five rows read
+       as a set with a start and an end, not a wall;
+     - legibility before style: the hero lede rises to near-full opacity
+       — supporting copy, but still copy.
+   ===================================================================== */
+
+/* ---- 1. one primary action ------------------------------------------
+   The solid button gets the weight; the ghost recedes a step. The eye
+   should settle the "which one?" question before the reader asks it. */
+.kdx-hero-actions .kdx-btn:not(.kdx-btn-ghost) {
+  min-height: 58px; padding: 0.9rem 2.1rem;
+  box-shadow: 0 1px 2px rgba(11, 11, 16, 0.08), 0 16px 38px -14px rgba(11, 11, 16, 0.5);
+}
+.kdx-btn-ghost { border-color: rgba(255, 255, 255, 0.34); color: rgba(255, 255, 255, 0.92); }
+
+/* the note under the buttons: quiet, but attached to them */
+.kdx-hero-note {
+  font-family: var(--display); font-size: 0.88rem; letter-spacing: 0.01em;
+  color: rgba(255, 255, 255, 0.72);
+  margin: 1.1rem 0 0;
+}
+
+/* ---- 2. the press ----------------------------------------------------
+   Hover states float; nothing acknowledged the actual click. A 1px drop
+   with the shadow pulled in reads as a physical press, and the 70ms
+   duration keeps it inside the window where it feels like cause and
+   effect rather than animation. */
+.kdx-btn:active,
+.kdx-chip:active,
+.kdx-tool:active,
+.kdx-copy:active,
+.kdx-top:active,
+.kdx-nav-cta:active {
+  transform: translateY(1px) scale(0.99);
+  box-shadow: none;
+  transition-duration: 0.07s;
+}
+
+/* ---- 3. the services read as a numbered set --------------------------
+   Five unnumbered rows read as "a lot"; 01–05 reads as "five, and I am
+   on the third". The numeral is small and sits above the name so the
+   name keeps the left edge. */
+.kdx-svc-list { counter-reset: kdxsvc; }
+.kdx-svc-head::before {
+  counter-increment: kdxsvc;
+  content: counter(kdxsvc, decimal-leading-zero);
+  display: block; margin-bottom: 0.8rem;
+  font-family: var(--display); font-size: 0.78rem; font-weight: 700;
+  letter-spacing: 0.12em; color: rgba(var(--blue-rgb), 0.55);
+  font-variant-numeric: tabular-nums;
+  transition: color 0.3s var(--ease);
+}
+.kdx-svc:hover .kdx-svc-head::before { color: var(--blue); }
+
+/* ---- 4. legibility ---------------------------------------------------
+   The lede is supporting copy, not decoration; 0.9 opacity on moving
+   gradient was the one place body text dipped toward the floor. */
+.kdx-lede { opacity: 0.95; }
+.kdx-hero-eyebrow { opacity: 0.85; }
+
+/* ---- 5. the FAQ answers the hover ------------------------------------
+   The row already changes colour; now the question also steps 4px right,
+   which is the same gesture the arrows make elsewhere — one vocabulary
+   for "this responds". Open items don't shift: they've answered. */
+.kdx-faq-item summary { transition: color 0.2s ease, padding-left 0.25s var(--ease); }
+.kdx-faq-item:not([open]) summary:hover { padding-left: 4px; }
+
+/* ---- 6. anchor arrivals ----------------------------------------------
+   JS scrolling already offsets for the fixed nav; this covers the other
+   routes in: pasted #fragment URLs and find-in-page jumps. */
+.kdx-sec[id], .kdx-contact[id] { scroll-margin-top: 84px; }
+
+/* ---- 7. the form's exit is never a dead end ---------------------------
+   The disabled look on hover made "Send" feel inert while typing. Give
+   the two form buttons the same seniority split as the hero pair. */
+.kdx-form-actions .kdx-btn-ghost { border-color: rgba(255, 255, 255, 0.3); }
+
+@media (max-width: 620px) {
+  .kdx-hero-note { font-size: 0.8rem; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .kdx-faq-item:not([open]) summary:hover { padding-left: 0; }
+}
+
+/* =====================================================================
+   NAV + HERO PASS
+   The nav's links were bare words with a 2px underline — small targets,
+   and the active state was easy to miss. The hero's eyebrow floated in
+   the top-right corner with nothing anchoring it, and the section ended
+   at the buttons with no evidence to hold on to.
+   ===================================================================== */
+
+/* ---- 1. nav links become real targets --------------------------------
+   Padded pills instead of bare words: the hit area grows from the text
+   itself to a 40px-tall capsule (Fitts), hover is a surface change the
+   eye can't miss, and the active section reads as a filled state rather
+   than a hairline. The underline goes — two state languages on one
+   element is one too many. */
+.kdx-nav-links { gap: 0.35rem; }
+.kdx-nav-links a {
+  padding: 0.5rem 0.9rem; border-radius: var(--pill);
+  opacity: 0.85;
+  transition: opacity 0.2s var(--ease), background 0.2s var(--ease), color 0.2s var(--ease);
+}
+.kdx-nav-links a::after { display: none; }
+.kdx-nav-links a:hover { background: rgba(255, 255, 255, 0.12); opacity: 1; }
+.kdx-nav-links a.is-active { background: rgba(255, 255, 255, 0.16); opacity: 1; }
+.kdx-nav.is-stuck .kdx-nav-links a:hover { background: rgba(11, 11, 16, 0.05); }
+.kdx-nav.is-stuck .kdx-nav-links a.is-active {
+  background: rgba(var(--blue-rgb), 0.1); color: var(--blue);
+}
+
+/* the brand is a home link — say so on hover */
+.kdx-brand { border-radius: var(--pill); padding: 0.3rem 0.6rem; margin-left: -0.6rem; }
+.kdx-brand:hover .kdx-brand-mark { transform: rotate(-8deg); }
+.kdx-brand-mark { transition: transform 0.3s var(--ease); }
+
+/* a whisper of ink behind the transparent nav so the links hold up even
+   over the palest corner of the hero gradient */
+.kdx-nav:not(.is-stuck):not(.is-open) {
+  background: linear-gradient(180deg, rgba(11, 11, 26, 0.16), rgba(11, 11, 26, 0));
+}
+
+/* ---- 2. the hero badge ------------------------------------------------
+   A bare status label in the top-right corner, where the eyebrow always
+   lived — no capsule, no glass, just the words and a pulsing green dot
+   borrowed from the headline. It reads as an instrument label on the
+   radar rather than a component floating over it. */
+.kdx-hero-badge {
+  display: inline-flex; align-items: center; gap: 0.6rem;
+  align-self: flex-end;
+  font-family: var(--display); font-size: 0.74rem; font-weight: 600;
+  letter-spacing: 0.16em; text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.85);
+  margin: 0;
+}
+/* a 16px radar: outer ring, inner ring, and a sweep arm that takes the
+   same 26s lap as the big one behind it — one instrument, two scales */
+.kdx-hero-badge-radar {
+  position: relative; flex: 0 0 auto;
+  width: 16px; height: 16px; border-radius: 50%;
+  border: 1px solid rgba(255, 255, 255, 0.75);
+}
+.kdx-hero-badge-radar::before {
+  content: ""; position: absolute; inset: 4px; border-radius: 50%;
+  border: 1px solid rgba(255, 255, 255, 0.4);
+}
+.kdx-hero-badge-radar::after {
+  content: ""; position: absolute; left: 50%; top: 50%;
+  width: 7px; height: 1px;
+  background: linear-gradient(90deg, #fff, rgba(255, 255, 255, 0));
+  transform-origin: 0 50%;
+  animation: kdx-spin 26s linear infinite;
+}
+
+/* ---- 3. small screens --------------------------------------------------
+   The badge joins the copy on the left once the layout narrows — a
+   right-aligned label with nothing under it reads as a stray. */
+@media (max-width: 620px) {
+  .kdx-hero-badge { align-self: flex-start; font-size: 0.66rem; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .kdx-hero-badge-radar::after { animation: none; transform: rotate(-45deg); }
+  .kdx-brand:hover .kdx-brand-mark { transform: none; }
+}
+
+/* with the badge back in the corner, the rule resumes anchoring the h1 */
+
+/* =====================================================================
+   BILINGUAL — Sorani Kurdish and English
+   Two things change with the language: the typefaces and the direction.
+   Everything else — colour, spacing, motion — is shared.
+   ===================================================================== */
+
+/* ---- 1. the Kurdish typefaces ----------------------------------------
+   Figtree and Source Serif have no Arabic script at all, so Sorani needs
+   its own pair — and it needs the same two voices, or the Kurdish site
+   reads flatter than the English one.
+
+     Vazirmatn        ↔ Figtree      the geometric voice: headlines,
+                                     buttons, labels. Drawn for Persian
+                                     and Kurdish, so ڕ ڵ ۆ ێ ژ چ پ گ are
+                                     real glyphs rather than fallbacks.
+     Noto Naskh Arabic ↔ Source Serif the reading voice: body copy. A
+                                     proper naskh, which is what long
+                                     Kurdish text actually wants.
+
+   Both are listed after the Latin faces in every stack rather than
+   swapped in, so a Latin brand name inside Kurdish copy (KDXJobs, FIB,
+   ZainCash) still renders in Figtree and does not jump script mid-line. */
+/* the two Kurdish faces are requested in the @import at the top of
+   this file — a second @import here would be ignored by the browser */
+
+.kdx {
+  --display: 'Figtree', 'Vazirmatn', 'Gilroy', 'Avenir Next', 'Segoe UI', Helvetica, Arial, sans-serif;
+  --serif: 'Source Serif 4', 'Noto Naskh Arabic', Georgia, 'Times New Roman', serif;
+}
+
+/* Sorani leads with its own faces. The line-height goes up because
+   Arabic script carries more above and below the baseline than Latin —
+   at 1.65 the descenders of one line touch the ascenders of the next. */
+:root[lang="ckb"] .kdx {
+  --display: 'Vazirmatn', 'Figtree', 'Segoe UI', Tahoma, sans-serif;
+  --serif: 'Noto Naskh Arabic', 'Vazirmatn', Georgia, serif;
+  line-height: 1.95;
+  letter-spacing: 0;
+}
+/* uppercase and wide tracking are Latin typographic devices — Arabic
+   script has no case, and letter-spacing breaks the joins between
+   letters outright. Both come off for the micro-labels. */
+:root[lang="ckb"] .kdx-eyebrow,
+:root[lang="ckb"] .kdx-svc-role,
+:root[lang="ckb"] .kdx-brand-word,
+:root[lang="ckb"] .kdx-nav-links a,
+:root[lang="ckb"] .kdx-nav-cta,
+:root[lang="ckb"] .kdx-stats dd,
+:root[lang="ckb"] .kdx-coverage-stats dd,
+:root[lang="ckb"] .kdx-contact-rows dt,
+:root[lang="ckb"] .kdx-foot-links a,
+:root[lang="ckb"] .kdx-foot-meta,
+:root[lang="ckb"] .kdx-timeline-future,
+:root[lang="ckb"] .kdx-region-flag,
+:root[lang="ckb"] .kdx-modal-label,
+:root[lang="ckb"] .kdx-card-top,
+:root[lang="ckb"] .kdx-svc-cta,
+:root[lang="ckb"] .kdx-coverage-cta,
+:root[lang="ckb"] .kdx-about-band-cta,
+:root[lang="ckb"] .kdx-btn,
+:root[lang="ckb"] .kdx-tool,
+:root[lang="ckb"] .kdx-copy,
+:root[lang="ckb"] .kdx-top,
+:root[lang="ckb"] .kdx-chip,
+:root[lang="ckb"] .kdx-tags li,
+:root[lang="ckb"] .kdx-field label,
+:root[lang="ckb"] .kdx-label,
+:root[lang="ckb"] .kdx-hero-badge {
+  text-transform: none;
+  letter-spacing: 0;
+}
+/* the headline sits tighter in Latin than Arabic wants */
+:root[lang="ckb"] .kdx-h1,
+:root[lang="ckb"] .kdx-h2,
+:root[lang="ckb"] .kdx-page-title,
+:root[lang="ckb"] .kdx-product-name,
+:root[lang="ckb"] .kdx-mv-statement,
+:root[lang="ckb"] .kdx-mission-text {
+  letter-spacing: 0;
+  line-height: 1.35;
+}
+:root[lang="ckb"] .kdx-h1 { line-height: 1.3; font-size: clamp(2.1rem, 5vw, 4rem); }
+/* the service numerals and stage numbers are Arabic-Indic in the Kurdish
+   pack, which sits differently on the line */
+:root[lang="ckb"] .kdx-svc-head::before { letter-spacing: 0.06em; }
+
+/* ---- 2. right to left --------------------------------------------------
+   `dir="rtl"` on <html> flips the flow for free wherever the layout was
+   written with logical properties. These are the places it was not —
+   each one is a physical left/right that has to be mirrored by hand. */
+
+/* the section rule and card edges */
+[dir="rtl"] .kdx-consult::before,
+[dir="rtl"] .kdx-about-band-mission::before {
+  inset: 0 0 0 auto;
+}
+[dir="rtl"] .kdx-svc:hover {
+  background: linear-gradient(270deg, rgba(var(--blue-rgb), 0.05) 0%, rgba(var(--blue-rgb), 0) 68%);
+}
+[dir="rtl"] .kdx-rule,
+[dir="rtl"] .kdx-hero-badge-radar::after {
+  transform: scaleX(-1);
+}
+[dir="rtl"] .kdx-hero-badge-radar::after {
+  transform-origin: 100% 50%;
+  left: auto; right: 50%;
+  animation-name: kdx-spin-rtl;
+}
+@keyframes kdx-spin-rtl { to { transform: scaleX(-1) rotate(-360deg); } }
+
+/* arrows point the way the language reads */
+[dir="rtl"] .kdx-svc-cta [aria-hidden],
+[dir="rtl"] .kdx-coverage-cta [aria-hidden],
+[dir="rtl"] .kdx-about-band-cta [aria-hidden],
+[dir="rtl"] .kdx-card-more [aria-hidden],
+[dir="rtl"] .kdx-btn [aria-hidden] {
+  transform: scaleX(-1);
+}
+[dir="rtl"] .kdx-svc-cta:hover [aria-hidden],
+[dir="rtl"] .kdx-coverage-cta:hover [aria-hidden],
+[dir="rtl"] .kdx-about-band-cta:hover [aria-hidden] {
+  transform: scaleX(-1) translateX(4px);
+}
+[dir="rtl"] .kdx-btn:hover [aria-hidden] { transform: scaleX(-1) translateX(2px); }
+/* except the ones that mean "up" or "away", which have no handedness */
+[dir="rtl"] .kdx-top [aria-hidden],
+[dir="rtl"] .kdx-tool-top [aria-hidden],
+[dir="rtl"] .kdx-top:hover [aria-hidden] {
+  transform: none;
+}
+
+/* the growing underline on links and the section hairline */
+[dir="rtl"] .kdx-nav-links a::after,
+[dir="rtl"] .kdx-svc::after { left: auto; right: 0; }
+[dir="rtl"] .kdx-svc-cta { background-position: 100% 100%; }
+
+/* the timeline: rail, nodes and columns all mirror */
+[dir="rtl"] .kdx-timeline::before { left: auto; right: 5.5rem; }
+[dir="rtl"] .kdx-timeline-copy::before {
+  left: auto;
+  right: calc(-1 * clamp(1.5rem, 3vw, 2.5rem) - 5px);
+}
+[dir="rtl"] .kdx-brand { margin-left: 0; margin-right: -0.6rem; }
+[dir="rtl"] .kdx-skip { left: auto; right: 1rem; }
+
+/* the hero's gradient mesh is lit from the top right; in RTL the copy
+   moves there, so the whole field flips to keep the text on the dark
+   corner rather than the bright one */
+[dir="rtl"] .kdx-hero,
+[dir="rtl"] .kdx-page-head,
+[dir="rtl"] .kdx-product,
+[dir="rtl"] .kdx-mv-card.is-vision { background-position-x: right; transform: none; }
+[dir="rtl"] .kdx-hero { background-image:
+    radial-gradient(78% 62% at 20% 6%, rgba(146, 155, 255, 0.55), rgba(146, 155, 255, 0) 62%),
+    radial-gradient(72% 58% at 90% 96%, rgba(38, 47, 186, 0.72), rgba(38, 47, 186, 0) 66%),
+    linear-gradient(208deg, #4049f2 0%, #4453ff 34%, #3641da 70%, #2b34c4 100%);
+}
+[dir="rtl"] .kdx-hero-radar { right: auto; left: -18%; }
+[dir="rtl"] .kdx-page-head-radar,
+[dir="rtl"] .kdx-product-radar,
+[dir="rtl"] .kdx-contact-radar { right: auto; left: -12%; }
+
+/* form fields and the map panel */
+[dir="rtl"] .kdx-search-icon { left: auto; right: 0.95rem; }
+[dir="rtl"] .kdx-search-clear { right: auto; left: 0.5rem; }
+[dir="rtl"] .kdx-search input { padding: 0 2.6rem; }
+[dir="rtl"] .kdx-modal-close { right: auto; left: 0.9rem; }
+
+/* the hero's word gradients run 180deg (top to bottom), so they need no
+   mirroring — but the note and lede do lose their Latin tracking */
+:root[lang="ckb"] .kdx-lede,
+:root[lang="ckb"] .kdx-hero-note,
+:root[lang="ckb"] .kdx-page-lede { letter-spacing: 0; }
+
+@media (max-width: 620px) {
+  [dir="rtl"] .kdx-timeline::before { left: auto; right: 3.6rem; }
+  [dir="rtl"] .kdx-timeline-copy::before { left: auto; right: -1.9rem; }
+}
+
+/* ---- 3. the language switch --------------------------------------------
+   A segmented control, not a dropdown: with two languages a dropdown
+   hides half the choice and gives no clue what the alternative is. The
+   pill slides between the halves, which is also the affordance that
+   says "this is a switch" rather than "these are two links". */
+.kdx-lang {
+  position: relative;
+  display: inline-flex; align-items: center; flex: 0 0 auto;
+  padding: 3px; border-radius: var(--pill);
+  border: 1px solid rgba(255, 255, 255, 0.24);
+  background: rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+.kdx-lang-pill {
+  position: absolute; top: 3px; bottom: 3px; left: 3px;
+  width: calc(50% - 3px);
+  border-radius: var(--pill);
+  background: #fff;
+  box-shadow: 0 1px 2px rgba(11, 11, 16, 0.12), 0 4px 12px -4px rgba(11, 11, 16, 0.4);
+  transition: transform 0.32s var(--ease), background 0.32s var(--ease);
+}
+.kdx-lang-pill[data-index="1"] { transform: translateX(100%); }
+[dir="rtl"] .kdx-lang-pill { left: auto; right: 3px; }
+[dir="rtl"] .kdx-lang-pill[data-index="1"] { transform: translateX(-100%); }
+
+.kdx-lang-option {
+  position: relative; z-index: 1;
+  display: inline-flex; align-items: center; justify-content: center;
+  min-width: 3.1rem; min-height: 32px; padding: 0 0.7rem;
+  font-family: var(--display); font-size: 0.78rem; font-weight: 600;
+  letter-spacing: 0.04em;
+  color: rgba(255, 255, 255, 0.8);
+  border-radius: var(--pill); cursor: pointer;
+  transition: color 0.28s var(--ease);
+}
+.kdx-lang-option:hover { color: #fff; }
+.kdx-lang-option.is-on { color: var(--blue); }
+/* the Kurdish label is set in its own face at its own size — matching
+   the Latin cap height, not the Latin font-size */
+.kdx-lang-option[lang="ckb"] {
+  font-family: 'Vazirmatn', var(--display);
+  font-size: 0.86rem; letter-spacing: 0;
+}
+
+/* on the light nav the switch inverts */
+.kdx-nav.is-stuck .kdx-lang {
+  border-color: rgba(11, 11, 16, 0.14);
+  background: rgba(11, 11, 16, 0.04);
+}
+.kdx-nav.is-stuck .kdx-lang-pill {
+  background: var(--blue);
+  box-shadow: var(--sheen), 0 4px 12px -4px rgba(var(--blue-rgb), 0.7);
+}
+.kdx-nav.is-stuck .kdx-lang-option { color: var(--ink-3); }
+.kdx-nav.is-stuck .kdx-lang-option:hover { color: var(--ink); }
+.kdx-nav.is-stuck .kdx-lang-option.is-on { color: #fff; }
+
+.kdx-nav-lang { margin-inline-start: 0.6rem; }
+/* in the drawer it sits above the contact lines, at full comfort size */
+.kdx-drawer-lang { align-self: flex-start; margin-bottom: 1rem; }
+.kdx-drawer-lang .kdx-lang-option { min-height: 40px; min-width: 3.6rem; font-size: 0.86rem; }
+
+@media (max-width: 900px) {
+  /* the nav collapses to the burger here, so the switch goes with it —
+     it is already in the drawer */
+  .kdx-nav-lang { display: none; }
+}
+
+/* an LTR island inside RTL copy still needs its own alignment, or the
+   number sits flush to the wrong edge of its cell */
+[dir="rtl"] .kdx-contact-rows dd[dir="ltr"] { justify-content: flex-end; text-align: right; }
+
+/* =====================================================================
+   SPACING PASS
+   Sections were padded at clamp(5.5rem, 11vw, 10rem) top AND bottom, so
+   every seam between two sections stacked ~320px of empty page at
+   desktop width — enough that a heading could scroll fully out of view
+   before the next one arrived. Generous had tipped into disconnected.
+
+   The rhythm is roughly 40% tighter throughout, and it is proportional:
+   the gaps between sections shrink most, the gaps inside a section
+   shrink less, so the page still groups correctly — a section still
+   reads as one thing, it just sits closer to its neighbour.
+   ===================================================================== */
+
+/* ---- section to section ---- */
+.kdx-sec { padding: clamp(3.25rem, 6.5vw, 6rem) 0; }
+.kdx-about-band { padding-block: clamp(3rem, 5.5vw, 4.75rem); }
+.kdx-contact { padding: clamp(4rem, 8vw, 6.25rem) 0 2.5rem; }
+.kdx-page-head { padding: clamp(7.5rem, 15vh, 10rem) 0 clamp(3rem, 5.5vw, 4.5rem); }
+.kdx-page-head + .kdx-sec { padding-top: clamp(2.5rem, 4.5vw, 3.75rem); }
+
+/* ---- the block under each section head ---- */
+.kdx-svc-list { margin-top: 2.4rem; }
+.kdx-stages { margin-top: 2.4rem; }
+.kdx-faq-list { margin-top: 2.4rem; }
+.kdx-product { margin-top: 1.5rem; }
+.kdx-about-story { margin-top: 2rem; }
+.kdx-disciplines { margin-top: 2.2rem; }
+.kdx-timeline { margin-top: 2rem; }
+
+/* ---- the trailing block in a section ---- */
+.kdx-consult { margin-top: 2.75rem; }
+.kdx-approach-cta { margin-top: clamp(2.5rem, 5vw, 3.75rem); padding-top: 2rem; }
+.kdx-faq-more { margin-top: 1.8rem; }
+.kdx-commitments {
+  margin-top: clamp(2rem, 4vw, 2.75rem);
+  padding-top: clamp(1.6rem, 3vw, 2.2rem);
+}
+.kdx-coverage {
+  margin-top: clamp(2.25rem, 4.5vw, 3.25rem);
+  padding-top: clamp(2rem, 4vw, 2.75rem);
+}
+.kdx-coverage-stats { margin-top: 1.6rem; padding-top: 1.4rem; }
+.kdx-contact-foot { margin-top: clamp(2.75rem, 6vw, 4.25rem); }
+
+/* the label that reintroduces a sub-block on the About page — this was
+   the single largest internal gap on the site at 6rem */
+.kdx-why-label { margin-top: clamp(2.75rem, 5.5vw, 4rem); }
+
+/* the services section head sat far from its own list */
+.kdx-sec-head .kdx-sec-lede { margin-bottom: 0; }
+.kdx-contact-h { margin-bottom: 2.4rem; }
+
+@media (max-width: 620px) {
+  /* on a narrow screen the sections are already stacked tall by their
+     own content, so the seam can be tighter still */
+  .kdx-sec { padding: clamp(2.75rem, 9vw, 3.5rem) 0; }
+  .kdx-about-band { padding-block: clamp(2.5rem, 8vw, 3.25rem); }
+}

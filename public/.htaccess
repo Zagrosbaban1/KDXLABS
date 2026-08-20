@@ -1,0 +1,15 @@
+# The site is a single-page app with real URLs (/, /about). Apache must hand
+# every path that isn't a real file to index.html, or loading /about directly
+# — or refreshing on it — returns 404 instead of the page.
+<IfModule mod_rewrite.c>
+  RewriteEngine On
+  RewriteBase /
+
+  # leave real files and directories alone
+  RewriteCond %{REQUEST_FILENAME} -f [OR]
+  RewriteCond %{REQUEST_FILENAME} -d
+  RewriteRule ^ - [L]
+
+  # everything else is handled by the app
+  RewriteRule . /index.html [L]
+</IfModule>
