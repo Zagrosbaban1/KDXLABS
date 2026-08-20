@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;800;900&family=Source+Serif+4:opsz,wght@8..60,400;8..60,600&family=Vazirmatn:wght@400;500;600;700;800;900&family=Noto+Naskh+Arabic:wght@400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;800;900&family=Source+Serif+4:opsz,wght@8..60,400;8..60,600&family=Noto+Kufi+Arabic:wght@400;500;600;700;800;900&family=Noto+Naskh+Arabic:wght@400;500;600;700&display=swap');
 
 html, body { margin: 0; padding: 0; background: #ffffff; color-scheme: light; }
 
@@ -149,7 +149,14 @@ html, body { margin: 0; padding: 0; background: #ffffff; color-scheme: light; }
 }
 .kdx-nav.is-stuck .kdx-progress { background: var(--blue); opacity: 1; }
 .kdx-nav.is-open .kdx-progress { opacity: 0; }
-.kdx-brand { display: flex; align-items: center; gap: 0.65rem; text-decoration: none; margin-right: auto; }
+/* margin-inline-end, not margin-right: this auto margin is the only thing
+   holding the brand and the burger at opposite ends of the bar, so it has
+   to follow the writing direction. As a physical margin-right it pushed
+   the burger to the far right in English and then, in Sorani, got
+   overwritten by the RTL nudge below — which collapsed the gap and left
+   the close button sitting against the brand instead of mirroring to the
+   far left. */
+.kdx-brand { display: flex; align-items: center; gap: 0.65rem; text-decoration: none; margin-inline-end: auto; }
 .kdx-brand-mark { width: 24px; }
 .kdx-brand-word {
   font-family: var(--display); font-weight: 800; font-size: 0.95rem;
@@ -204,6 +211,14 @@ html, body { margin: 0; padding: 0; background: #ffffff; color-scheme: light; }
   padding: 5.5rem clamp(1.5rem, 6vw, 3rem) 2.5rem;
   opacity: 0; visibility: hidden; pointer-events: none;
   transition: opacity 0.3s ease, visibility 0s linear 0.3s;
+  /* The drawer is a fixed, full-height box with no way out: without this
+     any row that does not fit is simply gone — not scrolled, not
+     clipped-with-a-hint, gone. It went wrong the moment the nav grew to
+     six items in a language whose words are long, which silently ate the
+     first link off the top. overscroll-behavior keeps a flick at the end
+     of the list from scrolling the page underneath. */
+  overflow-y: auto;
+  overscroll-behavior: contain;
 }
 .kdx-drawer.is-open {
   opacity: 1; visibility: visible; pointer-events: auto;
@@ -212,8 +227,11 @@ html, body { margin: 0; padding: 0; background: #ffffff; color-scheme: light; }
 .kdx-drawer-links { display: flex; flex-direction: column; gap: 0.2rem; }
 .kdx-drawer-links a {
   font-family: var(--display); font-weight: 800;
-  font-size: clamp(2rem, 9vw, 3rem); letter-spacing: -0.03em;
-  text-decoration: none; padding: 0.35rem 0;
+  /* was clamp(2rem, 9vw, 3rem) — sized for five short English words.
+     Six items plus Contact does not fit at that size on a short viewport. */
+  font-size: clamp(1.55rem, 6.4vw, 2.3rem); letter-spacing: -0.03em;
+  line-height: 1.25;
+  text-decoration: none; padding: 0.3rem 0;
 }
 .kdx-drawer-foot {
   margin-top: auto; padding-top: 2rem; border-top: 1px solid var(--line-light);
@@ -2005,7 +2023,10 @@ html, body { margin: 0; padding: 0; background: #ffffff; color-scheme: light; }
 }
 
 /* the brand is a home link — say so on hover */
-.kdx-brand { border-radius: var(--pill); padding: 0.3rem 0.6rem; margin-left: -0.6rem; }
+/* the -0.6rem pulls the hover pill's own padding back so the wordmark
+   still lines up with the page gutter; inline-start so it lands on the
+   leading edge in both directions */
+.kdx-brand { border-radius: var(--pill); padding: 0.3rem 0.6rem; margin-inline-start: -0.6rem; }
 .kdx-brand:hover .kdx-brand-mark { transform: rotate(-8deg); }
 .kdx-brand-mark { transition: transform 0.3s var(--ease); }
 
@@ -2072,22 +2093,46 @@ html, body { margin: 0; padding: 0; background: #ffffff; color-scheme: light; }
    its own pair — and it needs the same two voices, or the Kurdish site
    reads flatter than the English one.
 
-     Vazirmatn        ↔ Figtree      the geometric voice: headlines,
-                                     buttons, labels. Drawn for Persian
-                                     and Kurdish, so ڕ ڵ ۆ ێ ژ چ پ گ are
-                                     real glyphs rather than fallbacks.
+     Noto Kufi Arabic  ↔ Figtree      the geometric voice: headlines,
+                                     buttons, labels.
      Noto Naskh Arabic ↔ Source Serif the reading voice: body copy. A
                                      proper naskh, which is what long
                                      Kurdish text actually wants.
 
    Both are listed after the Latin faces in every stack rather than
    swapped in, so a Latin brand name inside Kurdish copy (KDXJobs, FIB,
-   ZainCash) still renders in Figtree and does not jump script mid-line. */
+   ZainCash) still renders in Figtree and does not jump script mid-line.
+
+   Why not Vazirmatn, which this used to be: it is a Persian typeface.
+   It covers every Sorani letter — ڕ ڵ ۆ ێ ژ چ پ گ ڤ are all real glyphs,
+   checked against its cmap, so nothing was broken — but its drawing is
+   Tehran, not Erbil, and next to Figtree it reads softer and rounder
+   than this brand does. Noto Kufi is the flatter, more constructed face
+   of the two and holds up at headline weight.
+
+   The face a Kurdish designer would actually reach for is Rabar, Ali-K
+   or NRT. None is on Google Fonts and none publishes web-embedding
+   terms, so none is shipped here — see the KURDISH_DISPLAY hook below
+   for how to drop one in once its licence is settled. */
 /* the two Kurdish faces are requested in the @import at the top of
    this file — a second @import here would be ignored by the browser */
 
+/* ---- self-hosted Kurdish face (optional) ------------------------------
+   Nothing loads unless the file exists; an @font-face whose src 404s is
+   skipped and the next family in the stack wins, so this is inert until
+   you put a file there. To use Rabar / Ali-K / NRT / Speda:
+     1. confirm the licence covers web embedding on a commercial site,
+     2. convert to woff2 and save as public/fonts/kurdish-display.woff2,
+     3. nothing else — 'KDX Kurdish Display' already leads the ckb stack. */
+@font-face {
+  font-family: 'KDX Kurdish Display';
+  src: url('/fonts/kurdish-display.woff2') format('woff2');
+  font-weight: 100 900;
+  font-display: swap;
+}
+
 .kdx {
-  --display: 'Figtree', 'Vazirmatn', 'Gilroy', 'Avenir Next', 'Segoe UI', Helvetica, Arial, sans-serif;
+  --display: 'Figtree', 'KDX Kurdish Display', 'Noto Kufi Arabic', 'Gilroy', 'Avenir Next', 'Segoe UI', Helvetica, Arial, sans-serif;
   --serif: 'Source Serif 4', 'Noto Naskh Arabic', Georgia, 'Times New Roman', serif;
 }
 
@@ -2095,8 +2140,8 @@ html, body { margin: 0; padding: 0; background: #ffffff; color-scheme: light; }
    Arabic script carries more above and below the baseline than Latin —
    at 1.65 the descenders of one line touch the ascenders of the next. */
 :root[lang="ckb"] .kdx {
-  --display: 'Vazirmatn', 'Figtree', 'Segoe UI', Tahoma, sans-serif;
-  --serif: 'Noto Naskh Arabic', 'Vazirmatn', Georgia, serif;
+  --display: 'KDX Kurdish Display', 'Noto Kufi Arabic', 'Figtree', 'Segoe UI', Tahoma, sans-serif;
+  --serif: 'Noto Naskh Arabic', 'Noto Kufi Arabic', Georgia, serif;
   line-height: 1.95;
   letter-spacing: 0;
 }
@@ -2203,7 +2248,9 @@ html, body { margin: 0; padding: 0; background: #ffffff; color-scheme: light; }
   left: auto;
   right: calc(-1 * clamp(1.5rem, 3vw, 2.5rem) - 5px);
 }
-[dir="rtl"] .kdx-brand { margin-left: 0; margin-right: -0.6rem; }
+/* the RTL brand nudge that used to live here is gone: it existed only to
+   mirror a physical margin-left, and it took the auto margin with it.
+   Both are logical properties now, so they mirror on their own. */
 [dir="rtl"] .kdx-skip { left: auto; right: 1rem; }
 
 /* the hero's gradient mesh is lit from the top right; in RTL the copy
@@ -2281,7 +2328,7 @@ html, body { margin: 0; padding: 0; background: #ffffff; color-scheme: light; }
 /* the Kurdish label is set in its own face at its own size — matching
    the Latin cap height, not the Latin font-size */
 .kdx-lang-option[lang="ckb"] {
-  font-family: 'Vazirmatn', var(--display);
+  font-family: 'KDX Kurdish Display', 'Noto Kufi Arabic', var(--display);
   font-size: 0.86rem; letter-spacing: 0;
 }
 
@@ -2370,4 +2417,296 @@ html, body { margin: 0; padding: 0; background: #ffffff; color-scheme: light; }
      own content, so the seam can be tighter still */
   .kdx-sec { padding: clamp(2.75rem, 9vw, 3.5rem) 0; }
   .kdx-about-band { padding-block: clamp(2.5rem, 8vw, 3.25rem); }
+}
+
+
+/* =====================================================================
+   THE HEADLINE CASCADE
+   The one piece of motion on this site that is there to be noticed.
+   Everything else settles; this one performs — it is the first three
+   seconds a prospective client spends on the page.
+
+   The words were already split into their own spans so each could take
+   its own gradient. That split is reused here as the timing track: each
+   word carries --w, its position across the whole headline, and enters
+   on its own delay. The effect is a line assembling itself rather than
+   a block fading in.
+
+   Blur is what makes it read as expensive rather than as a slide. A
+   word arrives out of focus and resolves as it lands, which is the same
+   cue a camera pull gives. Opacity and transform are compositor
+   properties and cost nothing; blur is the one line here that does ask
+   for GPU work, on eight elements, once, on entry. That is the trade —
+   if it ever shows on a low-end phone, drop the filter and keep the
+   rest, and the cascade still reads.
+   ===================================================================== */
+
+.kdx-hero .kdx-h1 .kdx-word {
+  /* inline-block is the price of transform: transforms do not apply to
+     non-replaced inline boxes. Home.jsx keeps the inter-word space as a
+     sibling text node so this does not cost the line its wrap points. */
+  display: inline-block;
+  opacity: 0;
+  transform: translateY(0.42em) scale(0.965);
+  filter: blur(12px);
+}
+
+/* --w * 60ms, so an eight-word headline is fully in at about 1.1s: long
+   enough to be read as deliberate, short enough that nobody waits. The
+   transform runs slightly longer than the fade so the word is still
+   easing to a stop after it is fully opaque, which is what stops the
+   cascade feeling mechanical. */
+.kdx.is-loaded .kdx-hero .kdx-h1 .kdx-word {
+  opacity: 1;
+  transform: none;
+  filter: blur(0);
+  transition:
+    opacity 0.75s var(--ease) calc(0.2s + var(--w, 0) * 0.06s),
+    transform 1.1s var(--ease) calc(0.2s + var(--w, 0) * 0.06s),
+    filter 0.75s var(--ease) calc(0.2s + var(--w, 0) * 0.06s);
+}
+
+/* The rule above the headline draws itself in, then the words follow it.
+   It reads as the page ruling a line and writing on it. */
+.kdx-hero .kdx-rule {
+  transform-origin: left center;
+}
+[dir=rtl] .kdx-hero .kdx-rule {
+  transform-origin: right center;
+}
+.kdx-hero .kdx-rule.kdx-in {
+  transform: scaleX(0);
+  opacity: 1;
+}
+.kdx.is-loaded .kdx-hero .kdx-rule.kdx-in {
+  transform: scaleX(1);
+  transition: transform 0.7s var(--ease) 0.1s;
+}
+
+/* Motion this size has to be genuinely optional. The global
+   prefers-reduced-motion block kills every animation and transition,
+   which would leave these words stranded at opacity 0 — the initial
+   state is set outside a transition, so removing the transition does
+   not remove it. Put them back. */
+@media (prefers-reduced-motion: reduce) {
+  .kdx-hero .kdx-h1 .kdx-word {
+    opacity: 1;
+    transform: none;
+    filter: none;
+  }
+  .kdx-hero .kdx-rule.kdx-in {
+    transform: none;
+  }
+}
+
+/* =====================================================================
+   THE OPS ROOM GAME  (/game)
+   Reuses the site's tokens throughout — no new colours, no new easing.
+   The one new idea is --urgency: a 0..1 the component sets per document
+   from how long it has waited, which the card reads for both its border
+   and its progress bar. One number, two cues, no extra state.
+   ===================================================================== */
+
+.kdx-game-sec { padding-top: 0; }
+
+.kdx-game {
+  border: 1px solid var(--line);
+  border-radius: var(--r-lg);
+  background: var(--paper);
+  box-shadow: var(--shadow-md);
+  padding: clamp(1.1rem, 3vw, 2rem);
+  transition: box-shadow 0.4s var(--ease), border-color 0.4s var(--ease);
+}
+.kdx-game.is-running { border-color: var(--line-strong); }
+.kdx-game.is-auto { border-color: rgba(var(--blue-rgb), 0.4); box-shadow: var(--shadow-blue); }
+
+/* ---- hud ---- */
+.kdx-game-hud {
+  display: flex; flex-wrap: wrap; gap: 1rem;
+  align-items: baseline; justify-content: space-between;
+  padding-bottom: 1rem; border-bottom: 1px solid var(--line);
+}
+.kdx-game-shift {
+  display: flex; align-items: center; gap: 0.6rem; margin: 0;
+  font-family: var(--display); font-weight: 800; font-size: 0.95rem;
+}
+.kdx-game-dot {
+  width: 9px; height: 9px; border-radius: var(--pill);
+  background: var(--line-strong); flex: none;
+}
+.kdx-game-dot.is-live { background: var(--blue); animation: kdx-game-pulse 1.6s var(--ease) infinite; }
+@keyframes kdx-game-pulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.45; transform: scale(0.8); }
+}
+.kdx-game-clock { margin: 0; font-family: var(--display); font-size: 0.9rem; }
+.kdx-game-clock-label { color: var(--ink-3); margin-inline-end: 0.5rem; }
+.kdx-game-clock strong { font-variant-numeric: tabular-nums; }
+
+/* ---- live stats ---- */
+.kdx-game-stats {
+  display: grid; grid-template-columns: repeat(4, 1fr);
+  gap: 0.75rem; margin: 1.2rem 0 0; padding: 0;
+}
+.kdx-game-stats > div {
+  border: 1px solid var(--line); border-radius: var(--r-md);
+  padding: 0.7rem 0.85rem; background: var(--mist);
+}
+.kdx-game-stats dt {
+  font-family: var(--display); font-size: 0.68rem; font-weight: 600;
+  letter-spacing: 0.1em; text-transform: uppercase; color: var(--ink-3);
+}
+.kdx-game-stats dd {
+  margin: 0.25rem 0 0; font-family: var(--display); font-weight: 900;
+  font-size: clamp(1.3rem, 3.2vw, 1.9rem); font-variant-numeric: tabular-nums;
+  line-height: 1.1;
+  transition: color 0.3s var(--ease);
+}
+.kdx-game-stat-good { color: var(--blue); }
+.kdx-game-stat-warn { color: #b26a00; }
+.kdx-game-stat-bad { color: #c0392b; }
+
+/* ---- throughput chart ---- */
+.kdx-game-chart { margin: 1.1rem 0 0; }
+.kdx-game-chart figcaption {
+  font-family: var(--display); font-size: 0.68rem; font-weight: 600;
+  letter-spacing: 0.1em; text-transform: uppercase; color: var(--ink-3);
+  margin-bottom: 0.45rem;
+}
+.kdx-game-chart svg {
+  display: block; width: 100%; height: 74px;
+  border: 1px solid var(--line); border-radius: var(--r-sm);
+  background: var(--mist);
+}
+.kdx-game-chart-axis { stroke: var(--line-strong); stroke-width: 1; vector-effect: non-scaling-stroke; }
+.kdx-game-chart-line {
+  fill: none; stroke: var(--blue); stroke-width: 2;
+  stroke-linejoin: round; stroke-linecap: round;
+  /* preserveAspectRatio=none would smear the stroke without this */
+  vector-effect: non-scaling-stroke;
+}
+
+/* ---- panels (intro, handoff) ---- */
+.kdx-game-panel { padding-top: 1.3rem; }
+.kdx-game-panel-title {
+  font-family: var(--display); font-weight: 800;
+  font-size: clamp(1.2rem, 2.4vw, 1.6rem); margin: 0 0 0.6rem;
+}
+.kdx-game-how { margin: 0 0 1rem; padding-inline-start: 1.2rem; color: var(--ink-2); }
+.kdx-game-how li { margin-bottom: 0.4rem; }
+.kdx-game-fair {
+  font-size: 0.92rem; color: var(--ink-3);
+  border-inline-start: 2px solid var(--blue); padding-inline-start: 0.8rem;
+  margin-bottom: 1.2rem;
+}
+
+/* ---- the queue ---- */
+.kdx-game-queue-label {
+  display: flex; justify-content: space-between; align-items: baseline; gap: 1rem;
+  font-family: var(--display); font-size: 0.68rem; font-weight: 600;
+  letter-spacing: 0.1em; text-transform: uppercase; color: var(--ink-3);
+  margin: 1.3rem 0 0.5rem;
+}
+.kdx-game-agents { text-transform: none; letter-spacing: 0; color: var(--blue); }
+.kdx-game-queue {
+  list-style: none; margin: 0; padding: 0;
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: 0.6rem; min-height: 148px; align-content: start;
+}
+.kdx-game-doc {
+  width: 100%; text-align: start; position: relative; overflow: hidden;
+  border: 1px solid var(--line-strong); border-radius: var(--r-sm);
+  background: var(--paper); padding: 0.6rem 0.7rem 0.9rem;
+  font-family: var(--display); display: block;
+  animation: kdx-game-doc-in 0.25s var(--ease) backwards;
+  transition: transform 0.15s var(--ease), box-shadow 0.15s var(--ease), border-color 0.3s linear;
+  border-color: color-mix(in srgb, #c0392b calc(var(--urgency, 0) * 100%), var(--line-strong));
+}
+@keyframes kdx-game-doc-in { from { opacity: 0; transform: translateY(8px); } }
+.kdx-game-doc:hover:not(:disabled) { transform: translateY(-2px); box-shadow: var(--shadow-sm); }
+.kdx-game-doc:active:not(:disabled) { transform: translateY(0); }
+.kdx-game-doc:disabled { cursor: default; opacity: 0.92; }
+.kdx-game-doc.is-urgent { background: rgba(192, 57, 43, 0.05); }
+.kdx-game-doc-type { display: block; font-size: 0.86rem; font-weight: 600; }
+.kdx-game-doc-age {
+  display: block; font-size: 0.74rem; color: var(--ink-3);
+  font-variant-numeric: tabular-nums; margin-top: 0.15rem;
+}
+.kdx-game-doc-bar {
+  position: absolute; inset-inline-start: 0; bottom: 0; height: 3px;
+  width: calc(var(--urgency, 0) * 100%);
+  background: color-mix(in srgb, #c0392b calc(var(--urgency, 0) * 100%), var(--blue));
+}
+.kdx-game-empty {
+  grid-column: 1 / -1; align-self: center; text-align: center;
+  color: var(--ink-3); font-family: var(--display); font-size: 0.95rem;
+}
+.kdx-game-overflow {
+  margin: 0.6rem 0 0; font-family: var(--display);
+  font-size: 0.82rem; color: var(--ink-3);
+}
+
+/* ---- results ---- */
+.kdx-game-result { padding-top: 1.4rem; }
+.kdx-game-result-lead { color: var(--ink-2); max-width: 52ch; }
+.kdx-game-table {
+  width: 100%; border-collapse: collapse; margin: 1.2rem 0;
+  font-family: var(--display);
+}
+.kdx-game-table th, .kdx-game-table td {
+  padding: 0.7rem 0.6rem; text-align: start;
+  border-bottom: 1px solid var(--line);
+}
+.kdx-game-table thead th {
+  font-size: 0.68rem; font-weight: 600; letter-spacing: 0.1em;
+  text-transform: uppercase; color: var(--ink-3);
+}
+.kdx-game-table tbody th { font-weight: 500; color: var(--ink-2); }
+.kdx-game-table td {
+  font-weight: 800; font-size: 1.05rem; font-variant-numeric: tabular-nums;
+}
+.kdx-game-table-auto { color: var(--blue); }
+.kdx-game-verdict {
+  font-family: var(--display); font-weight: 800;
+  font-size: clamp(1.05rem, 2.2vw, 1.35rem); margin: 0 0 0.5rem;
+}
+.kdx-game-closing { color: var(--ink-3); max-width: 46ch; }
+.kdx-game-actions { display: flex; flex-wrap: wrap; gap: 0.7rem; margin-top: 1.2rem; }
+
+@media (max-width: 640px) {
+  .kdx-game-stats { grid-template-columns: repeat(2, 1fr); }
+  .kdx-game-queue { grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); }
+}
+
+/* Sorani sets the uppercase micro-labels back to normal, as everywhere else */
+:root[lang="ckb"] .kdx-game-stats dt,
+:root[lang="ckb"] .kdx-game-chart figcaption,
+:root[lang="ckb"] .kdx-game-queue-label,
+:root[lang="ckb"] .kdx-game-table thead th {
+  text-transform: none;
+  letter-spacing: 0;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  /* the global block already stops the pulse and the card entrance; the
+     dot would then sit at whatever opacity it stopped at, so pin it */
+  .kdx-game-dot.is-live { opacity: 1; transform: none; }
+}
+
+/* ---- the drawer in Sorani -------------------------------------------
+   Three things go wrong here that do not go wrong in English:
+
+   1. The words are long. "خزمەتگوزارییەکان" is sixteen characters where
+      "Services" is eight, so the same font-size overflows the row.
+   2. The Sorani body line-height is 1.95, which is right for paragraphs
+      and far too loose for display type stacked seven deep — it was
+      roughly doubling the height of the list on its own.
+   3. letter-spacing: -0.03em is a Latin device. Arabic script joins its
+      letters, and negative tracking pulls those joins apart. It has to
+      go to zero here, the same way it does for every other micro-label
+      on the site. */
+:root[lang="ckb"] .kdx-drawer-links a {
+  font-size: clamp(1.3rem, 5.2vw, 1.85rem);
+  letter-spacing: 0;
+  line-height: 1.4;
 }

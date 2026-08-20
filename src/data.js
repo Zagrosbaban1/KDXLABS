@@ -12,12 +12,12 @@
  * ------------------------------------------------------------------ */
 
 export const CONTACT = {
-  email: "hello@kdxlabs.com",
-  phoneDisplay: "+964 000 000 0000", // TODO: confirm
-  phoneDial: "+9640000000000", // TODO: confirm
-  whatsapp: "9640000000000", // TODO: confirm — digits only, no + or spaces
-  web: "kdxlabs.com",
-  webUrl: "https://kdxlabs.com",
+  email: "hello@kdxlabs.net", // TODO: confirm the mailbox exists on the .net domain
+  phoneDisplay: "+964 750 605 9330",
+  phoneDial: "+9647506059330",
+  whatsapp: "9647506059330", // digits only, no + or spaces
+  web: "kdxlabs.net",
+  webUrl: "https://kdxlabs.net",
   jobsUrl: "https://kdxjobs.com",
   /* the office line is prose — it lives in content/*.js under details.officeValue */
 };
@@ -30,7 +30,39 @@ export const NAV = [
   { id: "work", section: "work" },
   { id: "approach", section: "approach" },
   { id: "faq", section: "faq" },
+  { id: "game", to: "/game" },
 ];
+
+/* ---- the ops room game ----------------------------------------------
+   Tuning, not language, so it lives here. These numbers decide whether
+   the demo is honest: AGENTS × (1000 / AGENT_MS) is the automated
+   shift's documents-per-second ceiling, and it has to be comfortably
+   above the arrival rate or the automated shift builds a backlog too —
+   which is realistic, but is not what this page is arguing. GAP_END is
+   the tightest arrival gap, reached at the end of the shift, and is
+   deliberately faster than a person can sustain by hand. */
+export const GAME = {
+  SHIFT_MS: 30000, // one shift
+  TICK_MS: 100, // clock resolution
+  SLA_MS: 5000, // a document older than this breaches
+  /* Tuned against a simulation of the real tick loop, not by eye. The
+     arrival rate has to exceed what a person can sustain or the demo
+     makes no point: at ~620ms→210ms the shift lands ~75 documents, and
+     a fast player clicking every 450ms can physically reach about 60 of
+     them — so even a good player finishes behind, which is the honest
+     result. Loosen these and the page starts flattering the player. */
+  GAP_START: 620, // ms between arrivals at the start of a shift
+  GAP_END: 210, // …and at the end
+  /* AGENTS × (1000 / AGENT_MS) = 6 docs/sec, above the ~4.8/sec peak
+     arrival rate, so the automated shift clears everything and never
+     breaches. Drop it below the peak and automation builds a backlog
+     too — true to life, but not what this page is demonstrating. */
+  AGENTS: 3, // automated workers
+  AGENT_MS: 500, // ms per document, per worker
+  DOC_TYPES: 4, // must match content game.docTypes length
+  VISIBLE: 12, // cards rendered before the queue collapses to a count
+  BACKLOG_WARN: 6, // backlog at which the counter turns amber
+};
 
 /* Order of the five services. Names, roles, bodies and tags come from
    content: c.services.items[id]. */

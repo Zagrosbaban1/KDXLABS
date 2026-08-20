@@ -28,6 +28,7 @@ export default {
     work: "Work",
     approach: "Approach",
     faq: "FAQ",
+    game: "Play the game",
   },
 
   ui: {
@@ -360,6 +361,61 @@ export default {
     copyLabelMessage: "Message",
     copyLabelEmail: "Email address",
     copyLabelPhone: "Phone number",
+  },
+
+  /* ---- the ops room game -------------------------------------------
+     Playable proof of two of the five services. Both shifts run the
+     identical workload, which is the whole argument: the difference on
+     the results screen is the automation, not a kinder queue. */
+  game: {
+    eyebrow: "Try it yourself",
+    heading: "Run the ops room.",
+    lede:
+      "Two shifts, the same queue. Clear the first by hand. Let automation clear the second. The dashboard keeps score.",
+    howToTitle: "How it works",
+    howTo: [
+      "Documents arrive in the queue on their own, faster as the shift goes on.",
+      "Click one to process it. Keyboard works too — tab to a card and press enter.",
+      "Anything sitting longer than {sla} seconds breaches and is counted against you.",
+    ],
+    fairNote:
+      "Both shifts get the exact same arrivals, in the same order, at the same moments. Only who clears them changes.",
+    start: "Start shift one",
+    deploy: "Deploy the automation",
+    replay: "Run it again",
+    shiftOf: "Shift {n} of 2",
+    manualLabel: "By hand",
+    autoLabel: "Automated",
+    manualLong: "Shift one — by hand",
+    autoLong: "Shift two — automated",
+    timeLeft: "Time left",
+    seconds: "{n}s",
+    queueLabel: "Queue",
+    queueEmpty: "Queue clear.",
+    queueOverflow: "+{n} more waiting",
+    agentsLabel: "Agents working",
+    processAria: "Process {type}, waiting {secs} seconds",
+    liveAria: "Live queue. Activate a document to process it.",
+    handoffHeading: "That was thirty seconds.",
+    handoffBody:
+      "Now the same queue again — the same documents, arriving at the same moments — handled by an automated workflow while you watch the dashboard.",
+    stats: {
+      processed: "Processed",
+      backlog: "In queue",
+      breached: "Breached",
+      avg: "Avg handling",
+    },
+    chartLabel: "Throughput, documents per second",
+    resultHeading: "Same workload. Two different shifts.",
+    resultLead: "This is the argument we make in a meeting, with your numbers instead of these.",
+    resultProcessed: "documents processed",
+    resultBreached: "breached",
+    resultAvg: "average handling time",
+    verdictBetter: "Automation cleared {n} more documents and breached {b} fewer.",
+    verdictEqual: "You kept up by hand — most people can't, and nobody can do it all day.",
+    closingLead: "Your queue is not documents on a screen. It is someone's afternoon.",
+    cta: "Talk to us about your queue",
+    docTypes: ["Invoice", "Job application", "Support ticket", "Monthly report"],
   },
 
   details: {

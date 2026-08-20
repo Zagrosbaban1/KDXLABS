@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { Fragment, useEffect } from "react";
 import { Link, useOutletContext } from "react-router-dom";
 import { CONTACT, NAV, SERVICE_IDS } from "../data.js";
 import { Counter, Radar } from "../components/primitives.jsx";
@@ -62,15 +62,27 @@ export default function Home() {
             <span className="kdx-rule kdx-in" style={{ "--d": "0.15s" }} />
             <h1 className="kdx-h1">
               {heroLines.map((line, li) => (
-                <span key={li} className="kdx-in" style={{ "--d": `${0.2 + li * 0.1}s` }}>
-                  {line.map((word, wi) => (
-                    <span
-                      key={`${word}-${wi}`}
-                      className={`kdx-word kdx-word-${((heroOffset[li] + wi) % GRADIENTS) + 1}`}
-                    >
-                      {word}{" "}
-                    </span>
-                  ))}
+                <span key={li}>
+                  {line.map((word, wi) => {
+                    /* --w is the word's position across the whole headline,
+                       which is what staggers the cascade. The space is a
+                       sibling text node, not part of the span: the words are
+                       inline-block so they can be transformed, and an
+                       inline-block swallows a trailing space, which would
+                       run the headline together and remove every point the
+                       line is allowed to wrap at. */
+                    const n = heroOffset[li] + wi;
+                    return (
+                      <Fragment key={`${word}-${wi}`}>
+                        <span
+                          className={`kdx-word kdx-word-${(n % GRADIENTS) + 1}`}
+                          style={{ "--w": n }}
+                        >
+                          {word}
+                        </span>{" "}
+                      </Fragment>
+                    );
+                  })}
                 </span>
               ))}
             </h1>

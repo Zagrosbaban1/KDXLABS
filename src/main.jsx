@@ -6,6 +6,7 @@ import "./styles.css";
 import App from "./App.jsx";
 import Home from "./pages/Home.jsx";
 import About from "./pages/About.jsx";
+import Game from "./pages/Game.jsx";
 import { SiteProvider } from "./site-context.jsx";
 
 createRoot(document.getElementById("root")).render(
@@ -16,6 +17,7 @@ createRoot(document.getElementById("root")).render(
           <Route element={<App />}>
             <Route path="/" element={<Home />} />
             <Route path="/about" element={<About />} />
+            <Route path="/game" element={<Game />} />
             {/* anything else lands back on the home page */}
             <Route path="*" element={<Navigate to="/" replace />} />
           </Route>

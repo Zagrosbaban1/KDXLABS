@@ -40,9 +40,18 @@ if (import.meta.env.DEV) {
 
   const tokens = (s) => (String(s).match(/\{(\w+)\}/g) || []).sort().join(",");
 
+  /* hero.headline is lines of words, split for the per-word gradient.
+     A language says the same thing in its own number of words, so the
+     line count must match but the words inside a line need not. */
+  const looseLength = (path) => /^content\.hero\.headline\[\d+\]$/.test(path);
+
   const walk = (a, b, path) => {
     if (Array.isArray(a)) {
       if (!Array.isArray(b)) return problems.push(`${path}: should be an array`);
+      if (looseLength(path)) {
+        b.forEach((item, i) => walk(a[i] ?? "", item, `${path}[${i}]`));
+        return;
+      }
       if (a.length !== b.length) {
         problems.push(`${path}: ${a.length} items in en, ${b.length} in ckb`);
         return;
