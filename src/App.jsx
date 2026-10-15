@@ -6,8 +6,6 @@ import { CONTACT } from "./data.js";
 import { prefersReducedMotion } from "./components/primitives.jsx";
 import { useSite } from "./site-context.jsx";
 
-/* Shared shell: nav, the contact footer, the floating tools and the toast.
-   Pages render into the middle. */
 export default function App() {
   const location = useLocation();
   const { toast, scrollToId, c } = useSite();
@@ -28,8 +26,6 @@ export default function App() {
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
-  /* On navigation: start at the top, unless we were sent here to reach a
-     particular section of the home page. */
   useEffect(() => {
     const target = location.state?.scrollTo;
     if (target) {
@@ -39,7 +35,7 @@ export default function App() {
     }
   }, [location.pathname, location.state, scrollToId]);
 
-  /* reveals — re-run per page so a newly mounted page animates in */
+  /* reveals, re-run per page so a newly mounted page animates in */
   useEffect(() => {
     const nodes = rootRef.current?.querySelectorAll("[data-reveal]:not(.is-in)") ?? [];
     if (prefersReducedMotion()) {

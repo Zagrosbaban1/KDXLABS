@@ -5,8 +5,6 @@ import { Mark } from "./primitives.jsx";
 import LanguageToggle from "./LanguageToggle.jsx";
 import { useSectionLink, useSite } from "../site-context.jsx";
 
-/* Nav items are one of two kinds: a route of its own (About) or a section
-   of the home page. Both render as links; only the target differs. */
 export default function Nav({ activeSection }) {
   const [scrolled, setScrolled] = useState(false);
   const [progress, setProgress] = useState(0);

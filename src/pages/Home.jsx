@@ -1,16 +1,10 @@
-import { Fragment, useEffect } from "react";
+import { Fragment, useEffect, useState } from "react";
 import { Link, useOutletContext } from "react-router-dom";
-import { CONTACT, NAV, SERVICE_IDS } from "../data.js";
-import { Counter, Radar } from "../components/primitives.jsx";
+import { NAV, SERVICE_IDS } from "../data.js";
+import { Counter, Radar, prefersReducedMotion } from "../components/primitives.jsx";
+import CompareChart from "../components/CompareChart.jsx";
 import { useSectionLink, useSite } from "../site-context.jsx";
 
-/* The hero headline arrives from the language pack as lines of words —
-   see `hero.headline` in content/en.js and content/ckb.js. Each word gets
-   a running index across the whole headline so the stylesheet can hand it
-   its own gradient (.kdx-word-N). The index wraps at eight because that is
-   how many gradients exist, and the white/green/red pattern repeats
-   cleanly on a cycle of eight — which matters because the two languages
-   do not have the same number of words. */
 const GRADIENTS = 8;
 const wordOffsets = (lines) =>
   lines.reduce((acc, line) => [...acc, acc[acc.length - 1] + line.length], [0]);
@@ -20,10 +14,17 @@ export default function Home() {
   const sectionLink = useSectionLink();
   const { nameRef, startEnquiry, c, t } = useSite();
   const services = SERVICE_IDS.map((id) => ({ id, ...c.services.items[id] }));
-  const heroLines = c.hero.headline;
-  const heroOffset = wordOffsets(heroLines);
+  const slides = c.hero.slides;
+  const [slide, setSlide] = useState(0);
+  const [paused, setPaused] = useState(false);
 
-  /* ---- which section the nav should highlight ---- */
+  useEffect(() => {
+    if (paused || prefersReducedMotion()) return undefined;
+    const id = window.setInterval(() => setSlide((i) => (i + 1) % slides.length), 5000);
+    return () => window.clearInterval(id);
+  }, [paused, slide, slides.length]);
+
+  /* which section the nav should highlight */
   useEffect(() => {
     const ids = [...NAV.filter((n) => n.section).map((n) => n.section), "contact"];
     const sections = ids.map((id) => document.getElementById(id)).filter(Boolean);
@@ -44,15 +45,14 @@ export default function Home() {
 
   return (
     <>
-      {/* ----------------------------- hero ------------------------------ */}
+      {/* hero */}
       <section className="kdx-hero" id="top">
         <div className="kdx-hero-radar">
           <Radar />
         </div>
 
         <div className="kdx-hero-inner">
-          {/* a quiet instrument label in the top-right corner: a miniature
-              of the big radar, sweep arm and all, then the words */}
+
           <p className="kdx-hero-badge kdx-in" style={{ "--d": "0.05s" }}>
             <span className="kdx-hero-badge-radar" aria-hidden="true" />
             {c.hero.badge}
@@ -60,35 +60,46 @@ export default function Home() {
 
           <div className="kdx-hero-copy">
             <span className="kdx-rule kdx-in" style={{ "--d": "0.15s" }} />
-            <h1 className="kdx-h1">
-              {heroLines.map((line, li) => (
-                <span key={li}>
-                  {line.map((word, wi) => {
-                    /* --w is the word's position across the whole headline,
-                       which is what staggers the cascade. The space is a
-                       sibling text node, not part of the span: the words are
-                       inline-block so they can be transformed, and an
-                       inline-block swallows a trailing space, which would
-                       run the headline together and remove every point the
-                       line is allowed to wrap at. */
-                    const n = heroOffset[li] + wi;
-                    return (
-                      <Fragment key={`${word}-${wi}`}>
-                        <span
-                          className={`kdx-word kdx-word-${(n % GRADIENTS) + 1}`}
-                          style={{ "--w": n }}
-                        >
-                          {word}
-                        </span>{" "}
-                      </Fragment>
-                    );
-                  })}
-                </span>
-              ))}
-            </h1>
-            <p className="kdx-lede kdx-in" style={{ "--d": "0.55s" }}>
-              {c.hero.lede}
-            </p>
+            <div
+              className="kdx-slides"
+              onMouseEnter={() => setPaused(true)}
+              onMouseLeave={() => setPaused(false)}
+              onFocus={() => setPaused(true)}
+              onBlur={() => setPaused(false)}
+            >
+              {slides.map((sl, si) => {
+                const offsets = wordOffsets(sl.headline);
+                const Tag = si === 0 ? "h1" : "div";
+                return (
+                  <div
+                    key={si}
+                    className={`kdx-slide ${si === slide ? "is-active" : ""}`}
+                    aria-hidden={si === slide ? undefined : true}
+                  >
+                    <Tag className="kdx-h1">
+                      {sl.headline.map((line, li) => (
+                        <span key={li}>
+                          {line.map((word, wi) => {
+                            const n = offsets[li] + wi;
+                            return (
+                              <Fragment key={`${word}-${wi}`}>
+                                <span
+                                  className={`kdx-word kdx-word-${(n % GRADIENTS) + 1}`}
+                                  style={{ "--w": n }}
+                                >
+                                  {word}
+                                </span>{" "}
+                              </Fragment>
+                            );
+                          })}
+                        </span>
+                      ))}
+                    </Tag>
+                    <p className="kdx-lede">{sl.lede}</p>
+                  </div>
+                );
+              })}
+            </div>
             <div className="kdx-hero-actions kdx-in" style={{ "--d": "0.65s" }}>
               <a className="kdx-btn" {...sectionLink("contact", { focus: nameRef })}>
                 {c.hero.primary}
@@ -97,18 +108,28 @@ export default function Home() {
                 {c.hero.secondary}
               </a>
             </div>
-            {/* risk reversal, right where the decision happens: the two facts
-                that remove the cost of clicking live next to the button that
-                asks for the click */}
+
             <p className="kdx-hero-note kdx-in" style={{ "--d": "0.75s" }}>
               {c.hero.note}
             </p>
+            <div className="kdx-slide-dots kdx-in" style={{ "--d": "0.85s" }}>
+              {slides.map((_, i) => (
+                <button
+                  key={i}
+                  type="button"
+                  className={i === slide ? "is-on" : ""}
+                  aria-label={t(c.hero.slideAria, { n: i + 1 })}
+                  aria-pressed={i === slide}
+                  onClick={() => setSlide(i)}
+                />
+              ))}
+            </div>
 
           </div>
         </div>
       </section>
 
-      {/* ------------------------- about, in brief ------------------------ */}
+      {/* about, in brief */}
       <section className="kdx-sec kdx-about-band">
         <div className="kdx-wrap">
           <div className="kdx-about-band-grid">
@@ -128,7 +149,7 @@ export default function Home() {
         </div>
       </section>
 
-      {/* ---------------------------- services ---------------------------- */}
+      {/* services */}
       <section className="kdx-sec kdx-services" id="services">
         <div className="kdx-wrap">
           <div className="kdx-sec-head" data-reveal>
@@ -168,54 +189,9 @@ export default function Home() {
         </div>
       </section>
 
-      {/* ----------------------------- work ------------------------------- */}
-      <section className="kdx-sec kdx-work" id="work">
-        <div className="kdx-wrap">
-          <div className="kdx-sec-head" data-reveal>
-            <p className="kdx-eyebrow kdx-eyebrow-blue">{c.work.eyebrow}</p>
-            <h2 className="kdx-h2">{c.work.heading}</h2>
-          </div>
+      <CompareChart />
 
-          <article className="kdx-product" data-reveal>
-            <div className="kdx-product-radar" aria-hidden="true">
-              <Radar spin={false} />
-            </div>
-            <div className="kdx-product-inner">
-              <p className="kdx-eyebrow">{c.work.productEyebrow}</p>
-              <h3 className="kdx-product-name">{c.work.productName}</h3>
-              <p>{c.work.productBody}</p>
-              <dl className="kdx-stats">
-                {c.work.stats.map((stat) => (
-                  <div key={stat.label}>
-                    <dt>{stat.value}</dt>
-                    <dd>{stat.label}</dd>
-                  </div>
-                ))}
-              </dl>
-              <div className="kdx-product-actions">
-                <a
-                  className="kdx-btn kdx-btn-sm kdx-btn-blue"
-                  href={CONTACT.jobsUrl}
-                  target="_blank"
-                  rel="noreferrer"
-                >
-                  {c.work.visit} <span aria-hidden="true">↗</span>
-                </a>
-                <button
-                  type="button"
-                  className="kdx-btn kdx-btn-sm kdx-btn-outline"
-                  onClick={() => startEnquiry("Recruitment")}
-                >
-                  {c.work.hire}
-                </button>
-              </div>
-            </div>
-          </article>
-
-        </div>
-      </section>
-
-      {/* --------------------------- why us ------------------------------- */}
+      {/* why us */}
       <section className="kdx-sec kdx-why">
         <div className="kdx-wrap">
           <div className="kdx-sec-head" data-reveal>
@@ -234,7 +210,7 @@ export default function Home() {
         </div>
       </section>
 
-      {/* --------------------------- approach ----------------------------- */}
+      {/* approach */}
       <section className="kdx-sec kdx-approach" id="approach">
         <div className="kdx-wrap">
           <div className="kdx-sec-head" data-reveal>
@@ -263,7 +239,7 @@ export default function Home() {
         </div>
       </section>
 
-      {/* ------------------------------ faq ------------------------------- */}
+      {/* faq */}
       <section className="kdx-sec kdx-faq" id="faq">
         <div className="kdx-wrap">
           <div className="kdx-sec-head" data-reveal>

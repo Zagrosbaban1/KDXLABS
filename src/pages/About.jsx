@@ -18,13 +18,18 @@ export default function About() {
   const serviceName = (id) => c.services.items[id]?.name ?? "";
   /* geometry from data.js, words from the language pack, joined on id */
   const activeGeo = GOVERNORATES.find((g) => g.id === region) ?? GOVERNORATES[0];
-  const activeRegion = { ...activeGeo, ...c.regions[activeGeo.id] };
+  const activeRegion = {
+    blurb: c.coverage.remoteBlurb,
+    focus: [c.coverage.allServices],
+    ...activeGeo,
+    ...c.regions[activeGeo.id],
+  };
   const timeline = TIMELINE_STEPS.map((step, i) => ({ ...step, ...c.timeline.items[i] }));
   const coverageStats = COVERAGE_VALUES.map((v, i) => ({ ...v, ...c.coverage.stats[i] }));
 
   return (
     <>
-      {/* ---------------------------- page head --------------------------- */}
+      {/* page head */}
       <header className="kdx-page-head">
         <div className="kdx-page-head-radar" aria-hidden="true">
           <Radar />
@@ -42,7 +47,7 @@ export default function About() {
         </div>
       </header>
 
-      {/* ------------------------- mission & vision ----------------------- */}
+      {/* mission & vision */}
       <section className="kdx-sec kdx-mv">
         <div className="kdx-wrap">
           <div className="kdx-mv-grid">
@@ -73,7 +78,7 @@ export default function About() {
         </div>
       </section>
 
-      {/* ------------------------------ story ----------------------------- */}
+      {/* story */}
       <section className="kdx-sec kdx-about-sec">
         <div className="kdx-wrap">
           <p className="kdx-eyebrow kdx-eyebrow-blue" data-reveal>
@@ -116,8 +121,6 @@ export default function About() {
           </p>
           <ol className="kdx-timeline">
             {timeline.map((item, i) => (
-              /* keyed on the title, not the step — the future entries all
-                 share step "00" */
               <li
                 key={item.title}
                 className={item.future ? "is-future" : ""}
@@ -141,7 +144,7 @@ export default function About() {
         </div>
       </section>
 
-      {/* ---------------------------- coverage ---------------------------- */}
+      {/* coverage */}
       <section className="kdx-sec kdx-coverage-sec">
         <div className="kdx-wrap">
           <div className="kdx-coverage" data-reveal>
@@ -162,7 +165,7 @@ export default function About() {
                   <h4 className="kdx-region-name">
                     {activeRegion.name}
                     {activeRegion.hq && (
-                      <span className="kdx-region-flag">{c.coverage.ourOffice}</span>
+                      <span className="kdx-region-flag">{c.coverage.ourBase}</span>
                     )}
                   </h4>
                   <p>{activeRegion.blurb}</p>
@@ -194,12 +197,12 @@ export default function About() {
         </div>
       </section>
 
-      {/* ---------------------------- closing ----------------------------- */}
+      {/* closing */}
       <section className="kdx-sec kdx-about-why">
         <div className="kdx-wrap">
           <div className="kdx-approach-cta" data-reveal>
             <p>{c.about.closingLead}</p>
-            <Link className="kdx-btn kdx-btn-blue" to="/" state={{ scrollTo: "work" }}>
+            <Link className="kdx-btn kdx-btn-blue" to="/" state={{ scrollTo: "services" }}>
               {c.about.closingButton}
             </Link>
           </div>

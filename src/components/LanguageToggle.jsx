@@ -1,15 +1,5 @@
 import { useSite } from "../site-context.jsx";
 
-/* A segmented switch, not a dropdown. With exactly two languages a
-   dropdown hides half the choice behind a click and gives no clue what
-   the other option even is — this shows both at once and slides a pill
-   between them, so the current state and the alternative are visible in
-   the same glance.
-
-   Each half is a real <button> in a radiogroup, so it is reachable by
-   Tab and answerable by Space or Enter. Each is labelled in its own
-   language and marked with its own `lang` attribute, which is what stops
-   a screen reader reading "کوردی" with an English voice. */
 export default function LanguageToggle({ className = "" }) {
   const { lang, setLang, languages, c } = useSite();
 
@@ -19,7 +9,11 @@ export default function LanguageToggle({ className = "" }) {
       role="radiogroup"
       aria-label={c.ui.switchLanguage}
     >
-      <span className="kdx-lang-pill" data-index={languages.findIndex((l) => l.id === lang)} aria-hidden="true" />
+      <span
+        className="kdx-lang-pill"
+        style={{ "--i": languages.findIndex((l) => l.id === lang), "--n": languages.length }}
+        aria-hidden="true"
+      />
       {languages.map((l) => (
         <button
           key={l.id}

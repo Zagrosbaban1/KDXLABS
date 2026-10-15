@@ -3,26 +3,6 @@ import { GAME } from "../data.js";
 import { Radar, prefersReducedMotion } from "../components/primitives.jsx";
 import { useSectionLink, useSite } from "../site-context.jsx";
 
-/* ====================================================================
-   THE OPS ROOM — a playable version of the AI & Automation pitch.
-
-   The argument this page has to make is not "automation is fast". It is
-   "automation is fast ON YOUR WORKLOAD", and a demo that cheats to make
-   that point is worth nothing. So both shifts replay one pre-generated
-   arrival schedule: the same documents, the same order, the same
-   milliseconds. Nothing about the queue changes between shift one and
-   shift two except who empties it. That is the only reason the results
-   screen is allowed to claim anything.
-
-   Timing lives in a ref and renders are driven off a fixed tick, rather
-   than one setState per event. The queue is small and the tick is slow
-   enough that this is not a performance necessity — it is so that the
-   clock cannot drift when the tab is throttled, because a shift that
-   silently runs long would quietly falsify the comparison.
-   ==================================================================== */
-
-/* Deterministic PRNG (mulberry32). Seeded once per session so the
-   workload is identical across both shifts and reproducible on replay. */
 function mulberry32(seed) {
   return function next() {
     seed |= 0;
@@ -33,9 +13,6 @@ function mulberry32(seed) {
   };
 }
 
-/* One shift's worth of arrivals: {at, type}. The gap shrinks as the
-   shift runs, which is what makes a manual shift start comfortable and
-   end underwater — the same shape as a real day. */
 function buildSchedule(seed) {
   const rand = mulberry32(seed);
   const items = [];
@@ -67,13 +44,12 @@ export default function Game() {
   const [live, setLive] = useState(emptyRun());
   const [runs, setRuns] = useState({ manual: null, auto: null });
 
-  /* mutable game state — the tick reads and writes this, React renders it */
+  /* mutable game state, the tick reads and writes this, React renders it */
   const state = useRef({ startedAt: 0, spawned: 0, credit: 0, run: emptyRun(), queue: [] });
   const reduced = useMemo(() => prefersReducedMotion(), []);
 
   const running = phase === "manual" || phase === "auto";
 
-  /* ---------------------------------------------------------------- */
   const begin = useCallback((next) => {
     state.current = { startedAt: performance.now(), spawned: 0, credit: 0, run: emptyRun(), queue: [] };
     setQueue([]);
@@ -82,7 +58,7 @@ export default function Game() {
     setPhase(next);
   }, []);
 
-  /* the process action — the only thing the player does in shift one */
+  /* the process action, the only thing the player does in shift one */
   const process = useCallback(
     (id) => {
       const s = state.current;
@@ -100,7 +76,7 @@ export default function Game() {
     []
   );
 
-  /* ---- the clock ------------------------------------------------- */
+  /* the clock */
   useEffect(() => {
     if (!running) return undefined;
     const auto = phase === "auto";
@@ -157,7 +133,7 @@ export default function Game() {
 
   return (
     <>
-      {/* ---------------------------- page head -------------------------- */}
+      {/* page head */}
       <header className="kdx-page-head">
         <div className="kdx-page-head-radar" aria-hidden="true">
           <Radar spin={!reduced} />
@@ -177,9 +153,9 @@ export default function Game() {
 
       <section className="kdx-sec kdx-game-sec">
         <div className="kdx-wrap">
-          {/* ---- the machine ------------------------------------------- */}
+          {/* the machine */}
           <div className={`kdx-game ${running ? "is-running" : ""} ${phase === "auto" ? "is-auto" : ""}`}>
-            {/* ---- HUD ---- */}
+            {/* HUD */}
             <div className="kdx-game-hud">
               <p className="kdx-game-shift">
                 <span className={`kdx-game-dot ${running ? "is-live" : ""}`} aria-hidden="true" />
@@ -197,7 +173,7 @@ export default function Game() {
               )}
             </div>
 
-            {/* ---- live dashboard: the data-analytics half of the pitch --- */}
+            {/* live dashboard: the data-analytics half of the pitch */}
             <dl className="kdx-game-stats">
               <div>
                 <dt>{g.stats.processed}</dt>
@@ -219,7 +195,7 @@ export default function Game() {
 
             <Throughput data={live.perSecond} label={g.chartLabel} seconds={GAME.SHIFT_MS / 1000} />
 
-            {/* ---- the queue ---- */}
+            {/* the queue */}
             {phase === "intro" && (
               <div className="kdx-game-panel">
                 <ol className="kdx-game-how">
@@ -306,17 +282,7 @@ export default function Game() {
   );
 }
 
-/* --------------------------- throughput chart ------------------------
-   The data-analytics half, drawn the way the rest of the site draws:
-   no library, one polyline, and a baseline so an empty chart still
-   reads as a chart rather than as a broken one. */
 function Throughput({ data, label, seconds }) {
-  /* perSecond is filled by index, so it is a SPARSE array — a second in
-     which nothing was processed is a hole, not a zero. Array.prototype
-     .map skips holes rather than mapping them, so `...data.map(n => n||0)`
-     spreads undefined into Math.max and the peak comes back NaN, which
-     silently turns every point of the polyline into NaN. Densify first,
-     then read. */
   const dense = Array.from({ length: seconds }, (_, i) => data[i] || 0);
   const peak = Math.max(4, ...dense);
   const pts = dense
@@ -338,7 +304,7 @@ function Throughput({ data, label, seconds }) {
   );
 }
 
-/* ------------------------------ results ------------------------------ */
+/* results */
 function Result({ g, t, runs, avgOf, onReplay, sectionLink, nameRef }) {
   const { manual, auto } = runs;
   if (!manual || !auto) return null;

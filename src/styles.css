@@ -15,7 +15,6 @@ html, body { margin: 0; padding: 0; background: #ffffff; color-scheme: light; }
   --line-strong: rgba(11, 11, 16, 0.18);
   --line-light: rgba(255, 255, 255, 0.18);
 
-  /* one radius scale and one easing curve for the whole page */
   --pill: 999px;
   --r-sm: 12px;
   --r-md: 16px;
@@ -37,13 +36,6 @@ html, body { margin: 0; padding: 0; background: #ffffff; color-scheme: light; }
 }
 .kdx *, .kdx *::before, .kdx *::after { box-sizing: border-box; }
 
-/* ---- element reset ----
-   All of this is wrapped in :where() so it carries zero specificity.
-   As bare ".kdx p" / ".kdx a" / ".kdx button" each rule scored (0,1,1) and beat
-   every component class at (0,1,0) — which is why solid buttons rendered with
-   no fill, chips lost their borders, .kdx-btn links inherited the section's
-   text colour (white label on a white pill), and the margins set on
-   .kdx-eyebrow / .kdx-lede / .kdx-hint never applied. A reset must lose. */
 :where(.kdx p) { margin: 0 0 1.1em; }
 :where(.kdx h1, .kdx h2, .kdx h3, .kdx h4, .kdx h5) {
   font-family: var(--display); margin: 0; letter-spacing: -0.022em;
@@ -53,8 +45,6 @@ html, body { margin: 0; padding: 0; background: #ffffff; color-scheme: light; }
 :where(.kdx ul, .kdx ol, .kdx dl, .kdx dd) { margin: 0; padding: 0; list-style: none; }
 :where(.kdx button) { font: inherit; color: inherit; background: none; border: 0; cursor: pointer; }
 .kdx ::selection { background: var(--blue); color: #fff; }
-/* currentColor rings disappeared on same-colour pairings (a white ring on a
-   white section, a blue ring on the blue hero). Each surface names its own. */
 .kdx :focus-visible {
   outline: 2px solid var(--focus, var(--blue));
   outline-offset: 3px;
@@ -72,12 +62,10 @@ html, body { margin: 0; padding: 0; background: #ffffff; color-scheme: light; }
 }
 .kdx-skip:focus { top: 1rem; }
 
-/* ---- shared bits ---- */
+/* shared bits */
 .kdx-wrap { width: min(1180px, 100% - 3rem); margin-inline: auto; }
 .kdx-sec { padding: clamp(5rem, 10vw, 9rem) 0; }
 
-/* Uppercase is now reserved for micro-labels only — eyebrows, meta and table
-   headers. Everything interactive reads in sentence case below. */
 .kdx-eyebrow {
   font-family: var(--display);
   font-size: 0.72rem;
@@ -126,7 +114,7 @@ html, body { margin: 0; padding: 0; background: #ffffff; color-scheme: light; }
               transform 0.8s cubic-bezier(0.2, 0.7, 0.2, 1) var(--d, 0s);
 }
 
-/* ---- nav ---- */
+/* nav */
 .kdx-nav {
   position: fixed; inset: 0 0 auto 0; z-index: 90;
   display: flex; align-items: center; gap: 2rem;
@@ -149,13 +137,6 @@ html, body { margin: 0; padding: 0; background: #ffffff; color-scheme: light; }
 }
 .kdx-nav.is-stuck .kdx-progress { background: var(--blue); opacity: 1; }
 .kdx-nav.is-open .kdx-progress { opacity: 0; }
-/* margin-inline-end, not margin-right: this auto margin is the only thing
-   holding the brand and the burger at opposite ends of the bar, so it has
-   to follow the writing direction. As a physical margin-right it pushed
-   the burger to the far right in English and then, in Sorani, got
-   overwritten by the RTL nudge below — which collapsed the gap and left
-   the close button sitting against the brand instead of mirroring to the
-   far left. */
 .kdx-brand { display: flex; align-items: center; gap: 0.65rem; text-decoration: none; margin-inline-end: auto; }
 .kdx-brand-mark { width: 24px; }
 .kdx-brand-word {
@@ -203,7 +184,7 @@ html, body { margin: 0; padding: 0; background: #ffffff; color-scheme: light; }
 .kdx-nav.is-open .kdx-burger span:first-child { transform: translateY(7px) rotate(45deg); }
 .kdx-nav.is-open .kdx-burger span:last-child { transform: translateY(-7px) rotate(-45deg); }
 
-/* ---- mobile drawer ---- */
+/* mobile drawer */
 .kdx-drawer {
   position: fixed; inset: 0; z-index: 80;
   background: var(--ink); color: #fff;
@@ -211,12 +192,6 @@ html, body { margin: 0; padding: 0; background: #ffffff; color-scheme: light; }
   padding: 5.5rem clamp(1.5rem, 6vw, 3rem) 2.5rem;
   opacity: 0; visibility: hidden; pointer-events: none;
   transition: opacity 0.3s ease, visibility 0s linear 0.3s;
-  /* The drawer is a fixed, full-height box with no way out: without this
-     any row that does not fit is simply gone — not scrolled, not
-     clipped-with-a-hint, gone. It went wrong the moment the nav grew to
-     six items in a language whose words are long, which silently ate the
-     first link off the top. overscroll-behavior keeps a flick at the end
-     of the list from scrolling the page underneath. */
   overflow-y: auto;
   overscroll-behavior: contain;
 }
@@ -227,8 +202,6 @@ html, body { margin: 0; padding: 0; background: #ffffff; color-scheme: light; }
 .kdx-drawer-links { display: flex; flex-direction: column; gap: 0.2rem; }
 .kdx-drawer-links a {
   font-family: var(--display); font-weight: 800;
-  /* was clamp(2rem, 9vw, 3rem) — sized for five short English words.
-     Six items plus Contact does not fit at that size on a short viewport. */
   font-size: clamp(1.55rem, 6.4vw, 2.3rem); letter-spacing: -0.03em;
   line-height: 1.25;
   text-decoration: none; padding: 0.3rem 0;
@@ -240,7 +213,7 @@ html, body { margin: 0; padding: 0; background: #ffffff; color-scheme: light; }
 }
 .kdx-drawer-foot a { text-decoration: none; }
 
-/* ---- radar motif ---- */
+/* radar motif */
 .kdx-radar { width: 100%; height: 100%; display: block; overflow: visible; }
 .kdx-radar-static circle { fill: none; stroke: currentColor; stroke-width: 1; opacity: 0.42; }
 .kdx-radar-static line { stroke: currentColor; stroke-width: 1; opacity: 0.2; }
@@ -249,7 +222,7 @@ html, body { margin: 0; padding: 0; background: #ffffff; color-scheme: light; }
 .kdx-radar-sweep { transform-origin: 0 0; animation: kdx-spin 26s linear infinite; }
 @keyframes kdx-spin { to { transform: rotate(360deg); } }
 
-/* ---- hero ---- */
+/* hero */
 .kdx-hero {
   position: relative; background: var(--blue); color: #fff;
   min-height: 100svh; display: flex; align-items: stretch; overflow: hidden;
@@ -265,18 +238,10 @@ html, body { margin: 0; padding: 0; background: #ffffff; color-scheme: light; }
   padding: clamp(7rem, 14vh, 10rem) 0 clamp(3.5rem, 9vh, 5.5rem);
 }
 .kdx-hero-eyebrow { align-self: flex-end; text-align: right; opacity: 0.75; }
-/* 50rem, because the longest h1 line needs ~48rem at the 5.1rem cap.
-   At 42rem the three <span> lines wrapped into five, which added ~167px of
-   height and pushed the buttons below the fold. */
 .kdx-hero-copy { margin-top: auto; max-width: 50rem; }
 .kdx-lede { font-size: clamp(1.1rem, 1.7vw, 1.3rem); max-width: 34rem; opacity: 0.9; margin-top: 1.8rem; }
 .kdx-hero-actions { display: flex; flex-wrap: wrap; gap: 0.9rem; margin-top: 2.5rem; }
 
-/* ---- buttons ----
-   One geometry for every variant: a 1px border on all of them so solid and
-   outlined buttons measure identically, and min-height instead of vertical
-   padding so a button that wraps its label stays the same height as its
-   neighbour. Only colour changes between variants. */
 .kdx-btn {
   display: inline-flex; align-items: center; justify-content: center; gap: 0.5rem;
   font-family: var(--display); font-size: 0.98rem; font-weight: 600;
@@ -298,7 +263,7 @@ html, body { margin: 0; padding: 0; background: #ffffff; color-scheme: light; }
 .kdx-btn-ghost:hover { background: rgba(255, 255, 255, 0.12); border-color: #fff; box-shadow: none; }
 .kdx-btn-sm { min-height: 46px; padding: 0.65rem 1.35rem; font-size: 0.9rem; }
 
-/* ---- who we are ---- */
+/* who we are */
 .kdx-who-grid {
   display: grid; grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: clamp(2rem, 5vw, 4.5rem); margin-top: 2.5rem; align-items: start;
@@ -318,7 +283,7 @@ html, body { margin: 0; padding: 0; background: #ffffff; color-scheme: light; }
   font-size: clamp(1.25rem, 2.4vw, 1.85rem); line-height: 1.34; max-width: 30ch; margin: 0;
 }
 
-/* ---- coverage map ---- */
+/* coverage map */
 .kdx-coverage {
   display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
   gap: clamp(2rem, 5vw, 4.5rem); align-items: center;
@@ -335,11 +300,6 @@ html, body { margin: 0; padding: 0; background: #ffffff; color-scheme: light; }
 .kdx-map-kri { fill: var(--blue); stroke: var(--blue); stroke-width: 1; stroke-linejoin: round; }
 .kdx-map-kri-line { fill: none; stroke: rgba(255, 255, 255, 0.5); stroke-width: 1.2; }
 .kdx-map-leader { stroke: rgba(11, 11, 16, 0.3); stroke-width: 1; }
-.kdx-map-dot { fill: rgba(11, 11, 16, 0.45); }
-.kdx-map-label {
-  font-family: var(--display); font-size: 15px; font-weight: 600;
-  letter-spacing: 0.12em; text-transform: uppercase; fill: rgba(11, 11, 16, 0.55);
-}
 .kdx-map-pulse { fill: #fff; opacity: 0; animation: kdx-ping 3.6s cubic-bezier(0.2, 0.7, 0.2, 1) infinite; }
 .kdx-map-ring { fill: none; stroke: #fff; stroke-width: 1.4; opacity: 0.5; }
 .kdx-map-hq-dot { fill: #fff; }
@@ -367,7 +327,7 @@ html, body { margin: 0; padding: 0; background: #ffffff; color-scheme: light; }
 .kdx-swatch-grey { background: rgba(11, 11, 16, 0.1); box-shadow: inset 0 0 0 1px rgba(11, 11, 16, 0.18); }
 .kdx-coverage-cta { margin-top: 1.8rem; text-decoration: none; }
 
-/* ---- services ---- */
+/* services */
 .kdx-services { background: var(--mist); }
 .kdx-svc-list { margin-top: 3.2rem; border-top: 1px solid var(--line); }
 .kdx-svc {
@@ -401,8 +361,6 @@ html, body { margin: 0; padding: 0; background: #ffffff; color-scheme: light; }
   background: rgba(11, 11, 16, 0.045); color: var(--ink-2);
 }
 .kdx-services .kdx-tags li { background: var(--paper); }
-/* the underline grows instead of appearing, and the arrow moves on its own —
-   animating the gap re-laid-out the row on every hover */
 .kdx-svc-cta {
   margin-top: 1.4rem; padding: 0 0 0.3rem; cursor: pointer;
   font-family: var(--display); font-size: 0.98rem; font-weight: 600;
@@ -424,7 +382,7 @@ html, body { margin: 0; padding: 0; background: #ffffff; color-scheme: light; }
 .kdx-consult p:last-child { margin-bottom: 0; max-width: 72ch; color: var(--ink-2); }
 .kdx-consult .kdx-eyebrow { color: var(--blue); opacity: 1; margin-bottom: 0.9rem; }
 
-/* ---- work ---- */
+/* work */
 .kdx-product {
   position: relative; overflow: hidden;
   background: var(--mist); color: var(--ink);
@@ -467,16 +425,11 @@ html, body { margin: 0; padding: 0; background: #ffffff; color-scheme: light; }
   max-width: 22ch; letter-spacing: -0.025em;
 }
 .kdx-filters { display: flex; flex-wrap: wrap; gap: 0.45rem; }
-/* Surface variants live together further down, next to .kdx-chip, so that
-   source order can't decide which one wins. See "chip variants" below. */
 
 .kdx-work-grid {
   display: grid; grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 1.4rem; margin-top: 2.4rem;
 }
-/* The card is the hit area, but only the title is a real <button>: a button's
-   content model is phrasing content, so it can't hold the heading, paragraphs
-   and tag list it used to wrap. The overlay carries the click instead. */
 .kdx-card {
   position: relative; display: flex; flex-direction: column; align-items: flex-start;
   padding: clamp(1.5rem, 2.5vw, 2rem);
@@ -599,10 +552,9 @@ html, body { margin: 0; padding: 0; background: #ffffff; color-scheme: light; }
 .kdx-reason h3 { font-weight: 800; font-size: 1.2rem; margin-bottom: 0.7rem; }
 .kdx-reason p { color: var(--ink-2); margin: 0; }
 
-/* ---- approach ---- */
+/* approach */
 .kdx-approach { background: var(--paper); color: var(--ink); }
 .kdx-approach .kdx-eyebrow { color: var(--blue); opacity: 1; }
-/* four stages, four cards — same card language as the work grid */
 .kdx-stages {
   display: grid; grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: 1.4rem; margin-top: 3rem;
@@ -644,7 +596,7 @@ html, body { margin: 0; padding: 0; background: #ffffff; color-scheme: light; }
   font-size: clamp(1.1rem, 2vw, 1.5rem); margin: 0; max-width: 24ch;
 }
 
-/* ---- faq ---- */
+/* faq */
 .kdx-faq-list { margin-top: 3rem; border-bottom: 1px solid var(--line); }
 .kdx-faq-item { border-top: 1px solid var(--line); }
 .kdx-faq-item summary {
@@ -674,15 +626,11 @@ html, body { margin: 0; padding: 0; background: #ffffff; color-scheme: light; }
 .kdx-faq-more { margin-top: 2.2rem; color: var(--ink-2); }
 .kdx-faq-more a { color: var(--blue); text-decoration: none; border-bottom: 1px solid currentColor; }
 
-/* ---- contact ---- */
+/* contact */
 .kdx-contact {
   position: relative; overflow: hidden;
   background: var(--ink); color: #fff;
   padding: clamp(5rem, 10vw, 8rem) 0 2.5rem;
-}
-.kdx-contact-radar {
-  position: absolute; bottom: -60%; right: -10%; width: 70%; aspect-ratio: 1;
-  color: #fff; opacity: 0.4; pointer-events: none;
 }
 .kdx-contact-inner { position: relative; z-index: 1; }
 .kdx-contact .kdx-eyebrow { opacity: 0.75; }
@@ -729,11 +677,6 @@ html, body { margin: 0; padding: 0; background: #ffffff; color-scheme: light; }
   font-family: var(--display); font-size: 0.8rem; margin: 0.55rem 0 0; opacity: 0.95;
 }
 .kdx-chips { display: flex; flex-wrap: wrap; gap: 0.45rem; }
-/* ---- chip variants ----
-   .kdx-chip carries geometry only. Colour comes from the surface variant,
-   and both variants sit here together: as separate blocks in separate
-   sections they scored the same (0,1,0) and whichever came last silently
-   won, which rendered the work filters white-on-white. */
 .kdx-chip {
   display: inline-flex; align-items: center; cursor: pointer;
   font-family: var(--display); font-size: 0.9rem; font-weight: 500;
@@ -743,12 +686,12 @@ html, body { margin: 0; padding: 0; background: #ffffff; color-scheme: light; }
   transition: background 0.2s var(--ease), color 0.2s var(--ease), border-color 0.2s var(--ease);
 }
 
-/* on a dark surface — the contact form */
+/* on a dark surface, the contact form */
 .kdx-chip-light { border-color: rgba(255, 255, 255, 0.28); color: rgba(255, 255, 255, 0.82); }
 .kdx-chip-light:hover { background: rgba(255, 255, 255, 0.1); border-color: #fff; color: #fff; }
 .kdx-chip-light.is-on { background: #fff; color: var(--ink); border-color: #fff; }
 
-/* on a light surface — the work filters */
+/* on a light surface, the work filters */
 .kdx-chip-dark { border-color: var(--line-strong); color: var(--ink-2); }
 .kdx-chip-dark:hover { background: var(--mist); border-color: var(--ink); color: var(--ink); }
 .kdx-chip-dark.is-on { background: var(--ink); color: #fff; border-color: var(--ink); }
@@ -818,7 +761,7 @@ html, body { margin: 0; padding: 0; background: #ffffff; color-scheme: light; }
 .kdx-top:hover { background: #fff; color: var(--ink); border-color: #fff; }
 .kdx-top:hover [aria-hidden] { transform: translateY(-2px); }
 
-/* ---- floating tools ---- */
+/* floating tools */
 .kdx-tools {
   position: fixed; right: clamp(1rem, 3vw, 2rem); bottom: clamp(1rem, 3vw, 2rem);
   z-index: 70; display: flex; align-items: center; gap: 0.6rem;
@@ -844,7 +787,7 @@ html, body { margin: 0; padding: 0; background: #ffffff; color-scheme: light; }
   box-shadow: var(--shadow-md), inset 0 0 0 1px var(--line-strong);
 }
 
-/* ---- responsive ---- */
+/* responsive */
 @media (max-width: 980px) {
   .kdx-contact-grid { grid-template-columns: minmax(0, 1fr); }
   .kdx-details-mark { display: none; }
@@ -887,21 +830,13 @@ html, body { margin: 0; padding: 0; background: #ffffff; color-scheme: light; }
   .kdx-in { opacity: 1; transform: none; }
 }
 
-/* =====================================================================
-   Added with the dynamic pass: interactive map, About section,
-   work toolbar (search / filter / sort), and richer motion.
-   ===================================================================== */
-
-/* ---- staggered reveals ---- */
+/* staggered reveals */
 .kdx [data-reveal][data-stagger] {
   transition-delay: calc(var(--s, 0) * 70ms);
 }
 
 .kdx-sec-head { max-width: 62ch; }
 
-/* ---------------------------------------------------------------- *
- *  About
- * ---------------------------------------------------------------- */
 .kdx-about-story {
   display: grid; grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: clamp(1.6rem, 3.5vw, 3rem);
@@ -931,7 +866,7 @@ html, body { margin: 0; padding: 0; background: #ffffff; color-scheme: light; }
 .kdx-discipline p { color: var(--ink-2); margin: 0 0 1rem; font-size: 0.98rem; }
 .kdx-discipline .kdx-tags li { font-size: 0.78rem; }
 
-/* ---- timeline ---- */
+/* timeline */
 .kdx-timeline { margin-top: 2.6rem; position: relative; }
 .kdx-timeline::before {
   content: ""; position: absolute; left: 5.5rem; top: 0.6rem; bottom: 0.6rem;
@@ -966,9 +901,6 @@ html, body { margin: 0; padding: 0; background: #ffffff; color-scheme: light; }
 }
 .kdx-timeline-copy p { color: var(--ink-2); margin: 0; font-size: 0.98rem; }
 
-/* ---------------------------------------------------------------- *
- *  Interactive coverage map
- * ---------------------------------------------------------------- */
 .kdx-coverage-map { position: relative; }
 
 .kdx-map-base {
@@ -979,11 +911,10 @@ html, body { margin: 0; padding: 0; background: #ffffff; color-scheme: light; }
   stroke-dashoffset: 0;
 }
 
-/* regions fade in one after another once the outline has drawn */
 .kdx-gov-shape, .kdx-map-marks, .kdx-map-labels { opacity: 0; }
 .kdx-map.is-drawn .kdx-gov-shape {
   opacity: 1;
-  transition: opacity 0.6s var(--ease) calc(0.35s + var(--i) * 0.12s),
+  transition: opacity 0.6s var(--ease) calc(0.35s + var(--i) * 0.045s),
               fill-opacity 0.25s var(--ease), stroke-width 0.25s var(--ease);
 }
 .kdx-map.is-drawn .kdx-map-marks,
@@ -1002,9 +933,7 @@ html, body { margin: 0; padding: 0; background: #ffffff; color-scheme: light; }
 
 .kdx-gov-dot { fill: #fff; opacity: 0.9; }
 
-/* Labels overhang their own region, so they carry a white halo to stay
-   readable over both the blue fill and the page behind it. */
-.kdx-map-label, .kdx-gov-label {
+.kdx-gov-label {
   paint-order: stroke fill;
   stroke: var(--paper); stroke-width: 3.5px; stroke-linejoin: round;
 }
@@ -1018,7 +947,6 @@ html, body { margin: 0; padding: 0; background: #ffffff; color-scheme: light; }
 .kdx-gov-label.is-active { fill: var(--blue); }
 
 .kdx-map-marks, .kdx-map-labels { pointer-events: none; }
-
 
 .kdx-region-panel {
   margin-top: 1.8rem; padding-top: 1.6rem; border-top: 1px solid var(--line);
@@ -1058,9 +986,6 @@ html, body { margin: 0; padding: 0; background: #ffffff; color-scheme: light; }
   color: var(--ink-3); margin-top: 0.45rem;
 }
 
-/* ---------------------------------------------------------------- *
- *  Work toolbar: search, filters, sort
- * ---------------------------------------------------------------- */
 .kdx-work-tools {
   display: flex; flex-wrap: wrap; align-items: center; gap: 0.8rem;
   margin-top: 2rem;
@@ -1132,7 +1057,7 @@ html, body { margin: 0; padding: 0; background: #ffffff; color-scheme: light; }
 .kdx-empty h4 { font-weight: 800; font-size: 1.2rem; margin-bottom: 0.5rem; }
 .kdx-empty p { color: var(--ink-3); margin: 0 0 1.3rem; }
 
-/* ---- draft-saved note on the form ---- */
+/* draft-saved note on the form */
 .kdx-saved {
   display: flex; align-items: center; gap: 0.55rem; flex-wrap: wrap;
   font-family: var(--display); font-size: 0.86rem; opacity: 0.7;
@@ -1144,7 +1069,7 @@ html, body { margin: 0; padding: 0; background: #ffffff; color-scheme: light; }
 }
 .kdx-saved button:hover { opacity: 1; }
 
-/* ---- toast for copy confirmations ---- */
+/* toast for copy confirmations */
 .kdx-toast {
   position: fixed; left: 50%; bottom: 2rem; z-index: 120;
   transform: translate(-50%, 1.5rem);
@@ -1158,9 +1083,6 @@ html, body { margin: 0; padding: 0; background: #ffffff; color-scheme: light; }
 }
 .kdx-toast.is-in { opacity: 1; transform: translate(-50%, 0); }
 
-/* ---------------------------------------------------------------- *
- *  Responsive
- * ---------------------------------------------------------------- */
 @media (max-width: 900px) {
   .kdx-about-story { grid-template-columns: minmax(0, 1fr); }
   .kdx-disciplines { grid-template-columns: minmax(0, 1fr); }
@@ -1170,8 +1092,6 @@ html, body { margin: 0; padding: 0; background: #ffffff; color-scheme: light; }
   .kdx-timeline li { grid-template-columns: 3.6rem minmax(0, 1fr); gap: 1.4rem; }
   .kdx-timeline-copy::before { left: -1.9rem; }
   .kdx-work-tools { flex-direction: column; align-items: stretch; }
-  /* the flex basis is a height once this stacks — reset it or the search
-     box grows to 16rem tall and its icon floats loose in the middle */
   .kdx-search { flex: 0 0 auto; }
   .kdx-sort { justify-content: space-between; }
   .kdx-sort select { flex: 1 1 auto; }
@@ -1184,7 +1104,6 @@ html, body { margin: 0; padding: 0; background: #ffffff; color-scheme: light; }
   .kdx-work-grid > li { animation: none !important; }
 }
 
-/* filters now sit below the toolbar rather than inside the section head */
 .kdx-filters { margin-top: 0.9rem; }
 
 /* an inline text button that reads as a link */
@@ -1194,12 +1113,6 @@ html, body { margin: 0; padding: 0; background: #ffffff; color-scheme: light; }
 }
 .kdx-linkish:hover { color: var(--blue-deep); }
 
-/* =====================================================================
-   Added when About moved onto its own route: page header, mission and
-   vision, and the short about band that replaced it on the home page.
-   ===================================================================== */
-
-/* ---- an inner page's blue header, the hero's smaller sibling ---- */
 .kdx-page-head {
   position: relative; overflow: hidden;
   background: var(--blue); color: #fff;
@@ -1223,7 +1136,7 @@ html, body { margin: 0; padding: 0; background: #ffffff; color-scheme: light; }
   max-width: 44ch; opacity: 0.9; margin: 1.6rem 0 0;
 }
 
-/* ---- mission & vision ---- */
+/* mission & vision */
 .kdx-mv-grid {
   display: grid; grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: clamp(1.2rem, 3vw, 2rem);
@@ -1240,7 +1153,6 @@ html, body { margin: 0; padding: 0; background: #ffffff; color-scheme: light; }
   line-height: 1.14; letter-spacing: -0.03em;
   margin-bottom: 1.1rem; max-width: 18ch;
 }
-/* vision is the forward-looking half, so it carries the brand colour */
 .kdx-mv-card.is-vision {
   background: var(--blue); border-color: var(--blue); color: #fff;
 }
@@ -1265,7 +1177,7 @@ html, body { margin: 0; padding: 0; background: #ffffff; color-scheme: light; }
   width: 8px; height: 8px; border-radius: 50%; background: var(--blue);
 }
 
-/* ---- the short about band on the home page ---- */
+/* the short about band on the home page */
 .kdx-about-band { background: var(--paper); }
 .kdx-about-band-grid {
   display: grid; grid-template-columns: minmax(0, 1.25fr) minmax(0, 0.75fr);
@@ -1290,16 +1202,6 @@ html, body { margin: 0; padding: 0; background: #ffffff; color-scheme: light; }
   .kdx-about-band-grid { grid-template-columns: minmax(0, 1fr); }
 }
 
-/* =====================================================================
-   DESIGN PASS
-   Three things were weak: every section sat on the same white so the page
-   read as one long scroll; the intro of each section was spaced slightly
-   differently; and several blocks were plain text floating in whitespace,
-   which read as empty rather than generous. Fixed in that order.
-   ===================================================================== */
-
-/* ---- 1. section rhythm ----
-   Alternating surfaces give the page structure without any extra ink. */
 .kdx-about-band { background: var(--paper); }
 .kdx-services   { background: var(--mist); }
 .kdx-work       { background: var(--paper); }
@@ -1311,22 +1213,17 @@ html, body { margin: 0; padding: 0; background: #ffffff; color-scheme: light; }
 .kdx-coverage-sec { background: var(--paper); }
 .kdx-about-why  { background: var(--mist); }
 
-/* on a tinted surface the white cards carry the contrast, so drop the
-   fill the tags were using to stand off white */
 .kdx-services .kdx-tags li,
 .kdx-why .kdx-tags li,
 .kdx-about-sec .kdx-tags li { background: var(--paper); }
 
-/* ---- 2. one intro block, spaced the same everywhere ---- */
+/* one intro block, spaced the same everywhere */
 .kdx-sec-head { max-width: 62ch; }
 .kdx-sec-head .kdx-eyebrow { margin-bottom: 1.3rem; }
 .kdx-sec-head .kdx-h2 { margin-bottom: 1.3rem; }
 .kdx-sec-head .kdx-h2:last-child { margin-bottom: 0; }
 .kdx-sec-head .kdx-sec-lede { margin: 0; }
 
-/* ---- 3. depth in the blue fields ----
-   A single soft highlight behind the radar keeps the flat blue from
-   reading as a printed swatch. */
 .kdx-hero {
   background-image:
     radial-gradient(115% 85% at 78% 10%, rgba(255, 255, 255, 0.13), rgba(255, 255, 255, 0) 62%);
@@ -1344,9 +1241,6 @@ html, body { margin: 0; padding: 0; background: #ffffff; color-scheme: light; }
     radial-gradient(90% 70% at 85% 100%, rgba(var(--blue-rgb), 0.22), rgba(0, 0, 0, 0) 65%);
 }
 
-/* ---- 4. "Why KDX Labs" as cards ----
-   Four one-line points on hairlines looked like leftovers in a wide
-   column. As a 2x2 of panels they hold the space. */
 .kdx-reasons {
   display: grid; grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 1.4rem; margin-top: 0;
@@ -1373,9 +1267,6 @@ html, body { margin: 0; padding: 0; background: #ffffff; color-scheme: light; }
 }
 .kdx-reason p { color: var(--ink-2); margin: 0; font-size: 0.99rem; }
 
-/* ---- 5. the about band on the home page ----
-   It was a short heading in a tall section, so most of it was empty.
-   Tighter block, vertically centred, and the mission card given an edge. */
 .kdx-about-band { padding-block: clamp(4rem, 8vw, 6.5rem); }
 .kdx-about-band-grid { align-items: center; }
 .kdx-about-band-mission {
@@ -1388,48 +1279,16 @@ html, body { margin: 0; padding: 0; background: #ffffff; color-scheme: light; }
   font-size: clamp(1.15rem, 2vw, 1.5rem); line-height: 1.3;
 }
 
-/* ---- 6. small corrections that were bugging the rhythm ---- */
-/* the consult note sat on white inside a white section — give it an edge */
 .kdx-consult { box-shadow: var(--shadow-sm); }
-/* the product panel is the loudest thing in the work section; let it sit
-   on the page rather than float in it */
 .kdx-product { box-shadow: var(--shadow-sm); }
-/* stage cards live on white now, so they need the same treatment as the
-   reason cards to read as one family */
 .kdx-stages li { box-shadow: var(--shadow-sm); }
-/* the FAQ list is on tint now — lift the open answer slightly */
 .kdx-faq-item[open] summary { color: var(--blue); }
 
 @media (max-width: 760px) {
   .kdx-reasons { grid-template-columns: minmax(0, 1fr); }
 }
 
-/* =====================================================================
-   Hero
-   The hero used to carry a photograph of the Erbil Citadel behind the
-   type, blended to a duotone with a scrim over the reading side. The
-   photograph is gone; the field is the brand blue, the soft highlight
-   set in the design pass above, and the radar motif. The radar keeps the
-   opacity it was given when it sat over the picture — at full strength
-   the rings compete with the headline.
-   ===================================================================== */
 .kdx-hero-radar { z-index: 0; opacity: 0.85; }
-
-/* =====================================================================
-   GRADIENT PASS
-   Same palette, richer surfaces. The page was built out of flat fills:
-   one blue, one white, one grey. Flat reads as cheap at large sizes, so
-   every large surface now carries a gradient and every raised element
-   carries a blue-tinted shadow instead of a grey one.
-
-   Four rules held throughout:
-     - gradients run dark-to-light diagonally, never rainbow;
-     - text always lands on the dark end of whatever it sits on;
-     - shadows are tinted with the brand blue, never neutral black;
-     - nothing new is introduced that isn't blue, white or ink.
-
-   Delete this block to get the flat version back.
-   ===================================================================== */
 
 .kdx {
   --grad-brand: linear-gradient(135deg, #2f3ce6 0%, #4453ff 45%, #6d78ff 100%);
@@ -1445,11 +1304,6 @@ html, body { margin: 0; padding: 0; background: #ffffff; color-scheme: light; }
 
 .kdx-sec { padding: clamp(5.5rem, 11vw, 10rem) 0; }
 
-/* ---- 1. the blue fields --------------------------------------------
-   One gradient, used by the hero, the About header, the KDXJobs panel
-   and the vision card. Light falls from the top right, which is where
-   the radar sits and where no copy ever lands, so the reading side
-   stays at the dark end. */
 .kdx-hero,
 .kdx-page-head,
 .kdx-product,
@@ -1460,7 +1314,6 @@ html, body { margin: 0; padding: 0; background: #ffffff; color-scheme: light; }
     radial-gradient(72% 58% at 10% 96%, rgba(38, 47, 186, 0.72), rgba(38, 47, 186, 0) 66%),
     linear-gradient(152deg, #4049f2 0%, #4453ff 34%, #3641da 70%, #2b34c4 100%);
 }
-/* a film of noise keeps a big gradient from banding on wide screens */
 .kdx-hero::after,
 .kdx-page-head::after,
 .kdx-product::after,
@@ -1474,9 +1327,6 @@ html, body { margin: 0; padding: 0; background: #ffffff; color-scheme: light; }
   background: linear-gradient(90deg, #ffffff, rgba(255, 255, 255, 0.15));
 }
 
-/* ---- 2. the ink field ----------------------------------------------
-   The contact footer keeps its near-black, but the blue now rises into
-   it from the corner instead of sitting flat behind it. */
 .kdx-contact {
   background-color: #07070c;
   background-image:
@@ -1484,11 +1334,7 @@ html, body { margin: 0; padding: 0; background: #ffffff; color-scheme: light; }
     radial-gradient(52% 46% at 4% -6%, rgba(var(--blue-rgb), 0.20), rgba(var(--blue-rgb), 0) 60%),
     linear-gradient(180deg, #101019 0%, #07070c 100%);
 }
-.kdx-contact-radar { opacity: 0.45; }
 
-/* ---- 3. section surfaces --------------------------------------------
-   The alternation stays; each band is now a shallow gradient so the
-   seam between two sections reads as a fold rather than a step. */
 .kdx-about-band   { background: linear-gradient(180deg, #ffffff 0%, #fbfbff 100%); }
 .kdx-services     { background: linear-gradient(180deg, #f6f7fd 0%, #f1f3fb 100%); }
 .kdx-work         { background: linear-gradient(180deg, #ffffff 0%, #fafbff 100%); }
@@ -1500,10 +1346,8 @@ html, body { margin: 0; padding: 0; background: #ffffff; color-scheme: light; }
 .kdx-coverage-sec { background: linear-gradient(180deg, #ffffff 0%, #fafbff 100%); }
 .kdx-about-why    { background: linear-gradient(180deg, #f4f6fd 0%, #f8f9fe 100%); }
 
-/* ---- 4. navigation --------------------------------------------------- */
+/* navigation */
 .kdx-nav.is-stuck {
-  /* 0.82, not 0.72: the bar also passes over the near-black contact
-     footer, and a thinner glass turned muddy grey there. */
   background: rgba(255, 255, 255, 0.82);
   backdrop-filter: blur(22px) saturate(1.6);
   -webkit-backdrop-filter: blur(22px) saturate(1.6);
@@ -1527,9 +1371,6 @@ html, body { margin: 0; padding: 0; background: #ffffff; color-scheme: light; }
     linear-gradient(180deg, #101019 0%, #07070c 100%);
 }
 
-/* ---- 5. buttons ------------------------------------------------------
-   Solid buttons get a top sheen and a coloured shadow; the shadow is
-   what actually reads as expensive, not the fill. */
 .kdx-btn {
   background-image: linear-gradient(180deg, #ffffff 0%, #f2f4ff 100%);
   box-shadow: 0 1px 2px rgba(11, 11, 16, 0.05), 0 10px 24px -14px rgba(11, 11, 16, 0.35);
@@ -1554,11 +1395,6 @@ html, body { margin: 0; padding: 0; background: #ffffff; color-scheme: light; }
 .kdx-btn-outline { background-image: none; box-shadow: none; }
 .kdx-btn-outline:hover { background-image: linear-gradient(135deg, #1a1a24, #0b0b10); }
 
-/* ---- 6. cards --------------------------------------------------------
-   Every card in the site — reasons, stages, disciplines, work — is one
-   surface treatment: a near-white gradient, a blue-tinted hairline, a
-   coloured shadow, and a gradient rule that lights along the top edge
-   on hover. */
 .kdx-reason,
 .kdx-stages li,
 .kdx-discipline,
@@ -1592,8 +1428,6 @@ html, body { margin: 0; padding: 0; background: #ffffff; color-scheme: light; }
 .kdx-card:hover::before,
 .kdx-card:focus-within::before { opacity: 1; }
 
-/* the stage numeral is the one small solid blue thing on a white card,
-   so it carries the gradient and a glow of its own */
 .kdx-stage-n {
   background-image: var(--grad-brand);
   box-shadow: var(--sheen), 0 8px 18px -8px rgba(var(--blue-rgb), 0.75);
@@ -1604,9 +1438,6 @@ html, body { margin: 0; padding: 0; background: #ffffff; color-scheme: light; }
   color: transparent;
 }
 
-/* ---- 7. the services list -------------------------------------------
-   Rows, not cards — so the hover is a wash that fades out to the right
-   rather than a lift. */
 .kdx-svc { transition: background 0.45s var(--ease); }
 .kdx-svc:hover {
   background: linear-gradient(90deg, rgba(var(--blue-rgb), 0.05) 0%, rgba(var(--blue-rgb), 0) 68%);
@@ -1624,9 +1455,6 @@ html, body { margin: 0; padding: 0; background: #ffffff; color-scheme: light; }
   background: var(--grad-brand);
 }
 
-/* ---- 8. the KDXJobs panel -------------------------------------------
-   It was a grey box with a blue edge in a white section — the loudest
-   claim on the page in the quietest surface. It is now the blue field. */
 .kdx-product {
   border-left: 0;
   color: #fff;
@@ -1656,7 +1484,7 @@ html, body { margin: 0; padding: 0; background: #ffffff; color-scheme: light; }
   border-color: #fff; color: #fff;
 }
 
-/* ---- 9. mission, vision, the about band ------------------------------ */
+/* mission, vision, the about band */
 .kdx-about-band-mission {
   background: linear-gradient(140deg, rgba(var(--blue-rgb), 0.07) 0%, rgba(var(--blue-rgb), 0.02) 100%);
   border: 1px solid rgba(var(--blue-rgb), 0.12);
@@ -1684,7 +1512,7 @@ html, body { margin: 0; padding: 0; background: #ffffff; color-scheme: light; }
   background: linear-gradient(90deg, var(--blue), rgba(var(--blue-rgb), 0.15));
 }
 
-/* ---- 10. timeline, map, coverage ------------------------------------- */
+/* timeline, map, coverage */
 .kdx-timeline::before {
   background: linear-gradient(180deg, rgba(var(--blue-rgb), 0.35), rgba(11, 11, 16, 0.06));
 }
@@ -1701,9 +1529,6 @@ html, body { margin: 0; padding: 0; background: #ffffff; color-scheme: light; }
 }
 .kdx-region-flag { box-shadow: var(--sheen), 0 6px 14px -6px rgba(var(--blue-rgb), 0.7); }
 
-/* ---- 11. the contact form --------------------------------------------
-   Glass rather than grey: the inputs pick up the blue rising behind
-   them instead of sitting on a flat wash. */
 .kdx-field input, .kdx-field textarea {
   background: linear-gradient(180deg, rgba(255, 255, 255, 0.09), rgba(255, 255, 255, 0.04));
   border-color: rgba(255, 255, 255, 0.18);
@@ -1728,7 +1553,7 @@ html, body { margin: 0; padding: 0; background: #ffffff; color-scheme: light; }
   border-color: rgba(255, 255, 255, 0.16);
 }
 
-/* ---- 12. tags, chips, small surfaces ---------------------------------- */
+/* tags, chips, small surfaces */
 .kdx-tags li {
   background: linear-gradient(180deg, rgba(var(--blue-rgb), 0.07), rgba(var(--blue-rgb), 0.03));
   border-color: rgba(var(--blue-rgb), 0.12);
@@ -1746,12 +1571,12 @@ html, body { margin: 0; padding: 0; background: #ffffff; color-scheme: light; }
   color: rgba(255, 255, 255, 0.92);
 }
 
-/* ---- 13. faq ---------------------------------------------------------- */
+/* faq */
 .kdx-faq-item summary { transition: color 0.3s var(--ease); }
 .kdx-faq-item[open] summary { color: var(--blue); }
 .kdx-faq-icon::before, .kdx-faq-icon::after { background-image: var(--grad-brand); }
 
-/* ---- 14. floating tools, toast, modal --------------------------------- */
+/* floating tools, toast, modal */
 .kdx-tool {
   background-image: linear-gradient(160deg, #1b1b26 0%, #0b0b10 100%);
   box-shadow: var(--sheen), 0 14px 34px -14px rgba(11, 11, 16, 0.6);
@@ -1775,9 +1600,7 @@ html, body { margin: 0; padding: 0; background: #ffffff; color-scheme: light; }
 }
 .kdx-modal-close:hover { background-image: var(--grad-brand); border-color: transparent; }
 
-/* ---- 15. motion ------------------------------------------------------- */
-/* A shade slower and a shade shorter: the reveal should feel like the
-   page settling, not like content arriving late. */
+/* motion */
 .kdx [data-reveal] {
   transform: translateY(16px);
   transition: opacity 0.9s var(--ease), transform 0.9s var(--ease);
@@ -1793,10 +1616,6 @@ html, body { margin: 0; padding: 0; background: #ffffff; color-scheme: light; }
   }
 }
 
-/* ---- 16. the timeline's future entries -------------------------------
-   Only the first milestone has happened. The rest carry step "00" and a
-   label, and are drawn back so the eye reads one solid entry followed by
-   three intentions — rather than four claims of equal weight. */
 .kdx-timeline-copy h3 {
   display: flex; align-items: center; gap: 0.7rem; flex-wrap: wrap;
 }
@@ -1810,13 +1629,10 @@ html, body { margin: 0; padding: 0; background: #ffffff; color-scheme: light; }
   white-space: nowrap;
 }
 
-/* the 00 steps read as placeholders, not as numbers in a sequence */
 .kdx-timeline li.is-future .kdx-timeline-step { color: var(--ink-3); }
 .kdx-timeline li.is-future .kdx-timeline-copy h3 { color: var(--ink-2); }
 .kdx-timeline li.is-future .kdx-timeline-copy p { color: var(--ink-3); }
 
-/* a hollow, grey node instead of the blue one, and it stays grey on
-   hover — the hover fill means "this happened" */
 .kdx-timeline li.is-future .kdx-timeline-copy::before,
 .kdx-timeline li.is-future:hover .kdx-timeline-copy::before {
   background: var(--paper);
@@ -1824,7 +1640,6 @@ html, body { margin: 0; padding: 0; background: #ffffff; color-scheme: light; }
   transform: none;
 }
 
-/* the connector fades out below the first entry for the same reason */
 .kdx-timeline::before {
   background: linear-gradient(180deg,
     rgba(var(--blue-rgb), 0.45) 0%,
@@ -1837,32 +1652,13 @@ html, body { margin: 0; padding: 0; background: #ffffff; color-scheme: light; }
   .kdx-timeline-future { font-size: 0.62rem; padding: 0.25rem 0.55rem; }
 }
 
-/* ---- 17. the headline, word by word ---------------------------------
-   Three colours only: green, red and white. They alternate — every odd
-   word is white and every even word takes a colour, red following green
-   — so the colour lands on "build", "systems", "businesses" and "on."
-   and the connecting words carry the white.
-
-   Every gradient starts at white and only reaches its colour at the
-   baseline. That is what keeps this legible: a saturated red on this
-   blue measures about 2.4:1, well under the 3:1 that display text needs,
-   so the reds here are held light on purpose. Darkening them past the
-   values below will fail contrast.
-   ===================================================================== */
-
-/* `.kdx-h1 span { display: block }` above turns every span into a line;
-   the word spans have to opt back out. (0,2,0) beats that rule's (0,1,1). */
 .kdx-h1 .kdx-word { display: inline; }
 
 .kdx-hero .kdx-h1 .kdx-word {
-  /* the default is also the fallback: a word past the eighth still gets a
-     gradient, so it can never end up transparent-on-transparent */
   background-image: linear-gradient(180deg, #ffffff 0%, #e9edff 100%);
   background-repeat: no-repeat;
   color: #fff;
 }
-/* only claim the text as a mask where the browser can actually paint it,
-   otherwise the fallback colour above stands */
 @supports ((-webkit-background-clip: text) or (background-clip: text)) {
   .kdx-hero .kdx-h1 .kdx-word {
     -webkit-background-clip: text;
@@ -1871,72 +1667,42 @@ html, body { margin: 0; padding: 0; background: #ffffff; color-scheme: light; }
   }
 }
 
-/* white — We, the, modern, run */
+/* white, We, the, modern, run */
 .kdx-hero .kdx-h1 .kdx-word-1,
 .kdx-hero .kdx-h1 .kdx-word-3,
 .kdx-hero .kdx-h1 .kdx-word-5,
 .kdx-hero .kdx-h1 .kdx-word-7 {
   background-image: linear-gradient(180deg, #ffffff 0%, #e9edff 100%);
 }
-/* green — build, businesses */
+/* green, build, businesses */
 .kdx-hero .kdx-h1 .kdx-word-2,
 .kdx-hero .kdx-h1 .kdx-word-6 {
   background-image: linear-gradient(180deg, #ffffff 6%, #4fdd93 100%);
 }
-/* red — systems, on. */
+/* red, systems, on. */
 .kdx-hero .kdx-h1 .kdx-word-4,
 .kdx-hero .kdx-h1 .kdx-word-8 {
   background-image: linear-gradient(180deg, #ffffff 6%, #ff9e9e 100%);
 }
 
-/* Chrome paints a clipped background over the selection highlight, which
-   makes selected words look unselected. Hand the text back its own colour
-   while it is highlighted. */
 .kdx-hero .kdx-h1 .kdx-word::selection {
   -webkit-text-fill-color: #fff;
   color: #fff;
   background: rgba(11, 11, 16, 0.55);
 }
 
-/* =====================================================================
-   REFINEMENT PASS — hierarchy, feedback, and the psychology of the click
-   No new look. Every rule here either sharpens the order in which the
-   eye reads the page, or answers an interaction the instant it happens.
-
-   The principles, and where each one lands:
-     - one primary action per view (Hick): the hero's solid button is now
-       clearly senior to the ghost one, and the nav CTA defers to both;
-     - risk reversal sits at the point of decision: the note under the
-       hero buttons (markup in Home.jsx), styled here;
-     - motor feedback inside 100ms (perceived responsiveness): every
-       button presses down on :active instead of only floating on hover;
-     - serial position: the services list is numbered so five rows read
-       as a set with a start and an end, not a wall;
-     - legibility before style: the hero lede rises to near-full opacity
-       — supporting copy, but still copy.
-   ===================================================================== */
-
-/* ---- 1. one primary action ------------------------------------------
-   The solid button gets the weight; the ghost recedes a step. The eye
-   should settle the "which one?" question before the reader asks it. */
 .kdx-hero-actions .kdx-btn:not(.kdx-btn-ghost) {
   min-height: 58px; padding: 0.9rem 2.1rem;
   box-shadow: 0 1px 2px rgba(11, 11, 16, 0.08), 0 16px 38px -14px rgba(11, 11, 16, 0.5);
 }
 .kdx-btn-ghost { border-color: rgba(255, 255, 255, 0.34); color: rgba(255, 255, 255, 0.92); }
 
-/* the note under the buttons: quiet, but attached to them */
 .kdx-hero-note {
   font-family: var(--display); font-size: 0.88rem; letter-spacing: 0.01em;
   color: rgba(255, 255, 255, 0.72);
   margin: 1.1rem 0 0;
 }
 
-/* ---- 2. the press ----------------------------------------------------
-   Hover states float; nothing acknowledged the actual click. A 1px drop
-   with the shadow pulled in reads as a physical press, and the 70ms
-   duration keeps it inside the window where it feels like cause and
-   effect rather than animation. */
 .kdx-btn:active,
 .kdx-chip:active,
 .kdx-tool:active,
@@ -1948,10 +1714,6 @@ html, body { margin: 0; padding: 0; background: #ffffff; color-scheme: light; }
   transition-duration: 0.07s;
 }
 
-/* ---- 3. the services read as a numbered set --------------------------
-   Five unnumbered rows read as "a lot"; 01–05 reads as "five, and I am
-   on the third". The numeral is small and sits above the name so the
-   name keeps the left edge. */
 .kdx-svc-list { counter-reset: kdxsvc; }
 .kdx-svc-head::before {
   counter-increment: kdxsvc;
@@ -1964,27 +1726,14 @@ html, body { margin: 0; padding: 0; background: #ffffff; color-scheme: light; }
 }
 .kdx-svc:hover .kdx-svc-head::before { color: var(--blue); }
 
-/* ---- 4. legibility ---------------------------------------------------
-   The lede is supporting copy, not decoration; 0.9 opacity on moving
-   gradient was the one place body text dipped toward the floor. */
 .kdx-lede { opacity: 0.95; }
 .kdx-hero-eyebrow { opacity: 0.85; }
 
-/* ---- 5. the FAQ answers the hover ------------------------------------
-   The row already changes colour; now the question also steps 4px right,
-   which is the same gesture the arrows make elsewhere — one vocabulary
-   for "this responds". Open items don't shift: they've answered. */
 .kdx-faq-item summary { transition: color 0.2s ease, padding-left 0.25s var(--ease); }
 .kdx-faq-item:not([open]) summary:hover { padding-left: 4px; }
 
-/* ---- 6. anchor arrivals ----------------------------------------------
-   JS scrolling already offsets for the fixed nav; this covers the other
-   routes in: pasted #fragment URLs and find-in-page jumps. */
 .kdx-sec[id], .kdx-contact[id] { scroll-margin-top: 84px; }
 
-/* ---- 7. the form's exit is never a dead end ---------------------------
-   The disabled look on hover made "Send" feel inert while typing. Give
-   the two form buttons the same seniority split as the hero pair. */
 .kdx-form-actions .kdx-btn-ghost { border-color: rgba(255, 255, 255, 0.3); }
 
 @media (max-width: 620px) {
@@ -1994,20 +1743,6 @@ html, body { margin: 0; padding: 0; background: #ffffff; color-scheme: light; }
   .kdx-faq-item:not([open]) summary:hover { padding-left: 0; }
 }
 
-/* =====================================================================
-   NAV + HERO PASS
-   The nav's links were bare words with a 2px underline — small targets,
-   and the active state was easy to miss. The hero's eyebrow floated in
-   the top-right corner with nothing anchoring it, and the section ended
-   at the buttons with no evidence to hold on to.
-   ===================================================================== */
-
-/* ---- 1. nav links become real targets --------------------------------
-   Padded pills instead of bare words: the hit area grows from the text
-   itself to a 40px-tall capsule (Fitts), hover is a surface change the
-   eye can't miss, and the active section reads as a filled state rather
-   than a hairline. The underline goes — two state languages on one
-   element is one too many. */
 .kdx-nav-links { gap: 0.35rem; }
 .kdx-nav-links a {
   padding: 0.5rem 0.9rem; border-radius: var(--pill);
@@ -2022,25 +1757,15 @@ html, body { margin: 0; padding: 0; background: #ffffff; color-scheme: light; }
   background: rgba(var(--blue-rgb), 0.1); color: var(--blue);
 }
 
-/* the brand is a home link — say so on hover */
-/* the -0.6rem pulls the hover pill's own padding back so the wordmark
-   still lines up with the page gutter; inline-start so it lands on the
-   leading edge in both directions */
+/* the brand is a home link, say so on hover */
 .kdx-brand { border-radius: var(--pill); padding: 0.3rem 0.6rem; margin-inline-start: -0.6rem; }
 .kdx-brand:hover .kdx-brand-mark { transform: rotate(-8deg); }
 .kdx-brand-mark { transition: transform 0.3s var(--ease); }
 
-/* a whisper of ink behind the transparent nav so the links hold up even
-   over the palest corner of the hero gradient */
 .kdx-nav:not(.is-stuck):not(.is-open) {
   background: linear-gradient(180deg, rgba(11, 11, 26, 0.16), rgba(11, 11, 26, 0));
 }
 
-/* ---- 2. the hero badge ------------------------------------------------
-   A bare status label in the top-right corner, where the eyebrow always
-   lived — no capsule, no glass, just the words and a pulsing green dot
-   borrowed from the headline. It reads as an instrument label on the
-   radar rather than a component floating over it. */
 .kdx-hero-badge {
   display: inline-flex; align-items: center; gap: 0.6rem;
   align-self: flex-end;
@@ -2049,8 +1774,6 @@ html, body { margin: 0; padding: 0; background: #ffffff; color-scheme: light; }
   color: rgba(255, 255, 255, 0.85);
   margin: 0;
 }
-/* a 16px radar: outer ring, inner ring, and a sweep arm that takes the
-   same 26s lap as the big one behind it — one instrument, two scales */
 .kdx-hero-badge-radar {
   position: relative; flex: 0 0 auto;
   width: 16px; height: 16px; border-radius: 50%;
@@ -2068,9 +1791,6 @@ html, body { margin: 0; padding: 0; background: #ffffff; color-scheme: light; }
   animation: kdx-spin 26s linear infinite;
 }
 
-/* ---- 3. small screens --------------------------------------------------
-   The badge joins the copy on the left once the layout narrows — a
-   right-aligned label with nothing under it reads as a stray. */
 @media (max-width: 620px) {
   .kdx-hero-badge { align-self: flex-start; font-size: 0.66rem; }
 }
@@ -2080,50 +1800,6 @@ html, body { margin: 0; padding: 0; background: #ffffff; color-scheme: light; }
   .kdx-brand:hover .kdx-brand-mark { transform: none; }
 }
 
-/* with the badge back in the corner, the rule resumes anchoring the h1 */
-
-/* =====================================================================
-   BILINGUAL — Sorani Kurdish and English
-   Two things change with the language: the typefaces and the direction.
-   Everything else — colour, spacing, motion — is shared.
-   ===================================================================== */
-
-/* ---- 1. the Kurdish typefaces ----------------------------------------
-   Figtree and Source Serif have no Arabic script at all, so Sorani needs
-   its own pair — and it needs the same two voices, or the Kurdish site
-   reads flatter than the English one.
-
-     Noto Kufi Arabic  ↔ Figtree      the geometric voice: headlines,
-                                     buttons, labels.
-     Noto Naskh Arabic ↔ Source Serif the reading voice: body copy. A
-                                     proper naskh, which is what long
-                                     Kurdish text actually wants.
-
-   Both are listed after the Latin faces in every stack rather than
-   swapped in, so a Latin brand name inside Kurdish copy (KDXJobs, FIB,
-   ZainCash) still renders in Figtree and does not jump script mid-line.
-
-   Why not Vazirmatn, which this used to be: it is a Persian typeface.
-   It covers every Sorani letter — ڕ ڵ ۆ ێ ژ چ پ گ ڤ are all real glyphs,
-   checked against its cmap, so nothing was broken — but its drawing is
-   Tehran, not Erbil, and next to Figtree it reads softer and rounder
-   than this brand does. Noto Kufi is the flatter, more constructed face
-   of the two and holds up at headline weight.
-
-   The face a Kurdish designer would actually reach for is Rabar, Ali-K
-   or NRT. None is on Google Fonts and none publishes web-embedding
-   terms, so none is shipped here — see the KURDISH_DISPLAY hook below
-   for how to drop one in once its licence is settled. */
-/* the two Kurdish faces are requested in the @import at the top of
-   this file — a second @import here would be ignored by the browser */
-
-/* ---- self-hosted Kurdish face (optional) ------------------------------
-   Nothing loads unless the file exists; an @font-face whose src 404s is
-   skipped and the next family in the stack wins, so this is inert until
-   you put a file there. To use Rabar / Ali-K / NRT / Speda:
-     1. confirm the licence covers web embedding on a commercial site,
-     2. convert to woff2 and save as public/fonts/kurdish-display.woff2,
-     3. nothing else — 'KDX Kurdish Display' already leads the ckb stack. */
 @font-face {
   font-family: 'KDX Kurdish Display';
   src: url('/fonts/kurdish-display.woff2') format('woff2');
@@ -2136,66 +1812,52 @@ html, body { margin: 0; padding: 0; background: #ffffff; color-scheme: light; }
   --serif: 'Source Serif 4', 'Noto Naskh Arabic', Georgia, 'Times New Roman', serif;
 }
 
-/* Sorani leads with its own faces. The line-height goes up because
-   Arabic script carries more above and below the baseline than Latin —
-   at 1.65 the descenders of one line touch the ascenders of the next. */
-:root[lang="ckb"] .kdx {
+:root:is([lang="ckb"], [lang="ar"]) .kdx {
   --display: 'KDX Kurdish Display', 'Noto Kufi Arabic', 'Figtree', 'Segoe UI', Tahoma, sans-serif;
   --serif: 'Noto Naskh Arabic', 'Noto Kufi Arabic', Georgia, serif;
   line-height: 1.95;
   letter-spacing: 0;
 }
-/* uppercase and wide tracking are Latin typographic devices — Arabic
-   script has no case, and letter-spacing breaks the joins between
-   letters outright. Both come off for the micro-labels. */
-:root[lang="ckb"] .kdx-eyebrow,
-:root[lang="ckb"] .kdx-svc-role,
-:root[lang="ckb"] .kdx-brand-word,
-:root[lang="ckb"] .kdx-nav-links a,
-:root[lang="ckb"] .kdx-nav-cta,
-:root[lang="ckb"] .kdx-stats dd,
-:root[lang="ckb"] .kdx-coverage-stats dd,
-:root[lang="ckb"] .kdx-contact-rows dt,
-:root[lang="ckb"] .kdx-foot-links a,
-:root[lang="ckb"] .kdx-foot-meta,
-:root[lang="ckb"] .kdx-timeline-future,
-:root[lang="ckb"] .kdx-region-flag,
-:root[lang="ckb"] .kdx-modal-label,
-:root[lang="ckb"] .kdx-card-top,
-:root[lang="ckb"] .kdx-svc-cta,
-:root[lang="ckb"] .kdx-coverage-cta,
-:root[lang="ckb"] .kdx-about-band-cta,
-:root[lang="ckb"] .kdx-btn,
-:root[lang="ckb"] .kdx-tool,
-:root[lang="ckb"] .kdx-copy,
-:root[lang="ckb"] .kdx-top,
-:root[lang="ckb"] .kdx-chip,
-:root[lang="ckb"] .kdx-tags li,
-:root[lang="ckb"] .kdx-field label,
-:root[lang="ckb"] .kdx-label,
-:root[lang="ckb"] .kdx-hero-badge {
+:root:is([lang="ckb"], [lang="ar"]) .kdx-eyebrow,
+:root:is([lang="ckb"], [lang="ar"]) .kdx-svc-role,
+:root:is([lang="ckb"], [lang="ar"]) .kdx-brand-word,
+:root:is([lang="ckb"], [lang="ar"]) .kdx-nav-links a,
+:root:is([lang="ckb"], [lang="ar"]) .kdx-nav-cta,
+:root:is([lang="ckb"], [lang="ar"]) .kdx-stats dd,
+:root:is([lang="ckb"], [lang="ar"]) .kdx-coverage-stats dd,
+:root:is([lang="ckb"], [lang="ar"]) .kdx-contact-rows dt,
+:root:is([lang="ckb"], [lang="ar"]) .kdx-foot-links a,
+:root:is([lang="ckb"], [lang="ar"]) .kdx-foot-meta,
+:root:is([lang="ckb"], [lang="ar"]) .kdx-timeline-future,
+:root:is([lang="ckb"], [lang="ar"]) .kdx-region-flag,
+:root:is([lang="ckb"], [lang="ar"]) .kdx-modal-label,
+:root:is([lang="ckb"], [lang="ar"]) .kdx-card-top,
+:root:is([lang="ckb"], [lang="ar"]) .kdx-svc-cta,
+:root:is([lang="ckb"], [lang="ar"]) .kdx-coverage-cta,
+:root:is([lang="ckb"], [lang="ar"]) .kdx-about-band-cta,
+:root:is([lang="ckb"], [lang="ar"]) .kdx-btn,
+:root:is([lang="ckb"], [lang="ar"]) .kdx-tool,
+:root:is([lang="ckb"], [lang="ar"]) .kdx-copy,
+:root:is([lang="ckb"], [lang="ar"]) .kdx-top,
+:root:is([lang="ckb"], [lang="ar"]) .kdx-chip,
+:root:is([lang="ckb"], [lang="ar"]) .kdx-tags li,
+:root:is([lang="ckb"], [lang="ar"]) .kdx-field label,
+:root:is([lang="ckb"], [lang="ar"]) .kdx-label,
+:root:is([lang="ckb"], [lang="ar"]) .kdx-hero-badge {
   text-transform: none;
   letter-spacing: 0;
 }
-/* the headline sits tighter in Latin than Arabic wants */
-:root[lang="ckb"] .kdx-h1,
-:root[lang="ckb"] .kdx-h2,
-:root[lang="ckb"] .kdx-page-title,
-:root[lang="ckb"] .kdx-product-name,
-:root[lang="ckb"] .kdx-mv-statement,
-:root[lang="ckb"] .kdx-mission-text {
+:root:is([lang="ckb"], [lang="ar"]) .kdx-h1,
+:root:is([lang="ckb"], [lang="ar"]) .kdx-h2,
+:root:is([lang="ckb"], [lang="ar"]) .kdx-page-title,
+:root:is([lang="ckb"], [lang="ar"]) .kdx-product-name,
+:root:is([lang="ckb"], [lang="ar"]) .kdx-mv-statement,
+:root:is([lang="ckb"], [lang="ar"]) .kdx-mission-text {
   letter-spacing: 0;
   line-height: 1.35;
 }
-:root[lang="ckb"] .kdx-h1 { line-height: 1.3; font-size: clamp(2.1rem, 5vw, 4rem); }
-/* the service numerals and stage numbers are Arabic-Indic in the Kurdish
-   pack, which sits differently on the line */
-:root[lang="ckb"] .kdx-svc-head::before { letter-spacing: 0.06em; }
-
-/* ---- 2. right to left --------------------------------------------------
-   `dir="rtl"` on <html> flips the flow for free wherever the layout was
-   written with logical properties. These are the places it was not —
-   each one is a physical left/right that has to be mirrored by hand. */
+:root:is([lang="ckb"], [lang="ar"]) .kdx-h1 { line-height: 1.3; font-size: clamp(2.1rem, 5vw, 4rem); }
+:root:is([lang="ckb"], [lang="ar"]) .kdx-svc-head::before { letter-spacing: 0.06em; }
 
 /* the section rule and card edges */
 [dir="rtl"] .kdx-consult::before,
@@ -2230,14 +1892,12 @@ html, body { margin: 0; padding: 0; background: #ffffff; color-scheme: light; }
   transform: scaleX(-1) translateX(4px);
 }
 [dir="rtl"] .kdx-btn:hover [aria-hidden] { transform: scaleX(-1) translateX(2px); }
-/* except the ones that mean "up" or "away", which have no handedness */
 [dir="rtl"] .kdx-top [aria-hidden],
 [dir="rtl"] .kdx-tool-top [aria-hidden],
 [dir="rtl"] .kdx-top:hover [aria-hidden] {
   transform: none;
 }
 
-/* the growing underline on links and the section hairline */
 [dir="rtl"] .kdx-nav-links a::after,
 [dir="rtl"] .kdx-svc::after { left: auto; right: 0; }
 [dir="rtl"] .kdx-svc-cta { background-position: 100% 100%; }
@@ -2248,14 +1908,8 @@ html, body { margin: 0; padding: 0; background: #ffffff; color-scheme: light; }
   left: auto;
   right: calc(-1 * clamp(1.5rem, 3vw, 2.5rem) - 5px);
 }
-/* the RTL brand nudge that used to live here is gone: it existed only to
-   mirror a physical margin-left, and it took the auto margin with it.
-   Both are logical properties now, so they mirror on their own. */
 [dir="rtl"] .kdx-skip { left: auto; right: 1rem; }
 
-/* the hero's gradient mesh is lit from the top right; in RTL the copy
-   moves there, so the whole field flips to keep the text on the dark
-   corner rather than the bright one */
 [dir="rtl"] .kdx-hero,
 [dir="rtl"] .kdx-page-head,
 [dir="rtl"] .kdx-product,
@@ -2268,33 +1922,25 @@ html, body { margin: 0; padding: 0; background: #ffffff; color-scheme: light; }
 [dir="rtl"] .kdx-hero-radar { right: auto; left: -18%; }
 [dir="rtl"] .kdx-page-head-radar,
 [dir="rtl"] .kdx-product-radar,
-[dir="rtl"] .kdx-contact-radar { right: auto; left: -12%; }
-
+[dir="rtl"] 
 /* form fields and the map panel */
 [dir="rtl"] .kdx-search-icon { left: auto; right: 0.95rem; }
 [dir="rtl"] .kdx-search-clear { right: auto; left: 0.5rem; }
 [dir="rtl"] .kdx-search input { padding: 0 2.6rem; }
 [dir="rtl"] .kdx-modal-close { right: auto; left: 0.9rem; }
 
-/* the hero's word gradients run 180deg (top to bottom), so they need no
-   mirroring — but the note and lede do lose their Latin tracking */
-:root[lang="ckb"] .kdx-lede,
-:root[lang="ckb"] .kdx-hero-note,
-:root[lang="ckb"] .kdx-page-lede { letter-spacing: 0; }
+:root:is([lang="ckb"], [lang="ar"]) .kdx-lede,
+:root:is([lang="ckb"], [lang="ar"]) .kdx-hero-note,
+:root:is([lang="ckb"], [lang="ar"]) .kdx-page-lede { letter-spacing: 0; }
 
 @media (max-width: 620px) {
   [dir="rtl"] .kdx-timeline::before { left: auto; right: 3.6rem; }
   [dir="rtl"] .kdx-timeline-copy::before { left: auto; right: -1.9rem; }
 }
 
-/* ---- 3. the language switch --------------------------------------------
-   A segmented control, not a dropdown: with two languages a dropdown
-   hides half the choice and gives no clue what the alternative is. The
-   pill slides between the halves, which is also the affordance that
-   says "this is a switch" rather than "these are two links". */
 .kdx-lang {
   position: relative;
-  display: inline-flex; align-items: center; flex: 0 0 auto;
+  display: inline-grid; grid-auto-flow: column; grid-auto-columns: 1fr; align-items: center; flex: 0 0 auto;
   padding: 3px; border-radius: var(--pill);
   border: 1px solid rgba(255, 255, 255, 0.24);
   background: rgba(255, 255, 255, 0.08);
@@ -2303,15 +1949,15 @@ html, body { margin: 0; padding: 0; background: #ffffff; color-scheme: light; }
 }
 .kdx-lang-pill {
   position: absolute; top: 3px; bottom: 3px; left: 3px;
-  width: calc(50% - 3px);
+  width: calc((100% - 6px) / var(--n, 2));
   border-radius: var(--pill);
   background: #fff;
   box-shadow: 0 1px 2px rgba(11, 11, 16, 0.12), 0 4px 12px -4px rgba(11, 11, 16, 0.4);
   transition: transform 0.32s var(--ease), background 0.32s var(--ease);
 }
-.kdx-lang-pill[data-index="1"] { transform: translateX(100%); }
+.kdx-lang-pill { transform: translateX(calc(var(--i, 0) * 100%)); }
 [dir="rtl"] .kdx-lang-pill { left: auto; right: 3px; }
-[dir="rtl"] .kdx-lang-pill[data-index="1"] { transform: translateX(-100%); }
+[dir="rtl"] .kdx-lang-pill { transform: translateX(calc(var(--i, 0) * -100%)); }
 
 .kdx-lang-option {
   position: relative; z-index: 1;
@@ -2325,9 +1971,7 @@ html, body { margin: 0; padding: 0; background: #ffffff; color-scheme: light; }
 }
 .kdx-lang-option:hover { color: #fff; }
 .kdx-lang-option.is-on { color: var(--blue); }
-/* the Kurdish label is set in its own face at its own size — matching
-   the Latin cap height, not the Latin font-size */
-.kdx-lang-option[lang="ckb"] {
+.kdx-lang-option[lang="ckb"], .kdx-lang-option[lang="ar"] {
   font-family: 'KDX Kurdish Display', 'Noto Kufi Arabic', var(--display);
   font-size: 0.86rem; letter-spacing: 0;
 }
@@ -2346,41 +1990,23 @@ html, body { margin: 0; padding: 0; background: #ffffff; color-scheme: light; }
 .kdx-nav.is-stuck .kdx-lang-option.is-on { color: #fff; }
 
 .kdx-nav-lang { margin-inline-start: 0.6rem; }
-/* in the drawer it sits above the contact lines, at full comfort size */
 .kdx-drawer-lang { align-self: flex-start; margin-bottom: 1rem; }
 .kdx-drawer-lang .kdx-lang-option { min-height: 40px; min-width: 3.6rem; font-size: 0.86rem; }
 
 @media (max-width: 900px) {
-  /* the nav collapses to the burger here, so the switch goes with it —
-     it is already in the drawer */
   .kdx-nav-lang { display: none; }
 }
 
-/* an LTR island inside RTL copy still needs its own alignment, or the
-   number sits flush to the wrong edge of its cell */
 [dir="rtl"] .kdx-contact-rows dd[dir="ltr"] { justify-content: flex-end; text-align: right; }
 
-/* =====================================================================
-   SPACING PASS
-   Sections were padded at clamp(5.5rem, 11vw, 10rem) top AND bottom, so
-   every seam between two sections stacked ~320px of empty page at
-   desktop width — enough that a heading could scroll fully out of view
-   before the next one arrived. Generous had tipped into disconnected.
-
-   The rhythm is roughly 40% tighter throughout, and it is proportional:
-   the gaps between sections shrink most, the gaps inside a section
-   shrink less, so the page still groups correctly — a section still
-   reads as one thing, it just sits closer to its neighbour.
-   ===================================================================== */
-
-/* ---- section to section ---- */
+/* section to section */
 .kdx-sec { padding: clamp(3.25rem, 6.5vw, 6rem) 0; }
 .kdx-about-band { padding-block: clamp(3rem, 5.5vw, 4.75rem); }
 .kdx-contact { padding: clamp(4rem, 8vw, 6.25rem) 0 2.5rem; }
 .kdx-page-head { padding: clamp(7.5rem, 15vh, 10rem) 0 clamp(3rem, 5.5vw, 4.5rem); }
 .kdx-page-head + .kdx-sec { padding-top: clamp(2.5rem, 4.5vw, 3.75rem); }
 
-/* ---- the block under each section head ---- */
+/* the block under each section head */
 .kdx-svc-list { margin-top: 2.4rem; }
 .kdx-stages { margin-top: 2.4rem; }
 .kdx-faq-list { margin-top: 2.4rem; }
@@ -2389,7 +2015,7 @@ html, body { margin: 0; padding: 0; background: #ffffff; color-scheme: light; }
 .kdx-disciplines { margin-top: 2.2rem; }
 .kdx-timeline { margin-top: 2rem; }
 
-/* ---- the trailing block in a section ---- */
+/* the trailing block in a section */
 .kdx-consult { margin-top: 2.75rem; }
 .kdx-approach-cta { margin-top: clamp(2.5rem, 5vw, 3.75rem); padding-top: 2rem; }
 .kdx-faq-more { margin-top: 1.8rem; }
@@ -2404,58 +2030,23 @@ html, body { margin: 0; padding: 0; background: #ffffff; color-scheme: light; }
 .kdx-coverage-stats { margin-top: 1.6rem; padding-top: 1.4rem; }
 .kdx-contact-foot { margin-top: clamp(2.75rem, 6vw, 4.25rem); }
 
-/* the label that reintroduces a sub-block on the About page — this was
-   the single largest internal gap on the site at 6rem */
 .kdx-why-label { margin-top: clamp(2.75rem, 5.5vw, 4rem); }
 
-/* the services section head sat far from its own list */
 .kdx-sec-head .kdx-sec-lede { margin-bottom: 0; }
 .kdx-contact-h { margin-bottom: 2.4rem; }
 
 @media (max-width: 620px) {
-  /* on a narrow screen the sections are already stacked tall by their
-     own content, so the seam can be tighter still */
   .kdx-sec { padding: clamp(2.75rem, 9vw, 3.5rem) 0; }
   .kdx-about-band { padding-block: clamp(2.5rem, 8vw, 3.25rem); }
 }
 
-
-/* =====================================================================
-   THE HEADLINE CASCADE
-   The one piece of motion on this site that is there to be noticed.
-   Everything else settles; this one performs — it is the first three
-   seconds a prospective client spends on the page.
-
-   The words were already split into their own spans so each could take
-   its own gradient. That split is reused here as the timing track: each
-   word carries --w, its position across the whole headline, and enters
-   on its own delay. The effect is a line assembling itself rather than
-   a block fading in.
-
-   Blur is what makes it read as expensive rather than as a slide. A
-   word arrives out of focus and resolves as it lands, which is the same
-   cue a camera pull gives. Opacity and transform are compositor
-   properties and cost nothing; blur is the one line here that does ask
-   for GPU work, on eight elements, once, on entry. That is the trade —
-   if it ever shows on a low-end phone, drop the filter and keep the
-   rest, and the cascade still reads.
-   ===================================================================== */
-
 .kdx-hero .kdx-h1 .kdx-word {
-  /* inline-block is the price of transform: transforms do not apply to
-     non-replaced inline boxes. Home.jsx keeps the inter-word space as a
-     sibling text node so this does not cost the line its wrap points. */
   display: inline-block;
   opacity: 0;
   transform: translateY(0.42em) scale(0.965);
   filter: blur(12px);
 }
 
-/* --w * 60ms, so an eight-word headline is fully in at about 1.1s: long
-   enough to be read as deliberate, short enough that nobody waits. The
-   transform runs slightly longer than the fade so the word is still
-   easing to a stop after it is fully opaque, which is what stops the
-   cascade feeling mechanical. */
 .kdx.is-loaded .kdx-hero .kdx-h1 .kdx-word {
   opacity: 1;
   transform: none;
@@ -2466,8 +2057,6 @@ html, body { margin: 0; padding: 0; background: #ffffff; color-scheme: light; }
     filter 0.75s var(--ease) calc(0.2s + var(--w, 0) * 0.06s);
 }
 
-/* The rule above the headline draws itself in, then the words follow it.
-   It reads as the page ruling a line and writing on it. */
 .kdx-hero .kdx-rule {
   transform-origin: left center;
 }
@@ -2483,11 +2072,6 @@ html, body { margin: 0; padding: 0; background: #ffffff; color-scheme: light; }
   transition: transform 0.7s var(--ease) 0.1s;
 }
 
-/* Motion this size has to be genuinely optional. The global
-   prefers-reduced-motion block kills every animation and transition,
-   which would leave these words stranded at opacity 0 — the initial
-   state is set outside a transition, so removing the transition does
-   not remove it. Put them back. */
 @media (prefers-reduced-motion: reduce) {
   .kdx-hero .kdx-h1 .kdx-word {
     opacity: 1;
@@ -2498,14 +2082,6 @@ html, body { margin: 0; padding: 0; background: #ffffff; color-scheme: light; }
     transform: none;
   }
 }
-
-/* =====================================================================
-   THE OPS ROOM GAME  (/game)
-   Reuses the site's tokens throughout — no new colours, no new easing.
-   The one new idea is --urgency: a 0..1 the component sets per document
-   from how long it has waited, which the card reads for both its border
-   and its progress bar. One number, two cues, no extra state.
-   ===================================================================== */
 
 .kdx-game-sec { padding-top: 0; }
 
@@ -2520,7 +2096,7 @@ html, body { margin: 0; padding: 0; background: #ffffff; color-scheme: light; }
 .kdx-game.is-running { border-color: var(--line-strong); }
 .kdx-game.is-auto { border-color: rgba(var(--blue-rgb), 0.4); box-shadow: var(--shadow-blue); }
 
-/* ---- hud ---- */
+/* hud */
 .kdx-game-hud {
   display: flex; flex-wrap: wrap; gap: 1rem;
   align-items: baseline; justify-content: space-between;
@@ -2543,7 +2119,7 @@ html, body { margin: 0; padding: 0; background: #ffffff; color-scheme: light; }
 .kdx-game-clock-label { color: var(--ink-3); margin-inline-end: 0.5rem; }
 .kdx-game-clock strong { font-variant-numeric: tabular-nums; }
 
-/* ---- live stats ---- */
+/* live stats */
 .kdx-game-stats {
   display: grid; grid-template-columns: repeat(4, 1fr);
   gap: 0.75rem; margin: 1.2rem 0 0; padding: 0;
@@ -2566,7 +2142,7 @@ html, body { margin: 0; padding: 0; background: #ffffff; color-scheme: light; }
 .kdx-game-stat-warn { color: #b26a00; }
 .kdx-game-stat-bad { color: #c0392b; }
 
-/* ---- throughput chart ---- */
+/* throughput chart */
 .kdx-game-chart { margin: 1.1rem 0 0; }
 .kdx-game-chart figcaption {
   font-family: var(--display); font-size: 0.68rem; font-weight: 600;
@@ -2582,11 +2158,10 @@ html, body { margin: 0; padding: 0; background: #ffffff; color-scheme: light; }
 .kdx-game-chart-line {
   fill: none; stroke: var(--blue); stroke-width: 2;
   stroke-linejoin: round; stroke-linecap: round;
-  /* preserveAspectRatio=none would smear the stroke without this */
   vector-effect: non-scaling-stroke;
 }
 
-/* ---- panels (intro, handoff) ---- */
+/* panels (intro, handoff) */
 .kdx-game-panel { padding-top: 1.3rem; }
 .kdx-game-panel-title {
   font-family: var(--display); font-weight: 800;
@@ -2600,7 +2175,7 @@ html, body { margin: 0; padding: 0; background: #ffffff; color-scheme: light; }
   margin-bottom: 1.2rem;
 }
 
-/* ---- the queue ---- */
+/* the queue */
 .kdx-game-queue-label {
   display: flex; justify-content: space-between; align-items: baseline; gap: 1rem;
   font-family: var(--display); font-size: 0.68rem; font-weight: 600;
@@ -2646,7 +2221,7 @@ html, body { margin: 0; padding: 0; background: #ffffff; color-scheme: light; }
   font-size: 0.82rem; color: var(--ink-3);
 }
 
-/* ---- results ---- */
+/* results */
 .kdx-game-result { padding-top: 1.4rem; }
 .kdx-game-result-lead { color: var(--ink-2); max-width: 52ch; }
 .kdx-game-table {
@@ -2678,35 +2253,342 @@ html, body { margin: 0; padding: 0; background: #ffffff; color-scheme: light; }
   .kdx-game-queue { grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); }
 }
 
-/* Sorani sets the uppercase micro-labels back to normal, as everywhere else */
-:root[lang="ckb"] .kdx-game-stats dt,
-:root[lang="ckb"] .kdx-game-chart figcaption,
-:root[lang="ckb"] .kdx-game-queue-label,
-:root[lang="ckb"] .kdx-game-table thead th {
+:root:is([lang="ckb"], [lang="ar"]) .kdx-game-stats dt,
+:root:is([lang="ckb"], [lang="ar"]) .kdx-game-chart figcaption,
+:root:is([lang="ckb"], [lang="ar"]) .kdx-game-queue-label,
+:root:is([lang="ckb"], [lang="ar"]) .kdx-game-table thead th {
   text-transform: none;
   letter-spacing: 0;
 }
 
 @media (prefers-reduced-motion: reduce) {
-  /* the global block already stops the pulse and the card entrance; the
-     dot would then sit at whatever opacity it stopped at, so pin it */
   .kdx-game-dot.is-live { opacity: 1; transform: none; }
 }
 
-/* ---- the drawer in Sorani -------------------------------------------
-   Three things go wrong here that do not go wrong in English:
-
-   1. The words are long. "خزمەتگوزارییەکان" is sixteen characters where
-      "Services" is eight, so the same font-size overflows the row.
-   2. The Sorani body line-height is 1.95, which is right for paragraphs
-      and far too loose for display type stacked seven deep — it was
-      roughly doubling the height of the list on its own.
-   3. letter-spacing: -0.03em is a Latin device. Arabic script joins its
-      letters, and negative tracking pulls those joins apart. It has to
-      go to zero here, the same way it does for every other micro-label
-      on the site. */
-:root[lang="ckb"] .kdx-drawer-links a {
+:root:is([lang="ckb"], [lang="ar"]) .kdx-drawer-links a {
   font-size: clamp(1.3rem, 5.2vw, 1.85rem);
   letter-spacing: 0;
   line-height: 1.4;
+}
+
+.kdx-gov-shape:not(.is-featured) { fill-opacity: 0.16; stroke-width: 1; }
+.kdx-gov-shape:not(.is-featured).is-active { fill-opacity: 0.4; }
+.kdx-gov-shape:not(.is-featured).is-selected { fill-opacity: 0.55; stroke-width: 1.8; }
+.kdx-gov-label.is-minor {
+  font-size: 15px; font-weight: 600; letter-spacing: 0.01em; text-transform: none;
+  stroke-width: 3px;
+}
+.kdx-gov-label.is-minor.is-active { fill: var(--blue); }
+
+/* services as padded rows */
+.kdx-svc-list { border-top: 0; display: grid; gap: 1.1rem; margin-top: 2.8rem; }
+.kdx-svc {
+  align-items: start;
+  gap: clamp(1.2rem, 4vw, 4rem);
+  padding: clamp(1.75rem, 3.4vw, 2.75rem) clamp(1.5rem, 3.6vw, 3rem);
+  background: var(--grad-card);
+  border: 1px solid rgba(var(--blue-rgb), 0.1);
+  border-radius: var(--r-lg);
+  box-shadow: var(--glow-sm);
+  transition: transform 0.35s var(--ease), box-shadow 0.35s var(--ease), border-color 0.35s var(--ease);
+}
+.kdx-svc:hover {
+  background: var(--grad-card);
+  transform: translateY(-3px);
+  border-color: rgba(var(--blue-rgb), 0.28);
+  box-shadow: var(--glow-md);
+}
+.kdx-svc::after { display: none; }
+.kdx-svc-head::before { margin-bottom: 1rem; }
+.kdx-svc-role { margin-top: 0.9rem; }
+.kdx-svc-body p { line-height: 1.7; margin-bottom: 1.5rem; }
+.kdx-svc-body .kdx-tags { gap: 0.5rem; }
+.kdx-svc-cta { margin-top: 1.8rem; }
+[dir="rtl"] .kdx-svc:hover { background: var(--grad-card); }
+@media (max-width: 900px) {
+  .kdx-svc { padding: 1.6rem 1.4rem; gap: 1rem; }
+  .kdx-svc-list { gap: 0.9rem; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .kdx-svc:hover { transform: none; }
+}
+
+/* mission card on the home page */
+.kdx-about-band-mission {
+  position: relative; overflow: hidden; isolation: isolate;
+  padding: clamp(5.5rem, 8vw, 6.5rem) clamp(2rem, 4vw, 3.2rem) clamp(2rem, 4vw, 3.2rem);
+  min-height: 19rem;
+  display: flex; flex-direction: column; justify-content: flex-end;
+  border: 0; border-radius: var(--r-lg); color: #fff;
+  background-color: #2f3ad2;
+  background-image:
+    radial-gradient(70% 60% at 85% 0%, rgba(146, 155, 255, 0.55), rgba(146, 155, 255, 0) 65%),
+    linear-gradient(155deg, #4453ff 0%, #3641da 60%, #2b34c4 100%);
+  box-shadow: var(--glow-lg);
+}
+.kdx-about-band-mission::before {
+  content: ""; position: absolute; z-index: -1;
+  inset: auto -30% -70% auto; width: 110%; aspect-ratio: 1; border-radius: 50%;
+  background: repeating-radial-gradient(circle, rgba(255, 255, 255, 0.16) 0 1px, transparent 1px 46px);
+}
+.kdx-about-band-mission::after {
+  content: "\201C"; position: absolute; z-index: -1; top: 0.6rem; inset-inline-start: 1.6rem;
+  font-family: var(--display); font-weight: 900; font-size: 7.5rem; line-height: 1;
+  color: rgba(255, 255, 255, 0.22);
+}
+.kdx-about-band-mission .kdx-eyebrow { color: rgba(255, 255, 255, 0.78); opacity: 1; margin-bottom: 1rem; }
+.kdx-about-band-mission .kdx-mission-text {
+  color: #fff; font-weight: 800; letter-spacing: -0.03em;
+  font-size: clamp(1.5rem, 2.6vw, 2.15rem); line-height: 1.16; max-width: 16ch;
+}
+[dir="rtl"] .kdx-about-band-mission::before { inset: auto auto -70% -30%; }
+[dir="rtl"] .kdx-about-band-mission::after { content: "\201D"; }
+:root:is([lang="ckb"], [lang="ar"]) .kdx-about-band-mission .kdx-mission-text { letter-spacing: 0; line-height: 1.4; }
+.kdx-btn:disabled { opacity: 0.6; cursor: progress; transform: none; box-shadow: none; }
+
+/* the lead service, AI, gets the brand field */
+.kdx-svc-list > .kdx-svc:first-child {
+  background-color: #2f3ad2;
+  background-image:
+    radial-gradient(70% 90% at 92% 0%, rgba(146, 155, 255, 0.5), rgba(146, 155, 255, 0) 62%),
+    linear-gradient(155deg, #4453ff 0%, #3641da 62%, #2b34c4 100%);
+  border-color: transparent; color: #fff; box-shadow: var(--glow-lg);
+}
+.kdx-svc-list > .kdx-svc:first-child:hover { background-color: #2f3ad2; border-color: transparent; }
+.kdx-svc-list > .kdx-svc:first-child .kdx-svc-name,
+.kdx-svc-list > .kdx-svc:first-child:hover .kdx-svc-name { color: #fff; }
+.kdx-svc-list > .kdx-svc:first-child .kdx-svc-role { color: rgba(255, 255, 255, 0.78); }
+.kdx-svc-list > .kdx-svc:first-child .kdx-svc-head::before,
+.kdx-svc-list > .kdx-svc:first-child:hover .kdx-svc-head::before { color: rgba(255, 255, 255, 0.7); }
+.kdx-svc-list > .kdx-svc:first-child .kdx-svc-body p { color: rgba(255, 255, 255, 0.92); font-size: 1.06rem; }
+.kdx-svc-list > .kdx-svc:first-child .kdx-tags li {
+  background: rgba(255, 255, 255, 0.16); border-color: rgba(255, 255, 255, 0.22); color: #fff;
+}
+.kdx-svc-list > .kdx-svc:first-child .kdx-svc-cta {
+  color: #fff; background-image: linear-gradient(#fff, #fff);
+}
+
+/* hero headline switcher */
+.kdx-slides { display: grid; }
+.kdx-slide {
+  grid-area: 1 / 1;
+  opacity: 0; visibility: hidden;
+  transition: opacity 0.5s var(--ease), visibility 0s linear 0.5s;
+}
+.kdx-slide.is-active {
+  opacity: 1; visibility: visible;
+  transition: opacity 0.5s var(--ease) 0.15s, visibility 0s;
+}
+.kdx.is-loaded .kdx-hero .kdx-slide:not(.is-active) .kdx-h1 .kdx-word {
+  opacity: 0; transform: translateY(0.42em) scale(0.965); filter: blur(12px);
+  transition: opacity 0.35s var(--ease), transform 0.35s var(--ease), filter 0.35s var(--ease);
+}
+.kdx-slide-dots { display: flex; gap: 0.5rem; margin-top: 1.6rem; }
+.kdx-slide-dots button {
+  position: relative; width: 44px; height: 24px; padding: 0;
+}
+.kdx-slide-dots button::before {
+  content: ""; position: absolute; inset: 50% 0 auto 0; height: 3px; margin-top: -1.5px;
+  border-radius: 2px; background: rgba(255, 255, 255, 0.3);
+  transition: background 0.3s var(--ease);
+}
+.kdx-slide-dots button::after {
+  content: ""; position: absolute; inset: 50% 0 auto 0; height: 3px; margin-top: -1.5px;
+  border-radius: 2px; background: #fff; transform: scaleX(0); transform-origin: 0 50%;
+}
+.kdx-slide-dots button.is-on::after { transform: scaleX(1); transition: transform 0.5s var(--ease); }
+@media (prefers-reduced-motion: reduce) {
+  .kdx-slide, .kdx-slide.is-active { transition: none; }
+}
+.kdx-slide .kdx-h1 { font-family: var(--display); margin: 0; text-wrap: balance; }
+
+/* AI vs by hand comparison */
+.kdx-compare {
+  position: relative; overflow: hidden; color: #fff;
+  background-color: #07070c;
+  background-image:
+    radial-gradient(60% 55% at 12% 0%, rgba(var(--blue-rgb), 0.28), rgba(var(--blue-rgb), 0) 62%),
+    radial-gradient(55% 50% at 100% 100%, rgba(255, 158, 158, 0.10), rgba(255, 158, 158, 0) 62%),
+    linear-gradient(180deg, #101019 0%, #07070c 100%);
+}
+.kdx-compare .kdx-eyebrow { color: #aab2ff; opacity: 1; }
+.kdx-compare .kdx-sec-lede { color: rgba(255, 255, 255, 0.78); }
+.kdx-cmp {
+  display: grid; grid-template-columns: minmax(0, 1.65fr) minmax(0, 0.85fr);
+  gap: clamp(1.25rem, 3vw, 2.25rem); margin-top: clamp(2.2rem, 4vw, 3.2rem);
+  align-items: stretch;
+}
+.kdx-cmp-chart {
+  margin: 0; padding: clamp(1rem, 2.4vw, 1.75rem);
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.1); border-radius: var(--r-lg);
+}
+.kdx-cmp-legend { display: flex; gap: 1.4rem; margin: 0 0 0.6rem 0.4rem; font-family: var(--display); font-size: 0.9rem; font-weight: 600; }
+.kdx-cmp-legend span { display: inline-flex; align-items: center; gap: 0.55rem; }
+.kdx-cmp-legend span::before { content: ""; width: 22px; height: 4px; border-radius: 2px; background: currentColor; }
+.kdx-cmp-legend .is-manual { color: #ff9e9e; }
+.kdx-cmp-legend .is-auto { color: #9ba5ff; }
+.kdx-cmp svg { display: block; width: 100%; height: auto; overflow: visible; }
+.kdx-cmp-grid { stroke: rgba(255, 255, 255, 0.09); stroke-width: 1; }
+.kdx-cmp-tick { fill: rgba(255, 255, 255, 0.55); font-family: var(--display); font-size: 13px; }
+.kdx-cmp-axis { fill: rgba(255, 255, 255, 0.6); font-family: var(--display); font-size: 13px; letter-spacing: 0.04em; }
+.kdx-cmp-line { fill: none; stroke-width: 3.5; stroke-linecap: round; stroke-linejoin: round; stroke-dasharray: 1; stroke-dashoffset: 1; }
+.kdx-cmp-line.is-manual { stroke: #ff9e9e; filter: drop-shadow(0 0 8px rgba(255, 158, 158, 0.45)); }
+.kdx-cmp-line.is-auto { stroke: #9ba5ff; filter: drop-shadow(0 0 10px rgba(var(--blue-rgb), 0.9)); }
+.kdx-cmp-area { opacity: 0; }
+.kdx-cmp-ends circle { opacity: 0; }
+.kdx-cmp-ends .is-manual { fill: #ff9e9e; }
+.kdx-cmp-ends .is-auto { fill: #9ba5ff; }
+.kdx-cmp.is-drawn .kdx-cmp-line {
+  stroke-dashoffset: 0; transition: stroke-dashoffset 2.6s cubic-bezier(0.45, 0, 0.2, 1);
+}
+.kdx-cmp.is-drawn .kdx-cmp-line.is-auto { transition-delay: 0.25s; }
+.kdx-cmp.is-drawn .kdx-cmp-area { opacity: 1; transition: opacity 1.6s var(--ease) 1.4s; }
+.kdx-cmp.is-drawn .kdx-cmp-ends circle { opacity: 1; transition: opacity 0.8s var(--ease) 2.5s; }
+.kdx-cmp-side { display: grid; gap: clamp(1rem, 2vw, 1.4rem); grid-template-rows: 1fr 1fr; }
+.kdx-cmp-card {
+  display: flex; flex-direction: column; justify-content: center;
+  padding: clamp(1.4rem, 2.6vw, 2rem);
+  border-radius: var(--r-lg); border: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.04);
+  opacity: 0; transform: translateY(14px);
+  transition: opacity 0.9s var(--ease), transform 0.9s var(--ease);
+}
+.kdx-cmp.is-drawn .kdx-cmp-card { opacity: 1; transform: none; }
+.kdx-cmp.is-drawn .kdx-cmp-card.is-auto { transition-delay: 0.25s; }
+.kdx-cmp-card.is-auto {
+  border-color: transparent;
+  background-image:
+    radial-gradient(90% 90% at 90% 0%, rgba(146, 155, 255, 0.5), rgba(146, 155, 255, 0) 62%),
+    linear-gradient(155deg, #4453ff 0%, #3641da 62%, #2b34c4 100%);
+  box-shadow: var(--glow-lg);
+}
+.kdx-cmp-card-label {
+  font-family: var(--display); font-size: 0.72rem; font-weight: 700;
+  letter-spacing: 0.14em; text-transform: uppercase; margin: 0 0 0.8rem;
+}
+.kdx-cmp-card.is-manual .kdx-cmp-card-label { color: #ff9e9e; }
+.kdx-cmp-card.is-auto .kdx-cmp-card-label { color: rgba(255, 255, 255, 0.85); }
+.kdx-cmp-big {
+  font-family: var(--display); font-weight: 900; font-size: clamp(2.4rem, 4.4vw, 3.4rem);
+  line-height: 1; letter-spacing: -0.03em; margin: 0; font-variant-numeric: tabular-nums;
+}
+.kdx-cmp-big > span:not(:first-child) { font-size: 0.5em; font-weight: 600; opacity: 0.6; letter-spacing: 0; }
+.kdx-cmp-card-note { margin: 0.45rem 0 0; font-family: var(--display); font-size: 0.92rem; color: rgba(255, 255, 255, 0.7); }
+.kdx-cmp-small {
+  margin: 1.1rem 0 0; padding-top: 1rem; border-top: 1px solid rgba(255, 255, 255, 0.14);
+  font-family: var(--display); font-size: 0.98rem; color: rgba(255, 255, 255, 0.82);
+}
+.kdx-cmp-small strong { font-size: 1.35rem; font-weight: 800; color: #fff; margin-inline-end: 0.2rem; }
+.kdx-cmp-foot {
+  display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 1.4rem;
+  margin-top: clamp(1.6rem, 3vw, 2.4rem);
+}
+.kdx-cmp-note { margin: 0; max-width: 62ch; font-family: var(--display); font-size: 0.88rem; line-height: 1.55; color: rgba(255, 255, 255, 0.6); }
+@media (max-width: 900px) {
+  .kdx-cmp { grid-template-columns: minmax(0, 1fr); }
+  .kdx-cmp-side { grid-template-columns: repeat(2, minmax(0, 1fr)); grid-template-rows: none; }
+}
+@media (max-width: 620px) {
+  .kdx-cmp-side { grid-template-columns: minmax(0, 1fr); }
+  .kdx-cmp-foot .kdx-btn { width: 100%; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .kdx-cmp-line { stroke-dashoffset: 0; }
+  .kdx-cmp-card { opacity: 1; transform: none; }
+}
+:root:is([lang="ckb"], [lang="ar"]) .kdx-cmp-card-label, :root:is([lang="ckb"], [lang="ar"]) .kdx-cmp-axis { text-transform: none; letter-spacing: 0; }
+
+.kdx-cmp-big { text-align: start; }
+[dir="rtl"] .kdx-cmp-big { text-align: right; }
+@media (max-width: 620px) {
+  .kdx-cmp-tick, .kdx-cmp-axis { font-size: 21px; }
+  .kdx-cmp-line { stroke-width: 5; }
+}
+
+/* Arabic: same script rules as Sorani, without the optional Kurdish display face */
+:root[lang="ar"] .kdx {
+  --display: 'Noto Kufi Arabic', 'Figtree', 'Segoe UI', Tahoma, sans-serif;
+  --serif: 'Noto Naskh Arabic', 'Noto Kufi Arabic', Georgia, serif;
+}
+:root[lang="ar"] .kdx-lang-option[lang="ckb"] { font-family: 'Noto Kufi Arabic', var(--display); }
+.kdx-lang-option { white-space: nowrap; }
+
+/* Sorani headings run larger than Latin at the same size, so they step down */
+:root[lang="ckb"] .kdx-h1 { font-size: clamp(1.75rem, 3.9vw, 3rem); line-height: 1.35; }
+:root[lang="ckb"] .kdx-h2 { font-size: clamp(1.4rem, 2.7vw, 2.1rem); line-height: 1.4; }
+:root[lang="ckb"] .kdx-page-title { font-size: clamp(1.7rem, 3.8vw, 2.8rem); line-height: 1.35; }
+:root[lang="ckb"] .kdx-mv-statement { font-size: clamp(1.2rem, 2.1vw, 1.6rem); line-height: 1.45; }
+:root[lang="ckb"] .kdx-about-band-mission .kdx-mission-text { font-size: clamp(1.2rem, 2vw, 1.6rem); }
+:root[lang="ckb"] .kdx-coverage-h { font-size: clamp(1.15rem, 1.8vw, 1.45rem); line-height: 1.45; }
+:root[lang="ckb"] .kdx-svc-name { font-size: clamp(1.15rem, 1.9vw, 1.5rem); line-height: 1.4; }
+:root[lang="ckb"] .kdx-reason h3,
+:root[lang="ckb"] .kdx-stage-copy h3,
+:root[lang="ckb"] .kdx-stages li h3 { font-size: clamp(1.05rem, 1.5vw, 1.2rem); line-height: 1.45; }
+:root[lang="ckb"] .kdx-cmp-big { font-size: clamp(2rem, 3.6vw, 2.7rem); }
+:root[lang="ckb"] .kdx-faq-item summary { font-size: clamp(0.98rem, 1.5vw, 1.1rem); }
+@media (max-width: 620px) {
+  :root[lang="ckb"] .kdx-h1 { font-size: clamp(1.6rem, 7.2vw, 2rem); }
+  :root[lang="ckb"] .kdx-h2 { font-size: 1.35rem; }
+  :root[lang="ckb"] .kdx-page-title { font-size: 1.6rem; }
+}
+:root[lang="ckb"] .kdx-h2 { max-width: 30ch; }
+:root[lang="ckb"] .kdx-page-title { max-width: 26ch; }
+
+/* footer tree */
+.kdx-contact-foot { position: relative; }
+.kdx-footer-tree {
+  position: absolute; z-index: 0; pointer-events: none;
+  bottom: 100%; inset-inline-end: 0;
+  width: clamp(240px, 31vw, 470px);
+}
+.kdx-footer-tree svg { display: block; width: 100%; height: auto; overflow: visible; }
+.kdx-tree-grass path, .kdx-tree-bark, .kdx-tree-branches path {
+  fill: none; stroke-linecap: round; stroke-linejoin: round;
+}
+.kdx-tree-grass path { stroke: var(--grass, #4453ff); stroke-width: 3; opacity: 0.8; }
+.kdx-tree-bark { stroke: rgba(11, 11, 16, 0.35); stroke-width: 2; }
+.kdx-tree-sway { transform-origin: 400px 300px; animation: kdx-tree-sway 9s ease-in-out infinite alternate; }
+.kdx-tree-canopy { transform-origin: 400px 150px; animation: kdx-tree-breathe 6.5s ease-in-out infinite alternate; }
+.kdx-tree-spark { fill: #fff; opacity: 0; animation: kdx-tree-spark 4.2s ease-in-out infinite; }
+.kdx-tree-fall ellipse { fill: #9ba5ff; opacity: 0; }
+.kdx-tree-fall .f1 { animation: kdx-tree-fall 11s ease-in infinite 0s; }
+.kdx-tree-fall .f2 { animation: kdx-tree-fall 13s ease-in infinite 3.5s; }
+.kdx-tree-fall .f3 { animation: kdx-tree-fall 12s ease-in infinite 6s; }
+.kdx-tree-fall .f4 { animation: kdx-tree-fall 14s ease-in infinite 8.5s; }
+@keyframes kdx-tree-sway { from { transform: rotate(-0.8deg); } to { transform: rotate(0.8deg); } }
+@keyframes kdx-tree-breathe { from { transform: scale(1); } to { transform: scale(1.012); } }
+@keyframes kdx-tree-spark { 0%, 100% { opacity: 0; transform: scale(0.6); } 50% { opacity: 0.95; transform: scale(1.5); } }
+@keyframes kdx-tree-fall {
+  0% { opacity: 0; transform: translate(0, 0) rotate(0deg); }
+  12% { opacity: 0.85; }
+  100% { opacity: 0; transform: translate(-40px, 190px) rotate(220deg); }
+}
+.kdx-tree-spark { transform-box: fill-box; transform-origin: center; }
+.kdx-tree-fall ellipse { transform-box: fill-box; transform-origin: center; }
+@media (max-width: 980px) { .kdx-footer-tree { width: clamp(210px, 40vw, 320px); } }
+@media (max-width: 620px) { .kdx-footer-tree { width: 130px; } }
+
+
+.kdx-moon-halo { animation: kdx-moon-glow 7s ease-in-out infinite alternate; }
+.kdx-moon-beam { animation: kdx-moon-beam 8s ease-in-out infinite alternate; }
+@keyframes kdx-moon-glow { from { opacity: 0.75; } to { opacity: 1; } }
+@keyframes kdx-moon-beam { from { opacity: 0.7; } to { opacity: 1; } }
+.kdx-moon-beam { filter: blur(4px); }
+
+/* the footer is dark everywhere except the lit scene under the tree */
+.kdx-contact { background-color: #050509; background-image: linear-gradient(180deg, #0a0a10 0%, #050509 100%); }
+
+/* the spring-day half of the scene */
+.kdx-day .kdx-tree-spark { fill: #fff6c8; }
+.kdx-sun-rays { transform-origin: 700px 80px; animation: kdx-spin 70s linear infinite; }
+.kdx-tree-fall.is-day ellipse { fill: #ffb8d0; }
+.kdx-tree-fall.is-day .f1 { animation: kdx-tree-fall-r 12s ease-in infinite 1s; }
+.kdx-tree-fall.is-day .f2 { animation: kdx-tree-fall-r 13s ease-in infinite 4.5s; }
+.kdx-tree-fall.is-day .f3 { animation: kdx-tree-fall-r 11s ease-in infinite 7s; }
+.kdx-tree-fall.is-day .f4 { animation: kdx-tree-fall-r 14s ease-in infinite 9.5s; }
+@keyframes kdx-tree-fall-r {
+  0% { opacity: 0; transform: translate(0, 0) rotate(0deg); }
+  12% { opacity: 0.9; }
+  100% { opacity: 0; transform: translate(46px, 190px) rotate(-200deg); }
 }

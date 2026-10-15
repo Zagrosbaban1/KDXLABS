@@ -1,6 +1,4 @@
-# The site is a single-page app with real URLs (/, /about). Apache must hand
-# every path that isn't a real file to index.html, or loading /about directly
-# — or refreshing on it — returns 404 instead of the page.
+# single-page app: send unknown paths to index.html
 <IfModule mod_rewrite.c>
   RewriteEngine On
   RewriteBase /

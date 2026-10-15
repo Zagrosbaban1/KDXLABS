@@ -5,7 +5,7 @@ export const prefersReducedMotion = () =>
   typeof window !== "undefined" &&
   window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
-/* ----------------------------- logomark ---------------------------- */
+/* logomark */
 export function Mark({ variant = "white", className = "" }) {
   return (
     <img
@@ -17,7 +17,7 @@ export function Mark({ variant = "white", className = "" }) {
   );
 }
 
-/* --------------------------- radar motif --------------------------- */
+/* radar motif */
 export function Radar({ spin = true }) {
   const rings = [46, 108, 178, 256, 342, 436];
   const spokes = Array.from({ length: 12 }, (_, i) => i * 30);
@@ -45,9 +45,7 @@ export function Radar({ spin = true }) {
   );
 }
 
-/* --------------------------- count-up value ------------------------- */
-/* Counts from zero to `value` the first time it scrolls into view.
-   Reduced motion gets the final number immediately, never a blank. */
+/* count-up value */
 export function Counter({ value, suffix = "", duration = 1100 }) {
   const [shown, setShown] = useState(() => (prefersReducedMotion() ? value : 0));
   const ref = useRef(null);

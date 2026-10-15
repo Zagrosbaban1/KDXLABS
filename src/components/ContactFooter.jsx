@@ -1,7 +1,8 @@
 import { useMemo, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import { CONTACT, NAV, SERVICE_IDS } from "../data.js";
-import { Mark, Radar } from "./primitives.jsx";
+import { Mark } from "./primitives.jsx";
+import FooterTree from "./FooterTree.jsx";
 import { useSectionLink, useSite } from "../site-context.jsx";
 
 export default function ContactFooter() {
@@ -14,6 +15,9 @@ export default function ContactFooter() {
   const sectionLink = useSectionLink();
   const messageRef = useRef(null);
   const [copied, setCopied] = useState("");
+  const [sending, setSending] = useState(false);
+  const [sentDirect, setSentDirect] = useState(false);
+  const [sendFailed, setSendFailed] = useState(false);
 
   const setField = (key) => (e) => {
     const value = e.target.value;
@@ -24,10 +28,10 @@ export default function ContactFooter() {
   const messageBody = useMemo(
     () =>
       [
-        `${c.form.mailName}: ${fields.name || "—"}`,
-        `${c.form.mailCompany}: ${fields.company || "—"}`,
-        `${c.form.mailEmail}: ${fields.email || "—"}`,
-        `${c.form.mailPhone}: ${fields.phone || "—"}`,
+        `${c.form.mailName}: ${fields.name || "-"}`,
+        `${c.form.mailCompany}: ${fields.company || "-"}`,
+        `${c.form.mailEmail}: ${fields.email || "-"}`,
+        `${c.form.mailPhone}: ${fields.phone || "-"}`,
         `${c.form.mailService}: ${fields.service || c.form.notSure}`,
         "",
         fields.message,
@@ -46,7 +50,7 @@ export default function ContactFooter() {
     return next;
   };
 
-  const send = () => {
+  const send = async () => {
     const next = validate();
     const first = Object.keys(next)[0];
     if (first) {
@@ -57,6 +61,28 @@ export default function ContactFooter() {
     const subject = fields.service
       ? t(c.form.mailSubjectService, { service: fields.service, who })
       : t(c.form.mailSubjectPlain, { who });
+
+    if (CONTACT.formEndpoint) {
+      setSending(true);
+      setSendFailed(false);
+      try {
+        const res = await fetch(CONTACT.formEndpoint, {
+          method: "POST",
+          headers: { "Content-Type": "application/json", Accept: "application/json" },
+          body: JSON.stringify({ ...fields, subject, _subject: subject }),
+        });
+        if (!res.ok) throw new Error(String(res.status));
+        setSentDirect(true);
+        setSent(true);
+        clearDraft();
+        return;
+      } catch {
+        setSendFailed(true);
+      } finally {
+        setSending(false);
+      }
+    }
+    setSentDirect(false);
     try {
       window.location.href = `mailto:${CONTACT.email}?subject=${encodeURIComponent(
         subject
@@ -90,6 +116,8 @@ export default function ContactFooter() {
 
   const resetEnquiry = () => {
     setSent(false);
+    setSentDirect(false);
+    setSendFailed(false);
     clearDraft();
     window.setTimeout(() => nameRef.current?.focus(), 60);
   };
@@ -99,10 +127,6 @@ export default function ContactFooter() {
 
   return (
     <footer className="kdx-contact" id="contact">
-      <div className="kdx-contact-radar" aria-hidden="true">
-        <Radar spin={false} />
-      </div>
-
       <div className="kdx-wrap kdx-contact-inner">
         <p className="kdx-eyebrow" data-reveal>
           {c.form.eyebrow}
@@ -115,16 +139,23 @@ export default function ContactFooter() {
           <div className="kdx-form" data-reveal>
             {sent ? (
               <div className="kdx-sent" role="status">
-                <h3>{c.form.sentHeading}</h3>
-                <p>{t(c.form.sentBody, { email: CONTACT.email })}</p>
+                <h3>{sentDirect ? c.form.sentDirectHeading : c.form.sentHeading}</h3>
+                <p>
+                  {sentDirect
+                    ? c.form.sentDirectBody
+                    : t(c.form.sentBody, { email: CONTACT.email })}
+                </p>
+                {sendFailed && !sentDirect && <p className="kdx-err">{c.form.errSend}</p>}
                 <div className="kdx-form-actions">
-                  <button
-                    type="button"
-                    className="kdx-btn kdx-btn-sm kdx-btn-blue"
-                    onClick={() => doCopy(messageBody, "message", c.form.copyLabelMessage)}
-                  >
-                    {copied === "message" ? c.ui.copied : c.form.copyMessage}
-                  </button>
+                  {!sentDirect && (
+                    <button
+                      type="button"
+                      className="kdx-btn kdx-btn-sm kdx-btn-blue"
+                      onClick={() => doCopy(messageBody, "message", c.form.copyLabelMessage)}
+                    >
+                      {copied === "message" ? c.ui.copied : c.form.copyMessage}
+                    </button>
+                  )}
                   <button
                     type="button"
                     className="kdx-btn kdx-btn-sm kdx-btn-ghost"
@@ -254,13 +285,19 @@ export default function ContactFooter() {
                 </div>
 
                 <div className="kdx-form-actions">
-                  <button type="button" className="kdx-btn kdx-btn-blue" onClick={send}>
-                    {c.form.send}
+                  <button type="button" className="kdx-btn kdx-btn-blue" onClick={send} disabled={sending}>
+                    {sending ? c.form.sending : c.form.send}
                   </button>
                   <button type="button" className="kdx-btn kdx-btn-ghost" onClick={sendWhatsApp}>
                     {c.form.sendWhatsApp}
                   </button>
                 </div>
+
+                {sendFailed && (
+                  <p className="kdx-err" role="alert">
+                    {c.form.errSend}
+                  </p>
+                )}
 
                 {draftRestored ? (
                   <p className="kdx-saved" role="status">
@@ -313,8 +350,8 @@ export default function ContactFooter() {
                 </dd>
               </div>
               <div>
-                <dt>{c.details.office}</dt>
-                <dd>{c.details.officeValue}</dd>
+                <dt>{c.details.base}</dt>
+                <dd>{c.details.baseValue}</dd>
               </div>
             </dl>
 
@@ -332,6 +369,7 @@ export default function ContactFooter() {
         </div>
 
         <div className="kdx-contact-foot">
+          <FooterTree />
           <nav className="kdx-foot-links" aria-label={c.ui.sections}>
             {NAV.map((n) =>
               n.to ? (
@@ -344,9 +382,6 @@ export default function ContactFooter() {
                 </a>
               )
             )}
-            <a href={CONTACT.jobsUrl} target="_blank" rel="noreferrer">
-              KDXJobs ↗
-            </a>
           </nav>
           <span className="kdx-foot-meta">
             {t(c.details.footMeta, { year: new Date().getFullYear() })}

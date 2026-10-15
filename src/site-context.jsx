@@ -3,25 +3,15 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { prefersReducedMotion } from "./components/primitives.jsx";
 import { DEFAULT_LANG, LANGUAGES, fill, getPack, isLang } from "./content/index.js";
 
-/* ------------------------------------------------------------------ *
- *  Everything shared between the pages: the chosen language, the
- *  enquiry the visitor is part-way through writing, the copy toast,
- *  and scrolling to a section that may well live on the other page.
- * ------------------------------------------------------------------ */
-
 const DRAFT_KEY = "kdx-enquiry-draft";
 const LANG_KEY = "kdx-lang";
 
-/* Remembered choice first, then what the browser asks for, then English.
-   Read once, synchronously, so the first paint is already in the right
-   language and direction — a flash of the wrong script is worse than a
-   slightly later paint. */
 function initialLang() {
   try {
     const saved = localStorage.getItem(LANG_KEY);
     if (isLang(saved)) return saved;
   } catch {
-    /* private mode — fall through to the browser's preference */
+    /* private mode, fall through to the browser's preference */
   }
   try {
     const wanted = navigator.languages || [navigator.language];
@@ -30,9 +20,10 @@ function initialLang() {
       /* ckb is Sorani; ku is Kurdish unqualified, which here means Sorani */
       if (base.startsWith("ckb") || base.startsWith("ku")) return "ckb";
       if (base.startsWith("en")) return "en";
+      if (base.startsWith("ar")) return "ar";
     }
   } catch {
-    /* no navigator — server render or an odd embed */
+    /* no navigator, server render or an odd embed */
   }
   return DEFAULT_LANG;
 }
@@ -69,21 +60,15 @@ export function SiteProvider({ children }) {
 
   const c = useMemo(() => getPack(lang), [lang]);
 
-  /* copy() is memoised with no deps so its identity stays stable across
-     renders; it reads the toast wording through a ref so a language
-     change still reaches it */
   const toastTemplate = useRef(c.ui.copiedToast);
   toastTemplate.current = c.ui.copiedToast;
 
-  /* ---- the language is a document-level fact ----
-     <html lang> and <html dir> drive the font stack, the RTL layout, the
-     browser's own hyphenation and spellcheck, and what a screen reader
-     switches its voice to. Setting them on <html> rather than a wrapper
-     div is what makes all of that work. */
   useEffect(() => {
     const el = document.documentElement;
     el.setAttribute("lang", c.meta.htmlLang);
     el.setAttribute("dir", c.meta.dir);
+    document.title = c.meta.title;
+    document.querySelector('meta[name="description"]')?.setAttribute("content", c.meta.description);
     return () => {};
   }, [c]);
 
@@ -97,11 +82,9 @@ export function SiteProvider({ children }) {
     }
   }, []);
 
-  /* c.form.errName etc. are already-translated strings; t() is only for
-     the ones carrying {tokens} */
   const t = useCallback((template, values) => fill(template, values), []);
 
-  /* ---- restore a half-written enquiry ---- */
+  /* restore a half-written enquiry */
   useEffect(() => {
     try {
       const saved = JSON.parse(localStorage.getItem(DRAFT_KEY) || "null");
@@ -110,18 +93,18 @@ export function SiteProvider({ children }) {
         setDraftRestored(true);
       }
     } catch {
-      /* private mode, or someone hand-edited storage — start fresh */
+      /* private mode, or someone hand-edited storage, start fresh */
     }
   }, []);
 
-  /* ---- and keep it saved as they type ---- */
+  /* and keep it saved as they type */
   useEffect(() => {
     const hasContent = Object.values(fields).some((v) => String(v).trim());
     try {
       if (hasContent) localStorage.setItem(DRAFT_KEY, JSON.stringify(fields));
       else localStorage.removeItem(DRAFT_KEY);
     } catch {
-      /* nothing to do — the form still works without persistence */
+      /* nothing to do, the form still works without persistence */
     }
   }, [fields]);
 
@@ -131,9 +114,6 @@ export function SiteProvider({ children }) {
     return () => clearTimeout(t);
   }, [toast]);
 
-  /* ---- scrolling to a section, wherever it lives ----
-     Sections belong to the home page. Asking for one from /about routes
-     home first and hands the target over so the page can scroll on arrival. */
   const scrollToId = useCallback((id, focusRef) => {
     const run = () => {
       if (id === "top") {
